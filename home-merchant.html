@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller Dashboard - BBite</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .merchant-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .merchant-profile { display: flex; align-items: center; gap: 12px; }
+        .merchant-profile img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid #E5E5E5; }
+        .merchant-info h1 { font-size: 16px; margin: 0; color: #000; }
+        .merchant-info p { font-size: 11px; color: #888; margin: 0; }
+        .status-toggle { background: #1B8B6A; color: #FFF; font-size: 12px; font-weight: 700; padding: 6px 14px; border-radius: 20px; display: flex; align-items: center; gap: 6px; cursor: pointer; border: none; }
+        
+        .alert-box { background: #FFF3CD; border-radius: 12px; padding: 12px 16px; display: flex; gap: 12px; align-items: center; margin-bottom: 20px; }
+        .alert-box p { font-size: 11px; font-weight: 600; color: #856404; margin: 0; line-height: 1.4; }
+
+        .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+        .metric-card { background: #FFF; border: 1px solid #E5E5E5; border-radius: 16px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+        .metric-card span { font-size: 11px; color: #666; font-weight: 600; }
+        .metric-card h2 { font-size: 20px; color: #000; margin-top: 4px; font-weight: 700; }
+
+        .section-title { font-size: 16px; font-weight: 700; margin-bottom: 12px; color: #000; display: flex; justify-content: space-between; align-items: center;}
+        
+        .incoming-order-card { background: #FFF; border: 1px solid #E5E5E5; border-radius: 16px; padding: 16px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+        .order-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .order-head h3 { font-size: 14px; font-weight: 700; color: #000; margin: 0; }
+        .badge-blue { background: #E3F2FD; color: #1976D2; font-size: 10px; font-weight: 700; padding: 4px 8px; border-radius: 12px; }
+        .badge-green { background: #E8F5E9; color: #2E7D32; font-size: 10px; font-weight: 700; padding: 4px 8px; border-radius: 12px; }
+        .order-items { font-size: 12px; color: #666; margin-bottom: 16px; line-height: 1.5; }
+        .order-actions { display: flex; gap: 12px; }
+        .btn-reject { flex: 1; background: #E5E5E5; color: #000; font-weight: 700; font-size: 13px; padding: 12px; border-radius: 10px; border: none; cursor: pointer; transition: 0.2s;}
+        .btn-accept { flex: 1; background: #DC9808; color: #FFF; font-weight: 700; font-size: 13px; padding: 12px; border-radius: 10px; border: none; cursor: pointer; transition: 0.2s;}
+        .btn-full { width: 100%; }
+        .btn-reject:active, .btn-accept:active { transform: scale(0.96); }
+
+        .menu-list-merchant { display: flex; flex-direction: column; gap: 12px; }
+        .menu-item-edit { display: flex; align-items: center; gap: 12px; background: #FFF; padding: 12px; border-radius: 16px; border: 1px solid #E5E5E5; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+        .menu-item-edit img { width: 60px; height: 60px; border-radius: 10px; object-fit: cover; background: #F5F5F5; }
+        .menu-item-edit-info { flex: 1; overflow: hidden; }
+        .menu-item-edit-info h4 { font-size: 13px; font-weight: 700; margin-bottom: 2px; color: #000; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
+        .menu-item-edit-info p { font-size: 12px; font-weight: 700; color: #6B4EFF; margin-bottom: 4px; }
+        .menu-item-edit-info span { font-size: 9px; background: #F5F5F5; padding: 2px 6px; border-radius: 8px; color: #666; font-weight: 600; }
+        
+        .custom-modal-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 100; display: none; justify-content: center; align-items: center; padding: 24px; backdrop-filter: blur(3px); }
+        .custom-modal { background: #FFFFFF; width: 100%; max-height: 90vh; overflow-y: auto; border-radius: 20px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: flex; flex-direction: column; gap: 12px; }
+        .custom-modal h3 { font-size: 18px; color: #000; font-weight: 700; margin: 0; }
+        
+        .upload-area { width: 100%; height: 120px; background: #F8F8F8; border: 2px dashed #CCC; border-radius: 12px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; position: relative; overflow: hidden; }
+        .upload-area img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; display: none; }
+        .upload-area span { font-size: 12px; color: #888; font-weight: 600; z-index: 2; pointer-events: none;}
+        
+        .form-input { width: 100%; padding: 14px; border: 1px solid #E5E5E5; border-radius: 12px; font-size: 13px; outline: none; background: #FFF; margin-bottom: 8px; }
+        .form-input:focus { border-color: #DC9808; }
+        .modal-buttons { display: flex; gap: 12px; margin-top: 8px; }
+        .modal-buttons button { flex: 1; padding: 14px; border-radius: 12px; font-size: 14px; font-weight: 600; border: none; cursor: pointer; transition: 0.2s; }
+        .btn-cancel { background: #F5F5F5; color: #333; }
+        .btn-save { background: #DC9808; color: #FFF; }
+
+        /* Bottom Nav */
+        .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 390px; height: 70px; background-color: #FFFFFF; border-top: 1px solid #E5E5E5; display: flex; justify-content: space-around; align-items: center; padding: 0 10px 10px 10px; z-index: 50; border-radius: 0 0 40px 40px;}
+        .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: #A0A0A0; font-size: 10px; font-weight: 700; transition: 0.2s ease; cursor: pointer; }
+        .nav-item.active { color: #000; }
+        .nav-item.active .dot { width: 4px; height: 4px; background: #000; border-radius: 50%; }
+
+        .d-none { display: none !important; }
+    </style>
+</head>
+<body style="background: #333;">
+    <div class="app-container dashboard" style="background: #FAFAFA; border-radius: 40px;">
+        
+        <!-- HEADER GLOBAL MERCHANT -->
+        <div id="globalMerchantHeader" style="padding: 50px 24px 0 24px; background: #FFF; border-bottom: 1px solid #E5E5E5; margin-bottom: 20px; padding-bottom: 16px;">
+            <div class="merchant-header" style="margin-bottom: 0;">
+                <div class="merchant-profile">
+                    <img src="https://via.placeholder.com/40/DC9808/FFFFFF?text=Toko" id="merchantHeaderImg" alt="Logo">
+                    <div class="merchant-info">
+                        <h1 id="merchantName">Toko Saya</h1>
+                        <p>Seller Dashboard</p>
+                    </div>
+                </div>
+                <button class="status-toggle">☕ Open</button>
+            </div>
+        </div>
+
+        <div id="viewOrders" class="dashboard-content" style="padding-top: 0; padding-bottom: 90px;">
+            <div class="alert-box">
+                <span style="font-size: 18px;">❗</span>
+                <p>Menerima pesanan secara Real-Time. Pastikan aplikasi tetap terbuka.</p>
+            </div>
+
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <span>Orders today</span>
+                    <h2 id="todayOrdersCount">0</h2>
+                </div>
+                <div class="metric-card">
+                    <span>Revenue today</span>
+                    <h2 id="todayRevenueCount">Rp0</h2>
+                </div>
+            </div>
+
+            <div class="section-title">Incoming Orders</div>
+            <div id="incomingOrdersList">
+                <p style="text-align:center; font-size:12px; color:#888; margin-top:20px;">Memuat pesanan masuk...</p>
+            </div>
+        </div>
+
+        <div id="viewMenu" class="dashboard-content d-none" style="padding-top: 0; padding-bottom: 90px;">
+            <div class="section-title">
+                Katalog Menu
+                <!-- PERBAIKAN CSS TOMBOL AGAR TIDAK TABRAKAN -->
+                <button class="btn-accept" style="flex: none; padding: 8px 16px; width: auto; font-size: 12px; border-radius: 20px; box-shadow: 0 4px 10px rgba(220,152,8,0.3);" onclick="openMenuModal()">+ Tambah Menu</button>
+            </div>
+            
+            <div class="menu-list-merchant" id="merchantMenuList">
+                <p style="text-align:center; font-size:12px; color:#888;">Memuat menu restoran...</p>
+            </div>
+        </div>
+
+        <div id="viewProfile" class="dashboard-content d-none" style="padding-top: 50px; padding-bottom: 90px;">
+            <h1 style="font-size: 24px; margin-bottom: 8px; padding: 0 4px; color: #000;">Profile</h1>
+            
+            <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 24px; margin-top: 10px;">
+                <label for="merchantAvatarUpload" style="width: 90px; height: 90px; position: relative; cursor: pointer; display: block;">
+                    <img src="https://via.placeholder.com/90/DC9808/FFFFFF?text=+" id="profileImageMerchant" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background-color: #E5E5E5; border: 2px solid #DC9808;" alt="Profile">
+                    <div style="position: absolute; bottom: 0; right: 0; background: #000; color: white; border: 2px solid #FFF; border-radius: 50%; width: 28px; height: 28px; display: flex; justify-content: center; align-items: center; font-size: 12px; pointer-events: none;">✎</div>
+                    <div id="profileUploadOverlay" style="position: absolute; top:0; left:0; right:0; bottom:0; background:rgba(255,255,255,0.8); border-radius: 50%; display: none; justify-content: center; align-items: center; font-size: 10px; font-weight: 700; color: #000;">Saving...</div>
+                </label>
+                <input type="file" id="merchantAvatarUpload" accept="image/*" style="display: none;">
+            </div>
+
+            <div>
+                <h3 style="font-size: 13px; color: #888; margin-bottom: 10px; margin-left: 4px; font-weight: 700; text-transform: uppercase;">Data Diri</h3>
+                <div style="background: #FFFFFF; border-radius: 16px; padding: 20px; border: 1px solid #E5E5E5; display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px;">
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                        <span style="font-size: 11px; color: #A0A0A0; font-weight: 600;">Nama Lengkap Akun</span>
+                        <span style="font-size: 14px; color: #000; font-weight: 600;" id="profName">Memuat...</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                        <span style="font-size: 11px; color: #A0A0A0; font-weight: 600;">Email Akun</span>
+                        <span style="font-size: 14px; color: #000; font-weight: 600;" id="profEmail">memuat...</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 4px; padding-top: 16px; border-top: 1px dashed #E5E5E5;">
+                        <span style="font-size: 11px; color: #A0A0A0; font-weight: 600;">Nama Toko Bisnis</span>
+                        <span style="font-size: 14px; color: #000; font-weight: 600;" id="profBName">Memuat...</span>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div style="background: #FFFFFF; border-radius: 16px; overflow: hidden; border: 1px solid #E5E5E5;">
+                    <div id="btnMerchantLogout" style="display: flex; align-items: center; gap: 16px; padding: 16px 20px; color: #D32F2F; font-weight: 600; font-size: 14px; cursor: pointer;">
+                        <span style="font-size: 18px;">🚪</span> <span>Log out</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL TAMBAH MENU -->
+        <div class="custom-modal-overlay" id="addMenuModal">
+            <div class="custom-modal">
+                <h3>Tambah Menu Baru</h3>
+                
+                <label for="menuImageInput" class="upload-area" id="uploadAreaBox">
+                    <span>📸 Upload Foto Menu</span>
+                    <img id="previewMenuImg" src="">
+                </label>
+                <input type="file" id="menuImageInput" accept="image/*" style="display: none;">
+
+                <input type="text" id="inputMenuName" class="form-input" placeholder="Nama Menu (cth: Ayam Bakar)">
+                
+                <select id="inputMenuCategory" class="form-input">
+                    <option value="" disabled selected>Pilih Kategori</option>
+                    <option value="Makanan">Makanan</option>
+                    <option value="Minuman">Minuman</option>
+                    <option value="Snacks">Snacks</option>
+                    <option value="Paket Hemat">Paket Hemat</option>
+                </select>
+
+                <input type="number" id="inputMenuPrice" class="form-input" placeholder="Harga (cth: 15000)">
+
+                <div class="modal-buttons">
+                    <button class="btn-cancel" onclick="closeMenuModal()">Batal</button>
+                    <button class="btn-save" id="btnSaveNewMenu">Simpan Menu</button>
+                </div>
+            </div>
+        </div>
+
+        <nav class="bottom-nav">
+            <a href="#" class="nav-item active" onclick="switchTab('viewOrders', this)">
+                <div class="dot"></div>
+                <span>Orders</span>
+            </a>
+            <a href="#" class="nav-item" onclick="switchTab('viewMenu', this)">
+                <div class="dot" style="background: transparent;"></div>
+                <span>Menu</span>
+            </a>
+            <a href="#" class="nav-item" onclick="alert('Fitur Laporan sedang dikembangkan'); return false;">
+                <div class="dot" style="background: transparent;"></div>
+                <span>Reports</span>
+            </a>
+            <a href="#" class="nav-item" onclick="switchTab('viewProfile', this)">
+                <div class="dot" style="background: transparent;"></div>
+                <span>Profile</span>
+            </a>
+        </nav>
+    </div>
+
+    <script>
+        window.tempBase64Image = "";
+
+        function switchTab(tabId, element) {
+            document.getElementById('viewOrders').classList.add('d-none');
+            document.getElementById('viewMenu').classList.add('d-none');
+            document.getElementById('viewProfile').classList.add('d-none');
+            
+            document.getElementById(tabId).classList.remove('d-none');
+            
+            if (tabId === 'viewProfile') {
+                document.getElementById('globalMerchantHeader').style.display = 'none';
+            } else {
+                document.getElementById('globalMerchantHeader').style.display = 'block';
+            }
+
+            document.querySelectorAll('.bottom-nav .nav-item').forEach(nav => {
+                nav.classList.remove('active');
+                nav.querySelector('.dot').style.background = 'transparent';
+            });
+            
+            element.classList.add('active');
+            element.querySelector('.dot').style.background = '#000';
+            window.scrollTo(0, 0);
+        }
+
+        function openMenuModal() {
+            document.getElementById("inputMenuName").value = "";
+            document.getElementById("inputMenuCategory").value = "";
+            document.getElementById("inputMenuPrice").value = "";
+            document.getElementById("previewMenuImg").style.display = "none";
+            window.tempBase64Image = "";
+            document.getElementById("addMenuModal").style.display = "flex";
+        }
+
+        function closeMenuModal() {
+            document.getElementById("addMenuModal").style.display = "none";
+        }
+
+        document.getElementById("menuImageInput").addEventListener("change", function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    const MAX_SIZE = 300;
+                    let width = img.width; let height = img.height;
+                    if (width > height) { if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; } } 
+                    else { if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; } }
+                    canvas.width = width; canvas.height = height;
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    window.tempBase64Image = canvas.toDataURL('image/jpeg', 0.7);
+                    const preview = document.getElementById("previewMenuImg");
+                    preview.src = window.tempBase64Image;
+                    preview.style.display = "block";
+                }
+                img.src = event.target.result;
+            }
+            reader.readAsDataURL(file);
+        });
+    </script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, collection, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCd_v_YnSXpiVAA_eDxk_MaCCdqo4H5CFE",
+            authDomain: "bbite-ac7e4.firebaseapp.com",
+            projectId: "bbite-ac7e4"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        window.currentUser = null;
+        window.userCustomMenus = [];
+        window.userDeletedMenus = [];
+        window.currentBaseMenus = [];
+
+        window.changeOrderStatus = async function(orderId, newStatus) {
+            try { await updateDoc(doc(db, "orders", orderId), { status: newStatus }); } 
+            catch (error) { alert("Gagal memperbarui pesanan: " + error.message); }
+        };
+
+        function getJsonRestoKey(bName) {
+            if (!bName) return 'starbucks';
+            const name = bName.toLowerCase();
+            if (name.includes('starbuck')) return 'starbucks';
+            if (name.includes('a&w') || name.includes('aw')) return 'aw';
+            if (name.includes('hokben')) return 'hokben';
+            if (name.includes('yoshinoya')) return 'yoshinoya';
+            return 'starbucks';
+        }
+
+        window.renderMerchantMenus = function() {
+            const listContainer = document.getElementById("merchantMenuList");
+            listContainer.innerHTML = ""; 
+            
+            const filteredBase = window.currentBaseMenus.filter(m => !window.userDeletedMenus.includes(m.id));
+            
+            const finalMenus = [...window.userCustomMenus, ...filteredBase];
+
+            if (finalMenus.length === 0) {
+                listContainer.innerHTML = "<p style='text-align:center; font-size:12px; color:#888;'>Belum ada menu. Silakan tambah menu.</p>";
+                return;
+            }
+
+            finalMenus.forEach(menu => {
+                const imgSrc = menu.img ? menu.img : 'https://via.placeholder.com/150/F5F5F5/A0A0A0?text=No+Photo';
+                const priceFmt = "Rp " + parseInt(menu.price || 0).toLocaleString('id-ID');
+                
+                const html = `
+                    <div class="menu-item-edit" id="menu-${menu.id}">
+                        <img src="${imgSrc}" alt="${menu.name}" onerror="this.src='https://via.placeholder.com/150/F5F5F5/A0A0A0?text=No+Photo'">
+                        <div class="menu-item-edit-info">
+                            <h4>${menu.name}</h4>
+                            <p>${priceFmt}</p>
+                            <span>${menu.category}</span>
+                        </div>
+                        <button class="btn-delete-menu" onclick="deleteMenuItem('${menu.id}')" style="background:#FFEBEE; color:#D32F2F; border:none; width:36px; height:36px; border-radius:10px; font-size:16px; cursor:pointer; display:flex; justify-content:center; align-items:center; transition:0.2s;" onmousedown="this.style.transform='scale(0.9)'" onmouseup="this.style.transform='scale(1)'">🗑️</button>
+                    </div>
+                `;
+                listContainer.insertAdjacentHTML('beforeend', html);
+            });
+        }
+
+        window.deleteMenuItem = async function(menuId) {
+            if(!confirm("Yakin ingin menghapus menu ini?")) return;
+
+            try {
+                const userRef = doc(db, "users", window.currentUser.uid);
+                
+                // Jika ID diawali custom-, berarti hapus dari array customMenus
+                if (menuId.startsWith('custom-')) {
+                    const updatedCustom = window.userCustomMenus.filter(m => m.id !== menuId);
+                    await updateDoc(userRef, { customMenus: updatedCustom });
+                    window.userCustomMenus = updatedCustom;
+                } 
+                else {
+                    const updatedDeleted = [...window.userDeletedMenus, menuId];
+                    await updateDoc(userRef, { deletedMenus: updatedDeleted });
+                    window.userDeletedMenus = updatedDeleted;
+                }
+
+                window.renderMerchantMenus();
+            } catch(e) {
+                alert("Gagal menghapus menu: " + e.message);
+            }
+        }
+
+        document.getElementById("btnSaveNewMenu").addEventListener("click", async () => {
+            if (!window.currentUser) return alert("Sesi tidak ditemukan. Harap login kembali.");
+
+            const name = document.getElementById("inputMenuName").value;
+            const category = document.getElementById("inputMenuCategory").value;
+            const price = document.getElementById("inputMenuPrice").value;
+            const img = window.tempBase64Image || "https://via.placeholder.com/150/F5F5F5/A0A0A0?text=No+Photo";
+
+            if (!name || !category || !price) {
+                alert("Harap isi Nama, Kategori, dan Harga!");
+                return;
+            }
+
+            const newMenu = {
+                id: 'custom-' + Date.now(),
+                name: name,
+                category: category,
+                price: parseInt(price),
+                img: img
+            };
+
+            const btn = document.getElementById("btnSaveNewMenu");
+            btn.innerText = "Menyimpan...";
+            btn.disabled = true;
+
+            try {
+                const userRef = doc(db, "users", window.currentUser.uid);
+                const updatedCustom = [newMenu, ...window.userCustomMenus]; // letakkan paling atas
+                await updateDoc(userRef, { customMenus: updatedCustom }, { merge: true });
+                
+                window.userCustomMenus = updatedCustom;
+                window.renderMerchantMenus();
+                
+                closeMenuModal();
+            } catch(e) {
+                alert("Gagal menambahkan menu: " + e.message);
+            } finally {
+                btn.innerText = "Simpan Menu";
+                btn.disabled = false;
+            }
+        });
+
+        async function fetchMerchantMenu(bName) {
+            try {
+                const response = await fetch('./menu.json');
+                const data = await response.json();
+                const key = getJsonRestoKey(bName);
+                
+                window.currentBaseMenus = data.restaurants[key]?.menus || [];
+                window.renderMerchantMenus();
+            } catch (error) { 
+                console.error("Gagal load menu.json:", error); 
+            }
+        }
+
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                window.location.href = "index.html";
+            } else {
+                window.currentUser = user;
+                try {
+                    const docSnap = await getDoc(doc(db, "users", user.uid));
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        const restoKey = getJsonRestoKey(data.businessName);
+
+                        window.userCustomMenus = data.customMenus || [];
+                        window.userDeletedMenus = data.deletedMenus || [];
+
+                        if (data.businessName) {
+                            document.getElementById("merchantName").innerText = data.businessName;
+                            fetchMerchantMenu(data.businessName);
+                        }
+
+                        document.getElementById("profName").innerText = data.name || "-";
+                        document.getElementById("profEmail").innerText = data.email || "-";
+                        document.getElementById("profBName").innerText = data.businessName || "-";
+                        
+                        if (data.photoBase64) {
+                            document.getElementById("profileImageMerchant").src = data.photoBase64;
+                            document.getElementById("merchantHeaderImg").src = data.photoBase64;
+                        }
+
+                        onSnapshot(collection(db, "orders"), (snapshot) => {
+                            let todayOrders = 0;
+                            let todayRevenue = 0;
+                            const ordersList = document.getElementById("incomingOrdersList");
+                            ordersList.innerHTML = "";
+
+                            snapshot.forEach(docSnapOrder => {
+                                const order = docSnapOrder.data();
+                                const orderId = docSnapOrder.id;
+
+                                if(order.merchantId === restoKey || order.merchantId === user.uid) {
+                                    todayOrders++;
+                                    if(order.status === 'preparing' || order.status === 'ready' || order.status === 'completed') {
+                                        todayRevenue += order.totalPrice;
+                                    }
+                                    if(order.status !== 'completed' && order.status !== 'rejected') {
+                                        let itemsText = order.items.map(i => `${i.qty}x ${i.name}`).join(', ');
+                                        let displayId = "#" + orderId.substring(0, 4).toUpperCase();
+                                        let badgeHtml = ''; let buttonsHtml = '';
+
+                                        if (order.status === 'pending') {
+                                            badgeHtml = `<div class="badge-blue">${order.type} ${order.time}</div>`;
+                                            buttonsHtml = `
+                                                <button class="btn-reject" onclick="changeOrderStatus('${orderId}', 'rejected')">Reject</button>
+                                                <button class="btn-accept" onclick="changeOrderStatus('${orderId}', 'preparing')">Accept</button>
+                                            `;
+                                        } else if (order.status === 'preparing') {
+                                            badgeHtml = `<div class="badge-green">Preparing</div>`;
+                                            buttonsHtml = `<button class="btn-accept btn-full" onclick="changeOrderStatus('${orderId}', 'ready')">Mark ready for pickup</button>`;
+                                        } else if (order.status === 'ready') {
+                                            badgeHtml = `<div class="badge-green" style="background:#FFF6DB; color:#DC9808;">Ready to Take</div>`;
+                                            buttonsHtml = `<button class="btn-accept btn-full" style="background:#333;" onclick="changeOrderStatus('${orderId}', 'completed')">Mark Completed</button>`;
+                                        }
+
+                                        const orderHtml = `
+                                            <div class="incoming-order-card">
+                                                <div class="order-head">
+                                                    <h3>${displayId} · ${order.studentName}</h3>
+                                                    ${badgeHtml}
+                                                </div>
+                                                <div class="order-items" style="margin-bottom: 8px;">${itemsText}</div>
+                                                <div style="font-size:10px; color:#888; margin-bottom:12px;">Notes: ${order.notes}</div>
+                                                <div class="order-actions">${buttonsHtml}</div>
+                                            </div>
+                                        `;
+                                        ordersList.insertAdjacentHTML('afterbegin', orderHtml);
+                                    }
+                                }
+                            });
+
+                            if(ordersList.innerHTML === "") {
+                                ordersList.innerHTML = "<p style='text-align:center; font-size:12px; color:#888; margin-top:20px;'>Tidak ada pesanan aktif saat ini.</p>";
+                            }
+
+                            document.getElementById("todayOrdersCount").innerText = todayOrders;
+                            document.getElementById("todayRevenueCount").innerText = "Rp " + todayRevenue.toLocaleString('id-ID');
+                        });
+                    }
+                } catch (error) { console.log(error); }
+
+                // Logika Upload Foto Profil
+                document.getElementById('merchantAvatarUpload').addEventListener('change', (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+
+                    const overlay = document.getElementById('profileUploadOverlay');
+                    overlay.style.display = 'flex'; overlay.innerText = 'Saving...';
+
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        const img = new Image();
+                        img.onload = async function() {
+                            const canvas = document.createElement('canvas');
+                            const ctx = canvas.getContext('2d');
+                            const MAX_SIZE = 150;
+                            let width = img.width; let height = img.height;
+                            if (width > height) { if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; } } 
+                            else { if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; } }
+                            canvas.width = width; canvas.height = height;
+                            ctx.drawImage(img, 0, 0, width, height);
+                            const base64String = canvas.toDataURL('image/jpeg', 0.6);
+                            
+                            document.getElementById("profileImageMerchant").src = base64String;
+                            document.getElementById("merchantHeaderImg").src = base64String;
+                            
+                            try {
+                                await setDoc(doc(db, "users", user.uid), { photoBase64: base64String }, { merge: true });
+                                overlay.innerText = 'Saved!';
+                                setTimeout(() => { overlay.style.display = 'none'; }, 1000);
+                            } catch (err) { alert("Gagal menyimpan foto"); overlay.style.display = 'none'; }
+                        }
+                        img.src = event.target.result;
+                    }
+                    reader.readAsDataURL(file);
+                });
+
+                document.getElementById("btnMerchantLogout").addEventListener("click", () => {
+                    if (confirm("Yakin ingin keluar dari akun Merchant?")) {
+                        signOut(auth).then(() => { window.location.href = "index.html"; });
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Mahasiswa</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Role switcher (Customer / Courier) - hanya tampil untuk pendaftar kurir */
+        .role-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin: -8px 0 20px; }
+        .role-switch { position: relative; }
+        .role-pill { display: inline-flex; align-items: center; gap: 6px; background: #F4F1FF; color: #6B4EFF; border: 1px solid #6B4EFF; border-radius: 20px; padding: 6px 12px; font-size: 12px; font-weight: 600; font-family: inherit; cursor: pointer; transition: 0.2s; }
+        .role-pill:active { transform: scale(0.96); }
+        .role-menu { display: none; position: absolute; top: calc(100% + 6px); left: 0; min-width: 200px; background: #FFF; border: 1px solid #E5E5E5; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.12); padding: 6px; z-index: 50; }
+        .role-menu.open { display: block; }
+        .role-option { display: flex; justify-content: space-between; align-items: center; gap: 8px; width: 100%; padding: 10px 12px; border: none; background: none; border-radius: 8px; font-size: 13px; font-weight: 600; font-family: inherit; color: #000; cursor: pointer; text-align: left; }
+        .role-option:hover:not(:disabled) { background: #F4F1FF; }
+        .role-option:disabled { color: #999; cursor: not-allowed; }
+        .role-option small { font-size: 10px; font-weight: 500; color: #888; }
+        .role-option .check { color: #6B4EFF; }
+        .courier-note { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #666; }
+        .role-pill .pill-dot { display: none; width: 7px; height: 7px; border-radius: 50%; background: #E53935; flex-shrink: 0; }
+        .role-pill.action-required { background: #FFF1F1; color: #D32F2F; border-color: #E53935; font-weight: 700; }
+        .role-pill.action-required .pill-dot { display: inline-block; }
+        .role-option.reapply { color: #D32F2F; text-decoration: none; }
+        .role-option.reapply:hover { background: #FFF1F1; }
+        .courier-dot { width: 8px; height: 8px; border-radius: 50%; background: #DC9808; flex-shrink: 0; }
+    
+        /* ===== TAMPILAN SESUAI DESAIN FIGMA (warna oranye -> emas BBite) ===== */
+        .app-container.dashboard { background: #FFFFFF; }
+        .dashboard-content { padding: 36px 20px 110px; }
+
+        .dash-header { margin-bottom: 14px; align-items: flex-start; }
+        .dash-greeting h1 { font-size: 24px; font-weight: 800; margin-bottom: 2px; color: #0B1220; }
+        .dash-greeting p { font-size: 12.5px; color: #6B7280; }
+        .profile-initials { width: 42px; height: 42px; background: #4FC3F7; color: #FFF; font-size: 14px; font-weight: 700; }
+
+        .role-row { margin: 0 0 18px; }
+        .role-pill { border-radius: 10px; padding: 7px 12px; }
+        .courier-note { font-size: 11px; color: #4B5563; }
+
+        .time-card { background: #F7F8FA; border: 1px solid #E5E7EB; border-radius: 18px; padding: 16px; margin-bottom: 14px; }
+        .time-card > label { display: block; font-size: 13px; font-weight: 700; color: #0B1220; margin-bottom: 12px; }
+        .time-card .input-wrapper select { background: #FFF; border: 1px solid #E5E7EB; border-radius: 12px; padding: 14px 40px 14px 46px; font-size: 15px; font-weight: 500; color: #0B1220; box-shadow: none; }
+        .time-card .lead-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #6B4EFF; display: flex; pointer-events: none; }
+        .time-card .input-icon { display: flex; }
+
+        .search-card { margin-bottom: 14px; }
+        .search-wrapper input { background: #F7F8FA; border: 1px solid #E5E7EB; border-radius: 22px; padding: 15px 16px 15px 46px; font-size: 14px; }
+        .search-wrapper input:focus { background: #FFF; border-color: #DC9808; }
+        .search-icon { left: 16px; display: flex; color: #374151; font-weight: 400; }
+
+        .promo-banner { background: #FFF6DB; border-radius: 12px; padding: 14px; justify-content: flex-start; gap: 12px; margin-bottom: 22px; }
+        .promo-banner .promo-ico { width: 26px; height: 26px; border-radius: 8px; background: #DC9808; color: #FFF; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .promo-banner p { color: #B07C00; font-size: 12.5px; font-weight: 700; line-height: 1.35; }
+
+        .section-head { margin-bottom: 12px; }
+        .section-head h2 { font-size: 18px; font-weight: 800; color: #0B1220; }
+        .section-head a { background: none; padding: 4px 0; font-size: 12.5px; font-weight: 700; color: #6B4EFF; }
+
+        .canteen-grid { grid-template-columns: repeat(4, 1fr); gap: 8px; }
+        .canteen-item { gap: 6px; background: #FFF; border: 1px solid #E5E7EB; border-radius: 12px; padding: 12px 4px 10px; justify-content: center; min-height: 84px; }
+        .canteen-icon { width: 36px; height: 36px; border-radius: 10px; box-shadow: none; padding: 0; background: transparent; }
+        .canteen-item span { font-size: 10.5px; font-weight: 700; color: #0B1220; }
+
+        /* Popular Picks: digeser kiri/kanan, kartu kedua terlihat sebagian */
+        .picks-scroll { margin: 0 -20px; padding: 2px 20px 14px; gap: 10px; scroll-snap-type: x proximity; scroll-padding-left: 20px; touch-action: pan-x pan-y; -webkit-overflow-scrolling: touch; }
+        .picks-scroll::after { content: ""; flex: 0 0 10px; }
+        .food-card { min-width: 212px; max-width: 212px; border-radius: 14px; border: 1px solid #E5E7EB; box-shadow: 0 2px 8px rgba(0,0,0,0.04); scroll-snap-align: start; }
+        .food-card img { height: 128px; }
+        .pick-body { padding: 12px 14px 12px; display: flex; flex-direction: column; }
+        .pick-body h3 { font-size: 13px; font-weight: 800; color: #0B1220; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .pick-body .pick-resto { font-size: 11px; color: #6B7280; margin-top: 2px; }
+        .pick-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+        .pick-price { font-size: 14px; font-weight: 800; color: #C98A00; }
+        .pick-rating { display: flex; align-items: center; gap: 3px; font-size: 11.5px; font-weight: 700; color: #0B1220; }
+        .pick-rating i { color: #DC9808; font-style: normal; font-size: 13px; }
+
+        .bottom-nav { background: #FFF; border-top: 1px solid #E5E7EB; box-shadow: none; }
+        .nav-item { color: #6B7280; }
+        .nav-item svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+        .nav-item.active { background: #F0ECFF; color: #6B4EFF; }
+    </style>
+</head>
+<body>
+    <div class="app-container dashboard">
+        
+        <div id="mainDashboardView" class="dashboard-content">
+            
+            <header class="dash-header">
+                <div class="dash-greeting">
+                    <h1 id="userGreeting">Hi, Loading...</h1>
+                    <p>Let's plan your next campus meal.</p>
+                </div>
+                <div class="profile-initials" id="userInitials" onclick="window.location.href='profile.html'">--</div>
+            </header>
+
+            <!-- ROLE SWITCHER: hanya muncul kalau user mendaftar sebagai kurir -->
+            <div class="role-row d-none" id="roleRow">
+                <div class="role-switch">
+                    <button type="button" class="role-pill" id="rolePill">
+                        <span class="pill-dot"></span>
+                        <span id="rolePillText">Role: Customer</span>
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+                    </button>
+                    <div class="role-menu" id="roleMenu">
+                        <button type="button" class="role-option" id="optCustomer"><span>Customer</span><span class="check">&#10003;</span></button>
+                        <button type="button" class="role-option" id="optCourier"><span>Courier</span><small id="courierOptNote"></small></button>
+                        <a href="courier-resubmit.html" class="role-option reapply d-none" id="optReapply"><span>Re-apply as Courier</span></a>
+                    </div>
+                </div>
+                <div class="courier-note d-none" id="courierNote">
+                    <span class="courier-dot" id="courierDot"></span>
+                    <span id="courierNoteText"></span>
+                </div>
+            </div>
+
+            <div class="time-card">
+                <label>What time does your class end today?</label>
+                <div class="input-wrapper">
+                    <span class="lead-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+                    <!-- JADWAL KELAS -->
+                    <select id="timeSelect">
+                        <option>09:00</option>
+                        <option>10:00</option>
+                        <option>11:00</option>
+                        <option>12:00</option>
+                        <option selected>13:00</option>
+                        <option>14:00</option>
+                        <option>15:00</option>
+                        <option>16:00</option>
+                        <option>17:00</option>
+                    </select>
+                    <span class="input-icon" style="pointer-events: none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+                </div>
+            </div>
+
+            <div class="search-card">
+                <div class="input-wrapper search-wrapper">
+                    <span class="search-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span>
+                    <input type="text" id="searchInput" placeholder="Search menu or canteen...">
+                </div>
+            </div>
+
+            <div id="searchResultsView" class="d-none" style="margin-bottom: 24px;">
+                <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 12px; color: #000;">Search Results</h3>
+                <div id="searchList" style="display: flex; flex-direction: column; gap: 12px;"></div>
+            </div>
+
+            <div id="defaultDashboardContent">
+                <div class="promo-banner" onclick="alert('Mengambil antrean slot promo 12:40!')">
+                    <span class="promo-ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.9 5.6L19.5 9.5l-5.6 1.9L12 17l-1.9-5.6L4.5 9.5l5.6-1.9z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z"/></svg></span>
+                    <p>12:40 slot still open — order now for faster pickup!</p>
+                </div>
+
+                <section class="dash-section">
+                    <div class="section-head">
+                        <h2>Canteens</h2>
+                        <a href="#" onclick="window.toggleAllCanteens(true); return false;">See all</a>
+                    </div>
+                    
+                    <div class="canteen-grid" id="mainCanteenGrid">
+                        <p style="grid-column: span 4; text-align: center; font-size: 11px; color: #888;">Memuat kantin...</p>
+                    </div>
+                </section>
+
+                <section class="dash-section">
+                    <div class="section-head">
+                        <h2>Popular Picks</h2>
+                        <a href="#" onclick="window.toggleAllCanteens(true); return false;">See all</a>
+                    </div>
+                    
+                    <div class="picks-scroll" id="popularScroll">
+                        <a href="menu-kantin.html?resto=nasigoreng" class="food-card">
+                            <img src="https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=300&q=80" alt="Nasi Goreng" draggable="false">
+                            <div class="pick-body">
+                                <h3>Chicken Katsu Curry Bento</h3>
+                                <span class="pick-resto">Hokben</span>
+                                <div class="pick-foot"><span class="pick-price">Rp 38.000</span><span class="pick-rating"><i>&#9733;</i>4.8</span></div>
+                            </div>
+                        </a>
+                        <a href="menu-kantin.html?resto=bakmiefata" class="food-card">
+                            <img src="https://images.unsplash.com/photo-1585032226651-759b368d7246?auto=format&fit=crop&w=300&q=80" alt="Bakmi" draggable="false">
+                            <div class="pick-body">
+                                <h3>Bakmi Ayam Rica-Rica</h3>
+                                <span class="pick-resto">Bakmi Efata</span>
+                                <div class="pick-foot"><span class="pick-price">Rp 28.000</span><span class="pick-rating"><i>&#9733;</i>4.8</span></div>
+                            </div>
+                        </a>
+                    </div>
+                    </section>
+            </div>
+        </div>
+
+        <div id="allCanteensView" class="dashboard-content d-none">
+            <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px; margin-top: 10px;">
+                <a href="#" class="back-button" onclick="window.toggleAllCanteens(false); return false;" style="margin-bottom: 0;">&#8592;</a>
+                <h1 style="font-size: 20px; margin-bottom: 0;">Semua Kantin</h1>
+            </div>
+            
+            <div class="dash-section" style="margin-bottom: 24px;">
+                <div class="input-wrapper search-wrapper">
+                    <span class="search-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span>
+                    <input type="text" id="searchAllInput" placeholder="Cari kantin favoritmu...">
+                </div>
+            </div>
+
+            <div class="canteen-grid" id="allCanteenGrid" style="grid-template-columns: repeat(3, 1fr); gap: 20px 12px;">
+                <p style="grid-column: span 3; text-align: center; font-size: 11px; color: #888;">Memuat seluruh kantin...</p>
+            </div>
+        </div>
+
+        <nav class="bottom-nav">
+            <a href="home-mahasiswa.html" class="nav-item active">
+                <svg viewBox="0 0 24 24"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>
+                <span>Home</span>
+            </a>
+            <a href="#" class="nav-item">
+                <svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>
+                <span>Order</span>
+            </a>
+            <a href="profile.html" class="nav-item">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+                <span>Profile</span>
+            </a>
+        </nav>
+
+    </div>
+
+    <script type="module" src="script.js"></script>
+
+    <script type="module">
+        import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, query, where, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCd_v_YnSXpiVAA_eDxk_MaCCdqo4H5CFE",
+            authDomain: "bbite-ac7e4.firebaseapp.com",
+            projectId: "bbite-ac7e4"
+        };
+        const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+        const db = getFirestore(app);
+
+        // ===== ROLE SWITCHER (Customer / Courier) =====
+        const roleAuth = getAuth(app);
+        onAuthStateChanged(roleAuth, async (user) => {
+            if (!user) return;
+            try {
+                const snap = await getDoc(doc(db, "users", user.uid));
+                if (!snap.exists()) return;
+                const d = snap.data();
+                // Akun lama yang role-nya "Courier" dianggap masih menunggu verifikasi
+                const cs = d.courierStatus || (d.role === "Courier" ? "pending" : null);
+                if (!cs) return; // bukan pendaftar kurir -> tampilan tetap seperti biasa
+
+                document.getElementById("roleRow").classList.remove("d-none");
+
+                const optCourier = document.getElementById("optCourier");
+                const note = document.getElementById("courierNote");
+                const dot = document.getElementById("courierDot");
+                const noteText = document.getElementById("courierNoteText");
+                const optNote = document.getElementById("courierOptNote");
+
+                if (cs === "active") {
+                    // Disetujui admin: 2 role bisa dipilih. Label "Courier Approved!" hanya tampil 7 hari sejak disetujui.
+                    optCourier.addEventListener("click", () => { window.location.href = "home-kurir.html"; });
+                    const v = d.courierApprovedAt;
+                    const approvedAt = (v && typeof v.toMillis === "function") ? v.toMillis() : Number(v || 0);
+                    if (approvedAt && (Date.now() - approvedAt) < 7 * 24 * 60 * 60 * 1000) {
+                        note.classList.remove("d-none");
+                        dot.style.background = "#22A06B";
+                        noteText.style.color = "#15803D";
+                        noteText.style.fontWeight = "600";
+                        noteText.innerText = "Courier Approved!";
+                    }
+                } else {
+                    optCourier.disabled = true;
+                    note.classList.remove("d-none");
+                    if (cs === "rejected") {
+                        // Ditolak admin: pill merah "Action Required", tanpa catatan di kanan
+                        note.classList.add("d-none");
+                        rolePill.classList.add("action-required");
+                        document.getElementById("rolePillText").innerText = "Role: Courier (Action Required)";
+                        document.querySelector("#optCustomer .check").classList.add("d-none");
+                        document.getElementById("optReapply").classList.remove("d-none");
+                        optNote.innerText = "Not approved";
+                    } else {
+                        noteText.innerText = "Courier review pending";
+                        optNote.innerText = "Under review";
+                    }
+                }
+            } catch (error) {
+                console.log("Gagal memuat status kurir:", error);
+            }
+        });
+
+        const rolePill = document.getElementById("rolePill");
+        const roleMenu = document.getElementById("roleMenu");
+        rolePill.addEventListener("click", (e) => { e.stopPropagation(); roleMenu.classList.toggle("open"); });
+        document.getElementById("optCustomer").addEventListener("click", () => roleMenu.classList.remove("open"));
+        document.addEventListener("click", () => roleMenu.classList.remove("open"));
+
+        window.toggleAllCanteens = function(show) {
+            const mainView = document.getElementById('mainDashboardView');
+            const allView = document.getElementById('allCanteensView');
+            if(show) {
+                mainView.classList.add('d-none');
+                allView.classList.remove('d-none');
+                document.querySelector('.app-container').scrollTo(0, 0);
+            } else {
+                allView.classList.add('d-none');
+                mainView.classList.remove('d-none');
+            }
+        };
+
+        const slider = document.getElementById('popularScroll');
+        let isDown = false; let startX; let scrollLeft; let dragged = false;
+        slider.addEventListener('mousedown', (e) => { dragged = false; isDown = true; slider.classList.add('active'); startX = e.pageX - slider.offsetLeft; scrollLeft = slider.scrollLeft; });
+        slider.addEventListener('mouseleave', () => { isDown = false; slider.classList.remove('active'); });
+        slider.addEventListener('mouseup', () => { isDown = false; slider.classList.remove('active'); });
+        slider.addEventListener('mousemove', (e) => { if (!isDown) return; e.preventDefault(); const x = e.pageX - slider.offsetLeft; const walk = (x - startX) * 2; if (Math.abs(walk) > 6) dragged = true; slider.scrollLeft = scrollLeft - walk; });
+
+        slider.addEventListener('click', (e) => { if (dragged) { e.preventDefault(); dragged = false; } }, true);
+
+        const defaultCanteens = [
+            { name: 'Hokben', img: 'https://www.centralparkjakarta.com/upload/tenant/00hokben.jpg', param: 'Hokben' },
+            { name: 'Cerita Cinta', bgColor: '#F4F1FF', color: '#6B4EFF', param: 'Cerita Cinta' },
+            { name: 'A&W', img: 'https://images.seeklogo.com/logo-png/18/2/aw-restaurants-logo-png_seeklogo-188287.png', param: 'A&W' },
+            { name: 'Bakmi Efata', bgColor: '#FFF6DB', color: '#DC9808', param: 'Bakmi Efata' },
+            { name: 'Warteg GB', bgColor: '#F8F8F8', color: '#333', param: 'Warteg GB' },
+            { name: 'Starbucks', img: 'https://thumb.wikimedia.org/wikipedia/sco/thumb/d/d3/Starbucks_Corporation_Logo_2011.svg/1280px-Starbucks_Corporation_Logo_2011.svg.png', param: 'Starbucks' },
+            { name: 'Yoshinoya', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-9GbZMi2MaedJrC8zpNqoYPN61jhNbWnRN2egk1RbLT8WmUp5B1Z-A-Zz&s=10', param: 'Yoshinoya' },
+            { name: 'Rasela', bgColor: '#E8F5E9', color: '#2E7D32', param: 'Rasela' }
+        ];
+
+        let allCanteensWithMenus = []; 
+
+        function getJsonRestoKey(bName) {
+            if (!bName) return null;
+            const name = bName.toLowerCase();
+            if (name.includes('starbuck')) return 'starbucks';
+            if (name.includes('a&w') || name.includes('aw')) return 'aw';
+            if (name.includes('hokben')) return 'hokben';
+            if (name.includes('yoshinoya')) return 'yoshinoya';
+            return null;
+        }
+
+        async function loadCanteensAndMenus() {
+            let mergedCanteens = [...defaultCanteens];
+            let baseMenusData = {};
+
+            try {
+                const res = await fetch('./menu.json');
+                const json = await res.json();
+                baseMenusData = json.restaurants || {};
+            } catch(e) { console.log("Gagal load menu.json", e); }
+
+            try {
+                const q = query(collection(db, "users"), where("role", "==", "Merchant"), where("status", "==", "active"));
+                const snapshot = await getDocs(q);
+
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const bName = data.businessName;
+                    if (!bName) return;
+
+                    const existingIdx = mergedCanteens.findIndex(c => c.name.toLowerCase() === bName.toLowerCase());
+                    
+                    let customMenus = data.customMenus || [];
+                    let deletedMenus = data.deletedMenus || [];
+
+                    if (existingIdx >= 0) {
+                        mergedCanteens[existingIdx].uid = doc.id;
+                        if (data.photoBase64) mergedCanteens[existingIdx].img = data.photoBase64;
+                        mergedCanteens[existingIdx].customMenus = customMenus;
+                        mergedCanteens[existingIdx].deletedMenus = deletedMenus;
+                    } else {
+                        mergedCanteens.push({
+                            uid: doc.id,
+                            name: bName,
+                            param: bName,
+                            img: data.photoBase64 || null,
+                            bgColor: '#F5F5F5', color: '#333',
+                            customMenus: customMenus,
+                            deletedMenus: deletedMenus
+                        });
+                    }
+                });
+            } catch(e) { console.log("Gagal load data merchant:", e); }
+
+            mergedCanteens.forEach(c => {
+                const jsonKey = getJsonRestoKey(c.name);
+                let baseM = (jsonKey && baseMenusData[jsonKey]) ? baseMenusData[jsonKey].menus : [];
+                let cMenus = c.customMenus || [];
+                let dMenus = c.deletedMenus || [];
+                
+                let finalBase = baseM.filter(m => !dMenus.includes(m.id));
+                c.allMenus = [...cMenus, ...finalBase];
+            });
+
+            allCanteensWithMenus = mergedCanteens;
+
+            const renderCanteenItem = (c) => {
+                const logoHtml = c.img 
+                    ? `<img src="${c.img}" alt="${c.name}" style="width:100%; height:100%; object-fit:contain; padding:4px; border-radius:8px;">`
+                    : `<div style="background-color:${c.bgColor||'#FFF6DB'}; color:${c.color||'#DC9808'}; width:100%; height:100%; font-weight:800; font-size:10px; line-height:1.2; display:flex; align-items:center; justify-content:center; text-align:center; border-radius:8px;">${c.name.substring(0,6)}</div>`;
+                const url = `menu-kantin.html?resto=${encodeURIComponent(c.param)}${c.uid ? '&uid='+c.uid : ''}`;
+                return `<a href="${url}" class="canteen-item"><div class="canteen-icon">${logoHtml}</div><span>${c.name}</span></a>`;
+            };
+
+            document.getElementById("mainCanteenGrid").innerHTML = mergedCanteens.slice(0, 8).map(renderCanteenItem).join('');
+            document.getElementById("allCanteenGrid").innerHTML = mergedCanteens.map(renderCanteenItem).join('');
+        }
+
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            const defaultContent = document.getElementById('defaultDashboardContent');
+            const searchView = document.getElementById('searchResultsView');
+            const searchList = document.getElementById('searchList');
+
+            if(query.length === 0) {
+                defaultContent.classList.remove('d-none');
+                searchView.classList.add('d-none');
+                return;
+            }
+
+            defaultContent.classList.add('d-none');
+            searchView.classList.remove('d-none');
+            searchList.innerHTML = '';
+
+            let resultsHtml = '';
+            let found = false;
+
+            allCanteensWithMenus.forEach(canteen => {
+                let canteenMatches = canteen.name.toLowerCase().includes(query);
+                
+                let matchedMenus = (canteen.allMenus || []).filter(m => 
+                    m.name.toLowerCase().includes(query) || 
+                    (m.category && m.category.toLowerCase().includes(query))
+                );
+
+                if (canteenMatches || matchedMenus.length > 0) {
+                    found = true;
+                    const url = `menu-kantin.html?resto=${encodeURIComponent(canteen.param)}${canteen.uid ? '&uid='+canteen.uid : ''}`;
+                    
+                    resultsHtml += `
+                        <div style="background: #FFF; border: 1px solid #E5E5E5; border-radius: 12px; padding: 12px; margin-bottom: 4px;">
+                            <a href="${url}" style="text-decoration:none; display:flex; justify-content:space-between; align-items:center; margin-bottom: ${matchedMenus.length > 0 ? '12px' : '0'}; border-bottom: ${matchedMenus.length > 0 ? '1px dashed #E5E5E5' : 'none'}; padding-bottom: ${matchedMenus.length > 0 ? '8px' : '0'};">
+                                <span style="font-weight:700; color:#000; font-size:14px;">🏪 ${canteen.name}</span>
+                                <span style="font-size:11px; color:#DC9808; font-weight:700; background:#FFF6DB; padding: 4px 8px; border-radius:8px;">Kunjungi ></span>
+                            </a>
+                    `;
+
+                    if (matchedMenus.length > 0) {
+                        matchedMenus.slice(0, 5).forEach(m => {
+                            const priceFmt = "Rp " + parseInt(m.price || 0).toLocaleString('id-ID');
+                            const imgSrc = m.img ? m.img : 'https://via.placeholder.com/50/F5F5F5/A0A0A0?text=Food';
+                            resultsHtml += `
+                                <a href="${url}" style="text-decoration:none; display:flex; align-items:center; gap:12px; margin-bottom:12px; padding-bottom: 4px;">
+                                    <img src="${imgSrc}" style="width:40px; height:40px; border-radius:8px; object-fit:cover;">
+                                    <div style="flex:1;">
+                                        <div style="font-size:12px; font-weight:600; color:#333; margin-bottom:2px;">${m.name}</div>
+                                        <div style="font-size:11px; color:#6B4EFF; font-weight:700;">${priceFmt}</div>
+                                    </div>
+                                    <div style="font-size:18px; color:#E5E5E5;">+</div>
+                                </a>
+                            `;
+                        });
+                        
+                        if(matchedMenus.length > 5) {
+                            resultsHtml += `<a href="${url}" style="font-size:11px; color:#888; text-align:center; display:block; text-decoration:none;">+${matchedMenus.length - 5} menu lainnya...</a>`;
+                        }
+                    }
+                    resultsHtml += `</div>`;
+                }
+            });
+
+            if (!found) {
+                searchList.innerHTML = `<p style="text-align:center; font-size:12px; color:#888; padding: 30px 0;">Tidak menemukan kantin atau menu yang mengandung kata "<span style="color:#000; font-weight:600;">${e.target.value}</span>"</p>`;
+            } else {
+                searchList.innerHTML = resultsHtml;
+            }
+        });
+
+        document.getElementById('searchAllInput').addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            const items = document.querySelectorAll('#allCanteenGrid .canteen-item');
+            
+            items.forEach(item => {
+                const name = item.querySelector('span').innerText.toLowerCase();
+                if (name.includes(query)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+
+        loadCanteensAndMenus();
+    </script>
+</body>
+</html>

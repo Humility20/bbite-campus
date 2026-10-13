@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buat Akun Baru</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .d-none { display: none !important; }
+
+        /* ==== DESAIN BARU: Sign Up (scoped khusus halaman ini) ==== */
+        .app-container { background-color: #FFFFFF; }
+
+        .auth-top-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+        .auth-back { width: 38px; height: 38px; border-radius: 50%; background: #F5F5F5; display: flex; align-items: center; justify-content: center; color: #333; text-decoration: none; flex-shrink: 0; }
+        .auth-back:active { opacity: 0.7; }
+        .auth-brand { display: flex; align-items: center; gap: 8px; }
+        .auth-brand-icon { width: 30px; height: 30px; border-radius: 8px; object-fit: cover; }
+        .auth-brand-name { font-size: 15px; font-weight: 800; color: #111; }
+        .auth-brand-name span { color: #DC9808; }
+
+        .auth-heading { font-size: 24px; font-weight: 700; color: #000; margin-bottom: 6px; }
+        .auth-subtext { font-size: 13px; color: #666; line-height: 1.5; margin-bottom: 22px; }
+
+        .auth-field { display: flex; flex-direction: column; gap: 6px; }
+        .auth-field label { font-size: 12px; font-weight: 600; color: #333; }
+        .auth-input, .auth-select-wrap { position: relative; display: flex; align-items: center; background: #F5F5F5; border-radius: 14px; padding: 0 14px; transition: 0.2s; }
+        .auth-input:focus-within, .auth-select-wrap:focus-within { background: #FFF; box-shadow: 0 0 0 2px #DC9808; }
+        .auth-input input { flex: 1; min-width: 0; border: none; background: transparent; padding: 15px 8px; font-size: 14px; outline: none; }
+        .auth-input input::placeholder { color: #A0A0A0; }
+        .auth-input-icon-left { color: #A0A0A0; display: flex; align-items: center; }
+        .auth-input-icon-right { color: #A0A0A0; display: flex; align-items: center; cursor: pointer; }
+
+        .auth-select-wrap select { flex: 1; width: 100%; appearance: none; -webkit-appearance: none; border: none; background: transparent; padding: 15px 28px 15px 8px; font-size: 14px; color: #1a1a1a; outline: none; cursor: pointer; }
+        .auth-select-chevron { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: #333; display: flex; pointer-events: none; }
+
+        .merchant-fields { background: #FAFAFA; padding: 14px; border-radius: 16px; border: 1.5px dashed #D5D5D5; display: flex; flex-direction: column; gap: 14px; transition: 0.2s; }
+        .merchant-fields:focus-within { border-color: #DC9808; }
+        .auth-file { width: 100%; font-size: 12px; padding: 10px; background: #F5F5F5; border-radius: 14px; }
+        .auth-file-plain { font-size: 12px; color: #333; }
+
+        .auth-submit { width: 100%; padding: 16px; border-radius: 30px; background: #DC9808; color: #FFF; font-size: 15px; font-weight: 700; border: none; cursor: pointer; transition: 0.2s; margin-top: 8px; }
+        .auth-submit:active { transform: scale(0.97); opacity: 0.9; }
+
+        .auth-footer { text-align: center; font-size: 12px; color: #666; padding: 4px 0 20px; }
+        .auth-footer a { color: #DC9808; font-weight: 700; text-decoration: none; }
+
+        .auth-submit-outline { display: block; width: 100%; box-sizing: border-box; text-align: center; padding: 16px; border-radius: 30px; background: #FFF; color: #DC9808; font-size: 15px; font-weight: 700; border: 1.5px solid #DC9808; text-decoration: none; }
+        .auth-submit-outline:active { opacity: 0.8; }
+
+        .auth-role-badge { width: 30px; height: 30px; border-radius: 9px; background: #DC9808; display: flex; align-items: center; justify-content: center; color: #FFF; flex-shrink: 0; }
+
+        .auth-hero-icon { width: 100px; height: 100px; border-radius: 50%; background: #FFF4D6; display: flex; align-items: center; justify-content: center; margin: 10px auto 28px; color: #DC9808; }
+        .auth-heading-center { font-size: 22px; font-weight: 700; color: #000; text-align: center; margin-bottom: 10px; }
+        .auth-subtext-center { font-size: 13px; color: #666; text-align: center; line-height: 1.6; margin-bottom: 32px; padding: 0 4px; }
+
+        /* Scroll tetap jalan, tapi scrollbar disembunyikan supaya bingkai HP tetap bersih */
+        .app-container { scrollbar-width: none; }
+        .app-container::-webkit-scrollbar { display: none; }
+
+        /* Dropdown aktif: latar peach + ikon oranye (sesuai desain) */
+        .auth-select-wrap:focus-within { background: #FFFAEB; }
+        .auth-select-wrap:focus-within .auth-input-icon-left { color: #DC9808; }
+
+        /* Area upload KTM (khusus Kurir) */
+        .auth-upload { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; border: 1.5px dashed #D5D5D5; border-radius: 16px; padding: 26px 16px; background: #FAFAFA; text-align: center; transition: 0.2s; }
+        .auth-upload:hover, .auth-upload.has-file { border-color: #DC9808; }
+        .auth-upload input[type="file"] { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+        .auth-upload-icon { color: #DC9808; display: flex; }
+        .auth-upload p { font-size: 12px; color: #666; line-height: 1.4; word-break: break-all; }
+    </style>
+</head>
+<body>
+    <div class="app-container" style="overflow-y: auto;">
+        
+        <div id="pageHeader">
+            <div class="auth-top-row">
+                <a href="index.html" class="auth-back">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
+                </a>
+                <div class="auth-brand">
+                    <img src="logo.jpg" alt="BBite" class="auth-brand-icon">
+                    <span class="auth-brand-name">BBite <span id="roleBadge">Customer</span></span>
+                </div>
+            </div>
+            <h1 class="auth-heading">Create New Account</h1>
+            <p class="auth-subtext" id="pageSubtitle">Order your favorite campus meals easily.</p>
+        </div>
+
+        <form id="signupForm">
+            <div class="auth-field">
+                <label>Register As</label>
+                <div class="auth-select-wrap">
+                    <span class="auth-input-icon-left">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg>
+                    </span>
+                    <select id="signupRole">
+                        <option value="Mahasiswa">Binusian</option>
+                        <option value="Merchant">Seller (Canteen Merchant)</option>
+                        <option value="Courier">Courier</option>
+                    </select>
+                    <span class="auth-select-chevron">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg>
+                    </span>
+                </div>
+            </div>
+
+            <div id="merchantFieldsContainer" class="merchant-fields d-none">
+                <div class="auth-field">
+                    <label>Select Managed Store / Canteen</label>
+                    <div class="auth-select-wrap">
+                        <span class="auth-input-icon-left">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9l1.5-5h13L20 9"></path><path d="M4 9a2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0 5 0"></path><path d="M5 12v8h14v-8"></path></svg>
+                        </span>
+                        <select id="businessNameSelect">
+                            <option value="" disabled selected>-- Select Your Store --</option>
+                            <option value="Starbucks">Starbucks</option>
+                            <option value="Hokben">Hokben</option>
+                            <option value="A&W">A&W</option>
+                            <option value="Yoshinoya">Yoshinoya</option>
+                            <option value="Cerita Cinta">Cerita Cinta</option>
+                            <option value="Bakmi Efata">Bakmi Efata</option>
+                            <option value="Warteg GB">Warteg GB</option>
+                            <option value="Rasela">Rasela</option>
+                            <option value="Lainnya">Other canteen (type manually)</option>
+                        </select>
+                        <span class="auth-select-chevron">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="auth-field d-none" id="otherBusinessNameGroup">
+                    <div class="auth-input">
+                        <input type="text" id="businessNameOther" placeholder="Type your canteen name">
+                    </div>
+                </div>
+
+                <div class="auth-field">
+                    <label>Business Proof / ID (Verification)</label>
+                    <input type="file" id="businessProof" accept="image/*" class="auth-file-plain">
+                </div>
+            </div>
+
+            <div class="auth-field">
+                <label id="fullNameLabel">Full Name</label>
+                <div class="auth-input">
+                    <span class="auth-input-icon-left">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="10" r="3"></circle><path d="M6.5 18.5c1-2.5 3-3.5 5.5-3.5s4.5 1 5.5 3.5"></path></svg>
+                    </span>
+                    <input type="text" id="signupName" placeholder="e.g. Helsinki Denver" required>
+                </div>
+            </div>
+
+            <div class="auth-field" id="nimGroup">
+                <label id="nimLabel">NIM / Lecturer ID</label>
+                <div class="auth-input">
+                    <span class="auth-input-icon-left">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><circle cx="9" cy="11" r="2"></circle><path d="M6 16c.5-1.5 1.7-2 3-2s2.5.5 3 2"></path><path d="M15 10h3M15 13h3"></path></svg>
+                    </span>
+                    <input type="text" id="signupNim" placeholder="e.g. 2802213456">
+                </div>
+            </div>
+
+            <div class="auth-field">
+                <label>Email</label>
+                <div class="auth-input">
+                    <span class="auth-input-icon-left">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 7l9 6 9-6"></path></svg>
+                    </span>
+                    <input type="email" id="signupEmail" placeholder="e.g. xxx@binus.ac.id" required>
+                </div>
+            </div>
+
+            <div class="auth-field d-none" id="whatsappGroup">
+                <label>WhatsApp Number</label>
+                <div class="auth-input">
+                    <span class="auth-input-icon-left">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                    </span>
+                    <input type="tel" id="signupWhatsapp" placeholder="e.g. 08123456789" inputmode="tel" pattern="(\+62|62|0)8[0-9]{7,12}" title="Use an Indonesian mobile number, e.g. 08123456789" disabled>
+                </div>
+            </div>
+
+            <div class="auth-field">
+                <label>Password</label>
+                <div class="auth-input">
+                    <span class="auth-input-icon-left">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>
+                    </span>
+                    <input type="password" id="signupPassword" placeholder="Create secure password" required>
+                    <span class="auth-input-icon-right toggle-password">
+                        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    </span>
+                </div>
+            </div>
+
+            <div class="auth-field d-none" id="ktmGroup">
+                <label>Student ID Card (KTM)</label>
+                <div class="auth-upload">
+                    <input type="file" id="ktmProof" accept="image/*" disabled>
+                    <span class="auth-upload-icon">
+                        <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M9 9l6 6M15 9l-6 6"></path></svg>
+                    </span>
+                    <p id="ktmText">Upload Student ID Card (KTM) for verification</p>
+                </div>
+            </div>
+
+            <button type="submit" class="auth-submit" id="btnSubmitSignup">Sign Up</button>
+
+            <p class="auth-footer">Already registered? <a href="index.html">Sign In</a></p>
+        </form>
+
+        <div class="d-none" id="courierSuccess" style="display: flex; flex-direction: column; flex: 1;">
+            <div class="auth-brand" style="justify-content: center; gap: 8px; margin: 8px 0 60px;">
+                <span class="auth-role-badge">
+                    <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="7" width="13" height="10"></rect><path d="M14 10h4l3 3v4h-7z"></path><circle cx="6" cy="19" r="2"></circle><circle cx="17.5" cy="19" r="2"></circle></svg>
+                </span>
+                <span class="auth-brand-name">BBite <span style="color:#DC9808;">Courier</span></span>
+            </div>
+
+            <div class="auth-hero-icon">
+                <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path><circle cx="11.5" cy="15.5" r="2.3"></circle><path d="M13.3 17.3L15 19"></path></svg>
+            </div>
+
+            <h1 class="auth-heading-center">Application Under Review</h1>
+            <p class="auth-subtext-center">Thank you for registering! Our team is currently verifying your Student ID (KTM). We will notify you via email or WhatsApp within 24 hours.</p>
+
+            <div id="binusianNote" class="d-none" style="margin: -12px 0 0; padding: 12px 14px; border-radius: 12px; background: #FFF6DB; color: #7A5600; font-size: 12.5px; line-height: 1.5; text-align: center;">
+                You're also registered as a <strong>Binusian</strong>. You can already <strong>Sign In</strong> and order food while your courier application is being reviewed.
+            </div>
+
+            <a href="index.html" class="auth-submit-outline" style="margin-top: auto;">Back to Sign In</a>
+        </div>
+    </div>
+
+    <!-- SCRIPT UI -->
+    <script>
+        const togglePasswordIcons = document.querySelectorAll('.toggle-password');
+        togglePasswordIcons.forEach(icon => {
+            icon.addEventListener('click', function() {
+                const inputField = this.previousElementSibling;
+                if (inputField.type === 'password') {
+                    inputField.type = 'text';
+                    this.style.color = '#DC9808'; 
+                } else {
+                    inputField.type = 'password';
+                    this.style.color = '#A0A0A0'; 
+                }
+            });
+        });
+
+        document.getElementById("signupRole").addEventListener("change", function(e) {
+            const val = e.target.value;
+            const merchantFields = document.getElementById("merchantFieldsContainer");
+            const nimGroup = document.getElementById("nimGroup");
+            
+            if (val === "Merchant") {
+                merchantFields.classList.remove("d-none");
+                nimGroup.classList.add("d-none");
+            } else {
+                merchantFields.classList.add("d-none");
+                nimGroup.classList.remove("d-none");
+            }
+        });
+
+        // Label tombol mengikuti role (juga dipakai script Firebase saat tombol di-reset setelah error)
+        function submitLabel() {
+            return document.getElementById("signupRole").value === "Courier" ? "Register as Courier" : "Sign Up";
+        }
+
+        // Tambahan tampilan saja: badge, subjudul, label & field khusus Kurir mengikuti role yang dipilih
+        document.getElementById("signupRole").addEventListener("change", function(e) {
+            const val = e.target.value;
+            const isCourier = (val === "Courier");
+            const labels = { Mahasiswa: "Customer", Merchant: "Seller", Courier: "Courier" };
+            document.getElementById("roleBadge").textContent = labels[val] || "Customer";
+
+            const subtitles = {
+                Mahasiswa: "Order your favorite campus meals easily.",
+                Merchant: "Partner with us to sell your delicious meals.",
+                Courier: 'Join our <strong>Kampus Anggrek</strong> food community.'
+            };
+            document.getElementById("pageSubtitle").innerHTML = subtitles[val] || subtitles.Mahasiswa;
+            document.getElementById("nimLabel").textContent = isCourier ? "NIM (Student ID)" : "NIM / Lecturer ID";
+            document.getElementById("fullNameLabel").textContent = (val === "Merchant") ? "Full Name (Account Owner)" : "Full Name";
+            document.getElementById("signupEmail").placeholder = (val === "Merchant") ? "e.g. canteen@binus.ac.id" : "e.g. xxx@binus.ac.id";
+            document.getElementById("btnSubmitSignup").innerText = submitLabel();
+
+            // Field khusus Kurir: di-disable saat tidak dipakai supaya tidak ikut validasi form
+            ["whatsappGroup", "ktmGroup"].forEach(id => document.getElementById(id).classList.toggle("d-none", !isCourier));
+            ["signupWhatsapp", "ktmProof"].forEach(id => {
+                const el = document.getElementById(id);
+                el.disabled = !isCourier;
+                el.required = isCourier;
+            });
+            document.getElementById("signupNim").required = isCourier;
+        });
+
+        // Tampilkan nama file KTM yang dipilih
+        document.getElementById("ktmProof").addEventListener("change", function() {
+            const file = this.files && this.files[0];
+            document.getElementById("ktmText").textContent = file ? file.name : "Upload Student ID Card (KTM) for verification";
+            this.closest(".auth-upload").classList.toggle("has-file", !!file);
+        });
+
+        document.getElementById("businessNameSelect").addEventListener("change", function(e) {
+            const val = e.target.value;
+            const otherGroup = document.getElementById("otherBusinessNameGroup");
+            if (val === "Lainnya") {
+                otherGroup.classList.remove("d-none");
+            } else {
+                otherGroup.classList.add("d-none");
+            }
+        });
+    </script>
+
+    <!-- SCRIPT FIREBASE -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyCd_v_YnSXpiVAA_eDxk_MaCCdqo4H5CFE",
+          authDomain: "bbite-ac7e4.firebaseapp.com",
+          projectId: "bbite-ac7e4"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Kompres foto KTM (maks 1000px, JPEG) supaya muat di batas 1 MB per dokumen Firestore
+        function compressImageToBase64(file, maxSize = 1000, quality = 0.7) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onerror = () => resolve("");
+                reader.onload = () => {
+                    const img = new Image();
+                    img.onerror = () => resolve(reader.result);
+                    img.onload = () => {
+                        const scale = Math.min(1, maxSize / Math.max(img.width, img.height));
+                        const canvas = document.createElement("canvas");
+                        canvas.width = Math.round(img.width * scale);
+                        canvas.height = Math.round(img.height * scale);
+                        canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+                        resolve(canvas.toDataURL("image/jpeg", quality));
+                    };
+                    img.src = reader.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // PENAMBAHAN FUNGSI ASYNC UNTUK MENGAMBIL BASE64 GAMBAR BUKTI
+        document.getElementById("signupForm").addEventListener("submit", async function(event){
+            event.preventDefault(); 
+            
+            const role = document.getElementById("signupRole").value;
+            let bName = document.getElementById("businessNameSelect").value;
+            
+            if (bName === "Lainnya") {
+                bName = document.getElementById("businessNameOther").value.trim();
+            }
+
+            if (role === "Merchant" && (!bName || bName === "")) {
+                alert("Harap pilih atau tulis nama toko/kantin yang Anda kelola!");
+                return;
+            }
+
+            document.getElementById("btnSubmitSignup").innerText = "Processing...";
+            
+            const namaLengkap = document.getElementById("signupName").value;
+            const nim = document.getElementById("signupNim").value;
+            const email = document.getElementById("signupEmail").value;
+            const password = document.getElementById("signupPassword").value;
+
+            let proofBase64 = "";
+            if (role === "Merchant") {
+                const proofInput = document.getElementById("businessProof");
+                if (proofInput.files && proofInput.files.length > 0) {
+                    const file = proofInput.files[0];
+                    proofBase64 = await new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onloadend = () => resolve(reader.result);
+                        reader.readAsDataURL(file);
+                    });
+                }
+            }
+
+            let ktmBase64 = "";
+            if (role === "Courier") {
+                const ktmInput = document.getElementById("ktmProof");
+                if (ktmInput.files && ktmInput.files.length > 0) {
+                    ktmBase64 = await compressImageToBase64(ktmInput.files[0]);
+                }
+            }
+
+            // showBinusianNote = true  -> pendaftar baru (otomatis dapat akun Binusian + permohonan Courier)
+            // showBinusianNote = false -> user lama yang sudah punya akun Binusian, hanya menambah Courier
+            const showCourierReview = (showBinusianNote) => {
+                document.getElementById("binusianNote").classList.toggle("d-none", !showBinusianNote);
+                document.getElementById("signupForm").classList.add("hidden");
+                document.getElementById("pageHeader").classList.add("hidden");
+                document.getElementById("courierSuccess").classList.remove("d-none");
+            };
+            const resetBtn = () => { document.getElementById("btnSubmitSignup").innerText = submitLabel(); };
+
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                await updateProfile(user, { displayName: namaLengkap });
+
+                // Courier = akun Mahasiswa (aktif) + permohonan Courier (pending).
+                // Jadi pendaftar kurir tetap bisa Sign In sebagai mahasiswa selama KTM dicek admin.
+                const isCourier = (role === "Courier");
+                const finalStatus = (role === "Merchant") ? "pending" : "active";
+                await setDoc(doc(db, "users", user.uid), {
+                    name: namaLengkap,
+                    email: email,
+                    nim: (role === "Merchant") ? "-" : nim,
+                    role: isCourier ? "Mahasiswa" : role,
+                    roles: isCourier ? ["Mahasiswa", "Courier"] : [role],
+                    status: finalStatus,
+                    businessName: (role === "Merchant") ? bName : "",
+                    businessProof: proofBase64,  // Data Bukti Izin Masuk Sini
+                    photoBase64: "",
+                    ...(isCourier ? {
+                        courierStatus: "pending",
+                        whatsapp: document.getElementById("signupWhatsapp").value,
+                        ktmProof: ktmBase64
+                    } : {})
+                });
+
+                if (isCourier) {
+                    showCourierReview(true);
+                } else {
+                    // Binusian / Seller: kirim pesan sukses ke halaman Sign In (index.html), lalu pindah ke sana
+                    const notice = (role === "Merchant")
+                        ? { title: "Akun Seller Dibuat", emoji: "⏳", message: "Your seller account has been created. Please wait for Admin approval before you can sign in." }
+                        : { title: "Pendaftaran Berhasil", emoji: "✅", message: "Your account has been registered. You can now sign in and start ordering." };
+                    try { sessionStorage.setItem("bbite_notice", JSON.stringify(notice)); } catch (e) {}
+                    await signOut(auth);
+                    window.location.href = "index.html";
+                }
+            } catch (error) {
+                // Email sudah punya akun, dan yang dipilih "Register as Courier":
+                // tambahkan peran Courier ke akun yang sama (bukan membuat akun baru).
+                if (error.code === "auth/email-already-in-use" && role === "Courier") {
+                    try {
+                        const cred = await signInWithEmailAndPassword(auth, email, password);
+                        const user = cred.user;
+                        const ref = doc(db, "users", user.uid);
+                        const snap = await getDoc(ref);
+                        const existing = snap.exists() ? snap.data() : null;
+
+                        if (existing && existing.courierStatus === "active") {
+                            alert("Akun ini sudah terdaftar dan aktif sebagai Courier. Silakan Sign In.");
+                            await signOut(auth);
+                            resetBtn();
+                            return;
+                        }
+                        if (existing && existing.courierStatus === "pending") {
+                            await signOut(auth);
+                            showCourierReview(false);  // pengajuan sebelumnya masih dalam peninjauan
+                            return;
+                        }
+
+                        const courierData = {
+                            courierStatus: "pending",
+                            whatsapp: document.getElementById("signupWhatsapp").value,
+                            ktmProof: ktmBase64
+                        };
+                        if (existing) {
+                            const currentRoles = Array.isArray(existing.roles) ? existing.roles : [existing.role || "Mahasiswa"];
+                            await updateDoc(ref, {
+                                ...courierData,
+                                roles: Array.from(new Set([...currentRoles, "Courier"])),
+                                nim: existing.nim && existing.nim !== "-" ? existing.nim : nim
+                            });
+                        } else {
+                            // Akun Auth ada tapi dokumen Firestore belum ada (sisa pendaftaran yang gagal)
+                            await setDoc(ref, {
+                                name: namaLengkap, email: email, nim: nim,
+                                role: "Mahasiswa", roles: ["Mahasiswa", "Courier"], status: "active",
+                                businessName: "", businessProof: "", photoBase64: "",
+                                ...courierData
+                            });
+                        }
+                        await signOut(auth);
+                        showCourierReview(!existing);  // akun lama: tanpa catatan; akun baru dibuat otomatis: dengan catatan
+                    } catch (innerErr) {
+                        if (innerErr.code === "auth/wrong-password" || innerErr.code === "auth/invalid-credential") {
+                            alert("Email ini sudah terdaftar. Untuk menambahkan peran Courier, isi kolom password dengan password akun BBite kamu yang sudah ada.");
+                        } else {
+                            alert("Gagal mendaftar sebagai Courier: " + innerErr.message);
+                        }
+                        resetBtn();
+                    }
+                    return;
+                }
+                if (error.code === "auth/email-already-in-use") {
+                    alert("Email ini sudah terdaftar. Silakan Sign In.");
+                } else if (error.code === "auth/weak-password") {
+                    alert("Password terlalu lemah. Gunakan minimal 6 karakter.");
+                } else {
+                    alert("Gagal mendaftar: " + error.message);
+                }
+                resetBtn();
+            }
+        });
+    </script>
+</body>
+</html>

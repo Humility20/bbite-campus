@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu Kantin</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* === TAMBAHAN STYLING KHUSUS CHECKOUT === */
+        .delivery-toggle { display: flex; background: #F5F5F5; border-radius: 24px; padding: 4px; margin-bottom: 24px; }
+        .toggle-btn { flex: 1; padding: 10px; border-radius: 20px; border: none; background: transparent; font-size: 13px; font-weight: 700; color: #888; cursor: pointer; transition: 0.3s; }
+        .toggle-btn.active { background: #DC9808; color: #FFF; box-shadow: 0 4px 10px rgba(220,152,8,0.3); }
+
+        .checkout-section { margin-bottom: 20px; }
+        .checkout-section > label { display: block; font-size: 11px; font-weight: 700; color: #000; margin-bottom: 8px; }
+        .checkout-input { width: 100%; padding: 14px 14px 14px 40px; border: 1px solid #E5E5E5; border-radius: 12px; font-size: 13px; outline: none; background: #FFF; transition: 0.2s; appearance: none; }
+        .checkout-input:focus { border-color: #DC9808; }
+        .input-icon-left { position: absolute; left: 14px; font-size: 16px; color: #6B4EFF; z-index: 2; pointer-events: none;}
+        .input-icon-right { position: absolute; right: 14px; font-size: 16px; color: #000; font-weight: bold; pointer-events: none;}
+
+        .order-card { background: #FFF; border-radius: 16px; padding: 16px; margin-bottom: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.03); border: 1px solid #E5E5E5; }
+        .order-resto-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px dashed #E5E5E5; }
+        .order-resto-header img { width: 24px; height: 24px; object-fit: contain; }
+        .order-resto-header h3 { font-size: 14px; font-weight: 700; margin: 0; }
+
+        .checkout-item { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+        .checkout-item:last-child { margin-bottom: 0; }
+        .checkout-item img { width: 50px; height: 50px; border-radius: 10px; object-fit: cover; background: #F5F5F5;}
+        .checkout-item-info { flex: 1; overflow: hidden; }
+        .checkout-item-info h4 { font-size: 12px; font-weight: 700; margin-bottom: 4px; color: #000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .checkout-item-info p { font-size: 12px; font-weight: 700; color: #6B4EFF; }
+
+        .qty-controls { display: flex; align-items: center; gap: 12px; background: #F4F1FF; color: #6B4EFF; padding: 6px 12px; border-radius: 16px; font-weight: 700; font-size: 14px; }
+        .qty-btn { cursor: pointer; user-select: none; font-size: 16px;}
+        .qty-btn:active { opacity: 0.5; }
+
+        .checkout-textarea { width: 100%; padding: 14px; border: 1px solid #E5E5E5; border-radius: 12px; font-size: 13px; outline: none; resize: none; background: #FFF; font-family: 'Inter', sans-serif; }
+        .payment-method { display: flex; align-items: center; justify-content: space-between; padding: 16px; background: #FFF; border-radius: 12px; border: 1px solid #E5E5E5; margin-bottom: 20px; cursor: pointer; }
+        .price-breakdown { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
+        .price-row { display: flex; justify-content: space-between; font-size: 12px; color: #666; }
+        .price-row.total { font-size: 14px; font-weight: 700; color: #000; padding-top: 12px; border-top: 1px dashed #E5E5E5; margin-top: 4px; }
+
+        /* Floating Place Order Bar */
+        .bottom-checkout-bar { position: absolute; bottom: 0; left: 0; right: 0; background: #FFF; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 -4px 20px rgba(0,0,0,0.05); z-index: 60; border-radius: 0 0 40px 40px; }
+        .btn-place-order { background: #DC9808; color: #FFF; font-weight: 700; font-size: 14px; padding: 14px 24px; border-radius: 12px; border: none; cursor: pointer; transition: 0.2s; }
+        .btn-place-order:active { transform: scale(0.95); opacity: 0.9; }
+        .d-none { display: none !important; }
+    </style>
+</head>
+<body>
+    <div class="app-container dashboard">
+        
+        <!-- VIEW 1: MENU KANTIN -->
+        <div id="menuView" class="dashboard-content" style="padding-bottom: 110px;">
+            <div style="margin-bottom: 24px; margin-top: 10px;">
+                <a href="home-mahasiswa.html" class="back-button" style="display: inline-block; margin-bottom: 0;">&#8592;</a>
+            </div>
+
+            <div class="canteen-header-detail">
+                <div class="canteen-header-logo" id="restoLogoContainer"></div>
+                <div class="canteen-header-info">
+                    <h1 id="restoName" style="font-size: 24px; margin-bottom: 4px;">Loading...</h1>
+                    <p id="restoStats" style="font-size: 12px; font-weight: 500;"></p>
+                </div>
+            </div>
+
+            <div class="category-tabs" id="menuTabs"></div>
+            <h2 style="font-size: 16px; font-weight: 700; margin-bottom: 16px;">Daftar Menu</h2>
+
+            <div class="menu-list-container" id="menuContainer">
+                <p style="text-align:center; color:#888; font-size:12px; margin-top:30px;">Memuat menu...</p>
+            </div>
+        </div>
+
+        <!-- Tombol Checkout Floating -->
+        <a href="#" class="floating-checkout" id="checkoutBtn" style="display: none;">
+            <div class="checkout-left">
+                <div class="cart-icon-wrapper">
+                    <span style="font-size: 18px;">🛒</span>
+                    <div class="cart-badge" id="cartCount">0</div>
+                </div>
+                <span id="cartTotal">Rp 0</span>
+            </div>
+            <div class="checkout-right">Checkout</div>
+        </a>
+
+        <!-- VIEW 2: CHECKOUT DETAIL -->
+        <div id="checkoutView" class="dashboard-content d-none" style="padding-bottom: 120px;">
+            <div style="display: flex; align-items: center; justify-content: center; position: relative; margin-bottom: 24px; margin-top: 10px;">
+                <a href="#" class="back-button" id="backToMenuBtn" style="position: absolute; left: 0; margin-bottom: 0;">&#8592;</a>
+                <h1 style="font-size: 16px; margin-bottom: 0;">Checkout</h1>
+            </div>
+
+            <div class="delivery-toggle">
+                <button class="toggle-btn active" id="modeDelivery" onclick="window.switchDeliveryMode(this)">Delivery</button>
+                <button class="toggle-btn" id="modePickup" onclick="window.switchDeliveryMode(this)">Pickup</button>
+            </div>
+
+            <div class="checkout-section">
+                <label>Schedule Time</label>
+                <div class="input-wrapper" style="display: flex; align-items: center; position: relative;">
+                    <span class="input-icon-left">🕒</span>
+                    <select id="checkoutTime" class="checkout-input" style="padding-left: 40px; color: #333;">
+                        <option value="Sekarang" selected>Sekarang</option>
+                        <option>10:00</option>
+                        <option>11:00</option>
+                        <option>12:00</option>
+                        <option>13:00</option>
+                        <option>14:00</option>
+                        <option>15:00</option>
+                        <option>16:00</option>
+                        <option>17:00</option>
+                    </select>
+                    <span class="input-icon-right" style="transform: rotate(90deg); font-size:12px;">></span>
+                </div>
+            </div>
+
+            <div class="checkout-section">
+                <label>Delivery location / Notes</label>
+                <div class="input-wrapper" style="display: flex; align-items: center;">
+                    <span class="input-icon-left">📍</span>
+                    <input type="text" id="checkoutLocation" class="checkout-input" placeholder="Enter your room number or notes">
+                    <span class="input-icon-right">></span>
+                </div>
+            </div>
+
+            <div class="order-card">
+                <div class="order-resto-header">
+                    <div id="checkoutRestoLogo" style="width: 24px; height: 24px; display:flex; justify-content:center; align-items:center;"></div>
+                    <h3 id="checkoutRestoName">Restaurant Name</h3>
+                </div>
+                <div id="checkoutItemsList"></div>
+            </div>
+
+            <div class="checkout-section">
+                <label>Notes for the restaurant</label>
+                <textarea id="checkoutNotes" class="checkout-textarea" placeholder="e.g. less spicy, no onions..." rows="2"></textarea>
+            </div>
+
+            <div class="payment-method">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 18px; color: #6B4EFF;">💳</span>
+                    <div>
+                        <div style="font-size: 10px; color: #888; font-weight: 700; margin-bottom: 2px;">Payment method</div>
+                        <div style="font-size: 13px; font-weight: 700; color: #000;">E-Wallet / Cash</div>
+                    </div>
+                </div>
+                <span style="font-weight: bold; color: #000;">></span>
+            </div>
+
+            <div class="price-breakdown">
+                <div class="price-row">
+                    <span id="orderItemsText">Order total (0 items)</span>
+                    <span id="subtotalDisplay">Rp 0</span>
+                </div>
+                <div class="price-row">
+                    <span>Delivery fee</span>
+                    <span id="deliveryFeeDisplay">Rp 3.000</span>
+                </div>
+                <div class="price-row">
+                    <span>Service fee</span>
+                    <span>Rp 2.000</span>
+                </div>
+                <div class="price-row total">
+                    <span>Total</span>
+                    <span id="finalTotalDisplay">Rp 0</span>
+                </div>
+                <div style="font-size: 10px; color: #A0A0A0; text-align: right; margin-top: -4px;">Includes all fees</div>
+            </div>
+        </div>
+
+        <!-- Floating Place Order Bar -->
+        <div class="bottom-checkout-bar d-none" id="placeOrderBar">
+            <div>
+                <div style="font-size: 11px; color: #666; font-weight: 600; margin-bottom: 2px;">Total</div>
+                <div style="font-size: 18px; font-weight: 700; color: #000;" id="placeOrderTotalDisplay">Rp 0</div>
+            </div>
+            <button class="btn-place-order" id="btnPlaceOrder">Place order</button>
+        </div>
+    </div>
+
+    <!-- SCRIPT GABUNGAN (UI, KERANJANG & FIREBASE MENU FETCHING) -->
+    <script type="module">
+        import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, serverTimestamp, doc, getDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCd_v_YnSXpiVAA_eDxk_MaCCdqo4H5CFE",
+            authDomain: "bbite-ac7e4.firebaseapp.com",
+            projectId: "bbite-ac7e4"
+        };
+        const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        const CATEGORY_ORDER = ['Semua', 'Paket Hemat', 'Makanan', 'Minuman', 'Snacks'];
+        let kantinDatabase = {};
+        let currentData = { id: '', name: 'Loading', logo: null, rating: 5.0, reviewCount: 'New', menus: [] };
+        
+        let cart = {}; 
+        const SERVICE_FEE = 2000;
+        let DELIVERY_FEE = 3000;
+        let FINAL_TOTAL_ORDER = 0;
+
+        // Ambil Data Dari URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const restoNameParam = urlParams.get('resto') || 'Hokben'; 
+        let merchantUidParam = urlParams.get('uid') || null;
+
+        function formatRupiah(value) {
+            if (typeof value !== 'number' || Number.isNaN(value)) return 'Harga tidak tersedia';
+            return 'Rp ' + value.toLocaleString('id-ID');
+        }
+
+        function getJsonRestoKey(bName) {
+            const name = bName.toLowerCase();
+            if (name.includes('starbuck')) return 'starbucks';
+            if (name.includes('a&w') || name.includes('aw')) return 'aw';
+            if (name.includes('hokben')) return 'hokben';
+            if (name.includes('yoshinoya')) return 'yoshinoya';
+            return null;
+        }
+
+        async function loadMenuData() {
+            try {
+                // 1. Ambil Menu Base dari menu.json
+                const response = await fetch('./menu.json', { cache: 'no-store' });
+                const json = await response.json();
+                kantinDatabase = json.restaurants || {};
+
+                const jsonKey = getJsonRestoKey(restoNameParam);
+                const baseData = jsonKey ? kantinDatabase[jsonKey] : null;
+
+                currentData = {
+                    id: merchantUidParam || jsonKey || restoNameParam,
+                    name: restoNameParam,
+                    logo: baseData ? baseData.logo : null,
+                    rating: baseData ? baseData.rating : 5.0,
+                    reviewCount: baseData ? baseData.reviewCount : 'New',
+                    menus: baseData ? [...baseData.menus] : []
+                };
+
+                // 2. Timpa dan Gabungkan dengan Menu Kustom dari Firestore
+                let fbCustomMenus = [];
+                let fbDeletedMenus = [];
+
+                try {
+                    let merchantDocSnap = null;
+                    if (merchantUidParam) {
+                        merchantDocSnap = await getDoc(doc(db, "users", merchantUidParam));
+                    } else {
+                        // Jika URL tidak memiliki UID, coba cari merchant berdasarkan namanya
+                        const q = query(collection(db, "users"), where("role", "==", "Merchant"), where("businessName", "==", restoNameParam));
+                        const qs = await getDocs(q);
+                        if (!qs.empty) {
+                            merchantDocSnap = qs.docs[0];
+                            merchantUidParam = merchantDocSnap.id; 
+                            currentData.id = merchantUidParam; // Ganti ID menjadi Firebase UID
+                        }
+                    }
+
+                    if (merchantDocSnap && merchantDocSnap.exists()) {
+                        const mData = merchantDocSnap.data();
+                        if (mData.photoBase64) currentData.logo = mData.photoBase64;
+                        if (mData.customMenus) fbCustomMenus = mData.customMenus;
+                        if (mData.deletedMenus) fbDeletedMenus = mData.deletedMenus;
+                    }
+                } catch(e) { console.warn("Firebase fetch error", e); }
+
+                // Bersihkan menu dasar yang sudah dihapus oleh merchant, lalu gabungkan
+                let finalBaseMenus = currentData.menus.filter(m => !fbDeletedMenus.includes(m.id));
+                currentData.menus = [...fbCustomMenus, ...finalBaseMenus];
+
+                initUI();
+            } catch (error) {
+                document.getElementById('menuContainer').innerHTML = '<p style="text-align:center; color:#D32F2F; margin-top:30px;">Gagal memuat data menu.</p>';
+            }
+        }
+
+        function initUI() {
+            document.title = 'Menu Kantin - ' + currentData.name;
+            document.getElementById('restoName').textContent = currentData.name;
+            
+            let statsHtml = `<span style="color: #DC9808;">⭐ ${currentData.rating}</span> (${currentData.reviewCount})`;
+            document.getElementById('restoStats').innerHTML = statsHtml;
+
+            const logoHtml = currentData.logo 
+                ? `<img src="${currentData.logo}" alt="${currentData.name}" style="width:100%; height:100%; object-fit:cover; border-radius:8px; padding:2px;">` 
+                : `<div style="width:100%; height:100%; background:#F8F8F8; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#333; font-weight:bold; font-size:10px;">${currentData.name.substring(0,6)}</div>`;
+            
+            document.getElementById('restoLogoContainer').innerHTML = logoHtml;
+            document.getElementById('checkoutRestoName').innerText = currentData.name;
+            document.getElementById('checkoutRestoLogo').innerHTML = logoHtml;
+
+            const categories = new Set((currentData.menus || []).map(m => m.category));
+            const availableCategories = CATEGORY_ORDER.filter(cat => cat === 'Semua' || categories.has(cat));
+
+            const menuTabs = document.getElementById('menuTabs');
+            menuTabs.innerHTML = '';
+            availableCategories.forEach((cat, index) => {
+                menuTabs.innerHTML += `<button class="tab-btn ${index === 0 ? 'active' : ''}" data-category="${cat}">${cat}</button>`;
+            });
+
+            window.renderMenu('Semua');
+        }
+
+        window.renderMenu = function(category) {
+            const menuContainer = document.getElementById('menuContainer');
+            menuContainer.innerHTML = ''; 
+            
+            const filteredMenus = (category === 'Semua') ? currentData.menus : currentData.menus.filter(m => m.category === category);
+
+            if (filteredMenus.length === 0) {
+                menuContainer.innerHTML = '<p style="text-align:center; color:#888; font-size:12px; margin-top:30px;">Belum ada menu yang didaftarkan.</p>';
+                return;
+            }
+
+            filteredMenus.forEach(menu => {
+                const imgSrc = menu.img ? menu.img : 'https://via.placeholder.com/150x150/F5F5F5/A0A0A0?text=No+Photo';
+                const safeName = menu.name.replace(/'/g, "\\'"); 
+                const priceNum = menu.price || 0;
+
+                const html = `
+                    <div class="menu-item">
+                        <img src="${imgSrc}" alt="${menu.name}" onerror="this.src='https://via.placeholder.com/150x150/F5F5F5/A0A0A0?text=No+Photo'">
+                        <div class="menu-item-info">
+                            <h3>${menu.name}</h3>
+                            <p>${formatRupiah(priceNum)}</p>
+                        </div>
+                        <button class="add-btn" onclick="window.addToCart('${menu.id}', '${safeName}', ${priceNum}, '${imgSrc}')" ${priceNum === 0 ? 'disabled' : ''}>+</button>
+                    </div>
+                `;
+                menuContainer.innerHTML += html;
+            });
+        }
+
+        document.getElementById('menuTabs').addEventListener('click', (e) => {
+            if(e.target.classList.contains('tab-btn')) {
+                document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+                e.target.classList.add('active');
+                window.renderMenu(e.target.getAttribute('data-category'));
+            }
+        });
+
+        // UI Keranjang
+        window.addToCart = function(id, name, price, img) {
+            if (cart[id]) cart[id].qty += 1;
+            else cart[id] = { id, name, price, img, qty: 1 };
+            
+            window.updateCartUI();
+            const btn = document.getElementById('checkoutBtn');
+            btn.style.transform = 'scale(0.95)';
+            setTimeout(() => { btn.style.transform = 'scale(1)'; }, 150);
+        }
+
+        window.updateQty = function(id, change) {
+            if (cart[id]) {
+                cart[id].qty += change;
+                if (cart[id].qty <= 0) delete cart[id];
+                window.updateCartUI();
+            }
+        }
+
+        window.updateCartUI = function() {
+            let totalItems = 0; let subtotal = 0;
+            for (const id in cart) {
+                totalItems += cart[id].qty;
+                subtotal += (cart[id].price * cart[id].qty);
+            }
+
+            const checkoutBtn = document.getElementById('checkoutBtn');
+            if (totalItems > 0) {
+                checkoutBtn.style.display = 'flex';
+                document.getElementById('cartCount').innerText = totalItems;
+                document.getElementById('cartTotal').innerText = formatRupiah(subtotal);
+            } else {
+                checkoutBtn.style.display = 'none';
+                if (!document.getElementById('checkoutView').classList.contains('d-none')) {
+                    document.getElementById('backToMenuBtn').click();
+                }
+            }
+
+            const list = document.getElementById('checkoutItemsList');
+            list.innerHTML = '';
+            for (const id in cart) {
+                const item = cart[id];
+                list.innerHTML += `
+                    <div class="checkout-item">
+                        <img src="${item.img}" alt="${item.name}">
+                        <div class="checkout-item-info">
+                            <h4>${item.name}</h4>
+                            <p>${formatRupiah(item.price)}</p>
+                        </div>
+                        <div class="qty-controls">
+                            <span class="qty-btn" onclick="window.updateQty('${id}', -1)">−</span>
+                            <span>${item.qty}</span>
+                            <span class="qty-btn" onclick="window.updateQty('${id}', 1)">+</span>
+                        </div>
+                    </div>
+                `;
+            }
+
+            document.getElementById('orderItemsText').innerText = `Order total (${totalItems} items)`;
+            document.getElementById('subtotalDisplay').innerText = formatRupiah(subtotal);
+            
+            FINAL_TOTAL_ORDER = subtotal + DELIVERY_FEE + SERVICE_FEE;
+            document.getElementById('finalTotalDisplay').innerText = formatRupiah(FINAL_TOTAL_ORDER);
+            document.getElementById('placeOrderTotalDisplay').innerText = formatRupiah(FINAL_TOTAL_ORDER);
+        }
+
+        document.getElementById('checkoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            document.getElementById('menuView').classList.add('d-none');
+            document.getElementById('checkoutView').classList.remove('d-none');
+            document.getElementById('placeOrderBar').classList.remove('d-none');
+            window.scrollTo(0,0);
+        });
+
+        document.getElementById('backToMenuBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            document.getElementById('checkoutView').classList.add('d-none');
+            document.getElementById('placeOrderBar').classList.add('d-none');
+            document.getElementById('menuView').classList.remove('d-none');
+        });
+
+        window.switchDeliveryMode = function(element) {
+            document.querySelectorAll('.delivery-toggle .toggle-btn').forEach(btn => btn.classList.remove('active'));
+            element.classList.add('active');
+
+            if(element.innerText === 'Pickup') {
+                DELIVERY_FEE = 0; document.getElementById('deliveryFeeDisplay').innerText = formatRupiah(0);
+            } else {
+                DELIVERY_FEE = 3000; document.getElementById('deliveryFeeDisplay').innerText = formatRupiah(3000);
+            }
+            window.updateCartUI(); 
+        }
+
+        // Firebase Submit Order Logic
+        let currentUser = null;
+        let realName = "Mahasiswa";
+
+        onAuthStateChanged(auth, async (user) => { 
+            currentUser = user; 
+            if(user) {
+                try {
+                    const docSnap = await getDoc(doc(db, "users", user.uid));
+                    if(docSnap.exists() && docSnap.data().name) {
+                        realName = docSnap.data().name; 
+                    }
+                } catch(e) { console.log(e); }
+            }
+        });
+
+        document.getElementById('btnPlaceOrder').addEventListener('click', async () => {
+            if (!currentUser) {
+                alert("Silakan login terlebih dahulu untuk memesan.");
+                window.location.href = "index.html";
+                return;
+            }
+
+            const btn = document.getElementById('btnPlaceOrder');
+            btn.innerText = "Processing..."; btn.disabled = true;
+
+            const orderType = document.querySelector('.delivery-toggle .active').innerText;
+            const scheduledTime = document.getElementById('checkoutTime').value;
+            const locNotes = document.getElementById('checkoutLocation').value || "-";
+            const extraNotes = document.getElementById('checkoutNotes').value || "-";
+
+            const orderData = {
+                studentId: currentUser.uid,
+                studentName: realName, 
+                merchantId: currentData.id, // UID Akun Merchant (atau nama restoran jika fallback JSON)
+                items: Object.values(cart),
+                totalPrice: FINAL_TOTAL_ORDER,
+                status: 'pending',
+                type: orderType,
+                time: scheduledTime,
+                location: locNotes,
+                notes: extraNotes,
+                timestamp: serverTimestamp()
+            };
+
+            try {
+                await addDoc(collection(db, "orders"), orderData);
+                alert("Pesanan berhasil dibuat! Menunggu konfirmasi kantin.");
+                
+                cart = {}; window.updateCartUI();
+                document.getElementById('backToMenuBtn').click();
+            } catch (error) {
+                alert("Gagal membuat pesanan: " + error.message);
+            } finally {
+                btn.innerText = "Place order"; btn.disabled = false;
+            }
+        });
+
+        // Initialize Everything
+        loadMenuData();
+    </script>
+</body>
+</html>

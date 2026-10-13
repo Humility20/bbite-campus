@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BBite Courier - Wallet</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="courier-store.js"></script>
+    <style>
+        .app-container.dashboard { background: #F5F7FA; }
+        .page-content { flex: 1; overflow-y: auto; padding: 56px 20px 110px; }
+        .w-top { position: relative; text-align: center; margin-bottom: 18px; }
+        .w-top h1 { font-size: 18px; font-weight: 800; color: #0B1220; margin: 0; }
+        .btn-hist { position: absolute; right: 0; top: -4px; width: 34px; height: 34px; border-radius: 50%; border: 1px solid #D5DAE1; background: #FFF; color: #0B1220; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+
+        .bal-card { background: linear-gradient(135deg, #E8A91A 0%, #C98300 100%); border-radius: 20px; padding: 20px; color: #FFF; display: flex; justify-content: space-between; align-items: flex-end; box-shadow: 0 10px 22px rgba(201,131,0,0.3); margin-bottom: 16px; }
+        .bal-card small { display: block; font-size: 12px; font-weight: 600; opacity: 0.9; margin-bottom: 6px; }
+        .bal-card strong { font-size: 27px; font-weight: 800; letter-spacing: -0.3px; }
+        .btn-withdraw { display: flex; align-items: center; gap: 6px; background: #FFF; color: #B07400; border: none; border-radius: 12px; padding: 10px 14px; font-size: 13px; font-weight: 800; cursor: pointer; font-family: inherit; }
+        .btn-withdraw:active { transform: scale(0.95); }
+
+        .card { background: #FFF; border: 1px solid #E5E7EB; border-radius: 18px; padding: 16px; margin-bottom: 22px; }
+        .wk-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+        .wk-head span { font-size: 13px; font-weight: 600; color: #64748B; }
+        .wk-head strong { font-size: 15px; font-weight: 800; color: #0B1220; }
+        .chart { display: flex; justify-content: space-between; align-items: flex-end; height: 100px; padding: 0 6px; }
+        .bar-col { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 8px; height: 100%; flex: 1; }
+        .bar { width: 15px; border-radius: 6px; background: #E2E8F0; transition: height 0.4s; }
+        .bar.today { background: #DC9808; }
+        .bar-col span { font-size: 11px; font-weight: 600; color: #64748B; }
+        .bar-col.today span { color: #DC9808; font-weight: 800; }
+        .wk-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; padding-top: 16px; border-top: 1px solid #E5E7EB; }
+        .mini-stat { background: #F8FAFC; border: 1px solid #E5E7EB; border-radius: 12px; padding: 11px 12px; }
+        .mini-stat small { display: block; font-size: 10.5px; color: #64748B; font-weight: 600; margin-bottom: 4px; }
+        .mini-stat strong { font-size: 14.5px; font-weight: 800; color: #0B1220; }
+
+        .tx-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .tx-head h2 { font-size: 16px; font-weight: 800; color: #0B1220; }
+        .see-all { border: none; background: none; color: #DC9808; font-size: 12.5px; font-weight: 700; cursor: pointer; font-family: inherit; }
+        .tx-list { display: flex; flex-direction: column; gap: 10px; }
+        .tx { display: flex; align-items: center; gap: 12px; background: #FFF; border: 1px solid #E5E7EB; border-radius: 14px; padding: 12px 14px; }
+        .tx-ico { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .tx-ico.in { background: #D9F5E5; color: #16A34A; }
+        .tx-ico.out { background: #FDE2E2; color: #DC2626; }
+        .tx-info { flex: 1; min-width: 0; }
+        .tx-info strong { display: block; font-size: 13px; font-weight: 700; color: #0B1220; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .tx-info small { font-size: 11px; color: #64748B; font-weight: 500; }
+        .tx-amt { font-size: 13px; font-weight: 800; flex-shrink: 0; }
+        .tx-amt.in { color: #16A34A; }
+        .tx-amt.out { color: #DC2626; }
+        .tx-empty { text-align: center; color: #64748B; font-size: 12.5px; padding: 26px 10px; }
+
+        /* Withdraw bottom sheet */
+        .sheet-overlay { position: absolute; inset: 0; background: rgba(11,18,32,0.5); z-index: 100; display: flex; align-items: flex-end; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+        .sheet-overlay.open { opacity: 1; pointer-events: auto; }
+        .sheet { width: 100%; max-height: 92%; overflow-y: auto; background: #FFF; border-radius: 28px 28px 0 0; padding: 10px 20px 30px; transform: translateY(100%); transition: transform 0.28s; }
+        .sheet-overlay.open .sheet { transform: none; }
+        .sheet-handle { width: 40px; height: 4px; border-radius: 2px; background: #D1D5DB; margin: 0 auto 16px; }
+        .sheet-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .sheet-head h3 { font-size: 19px; font-weight: 800; color: #0B1220; }
+        .btn-x { width: 28px; height: 28px; border-radius: 50%; border: none; background: #E2E8F0; color: #64748B; font-size: 12px; cursor: pointer; }
+        .bal-row { display: flex; justify-content: space-between; align-items: center; background: #F8FAFC; border: 1px solid #E5E7EB; border-radius: 12px; padding: 13px 14px; font-size: 13px; color: #64748B; font-weight: 500; margin-bottom: 18px; }
+        .bal-row strong { color: #0B1220; font-weight: 800; font-size: 14px; }
+        .lbl { display: block; font-size: 12.5px; font-weight: 700; color: #475569; margin-bottom: 8px; }
+        .amt-box { display: flex; align-items: center; gap: 10px; border: 2px solid #E5E7EB; border-radius: 14px; padding: 12px 16px; transition: 0.2s; }
+        .amt-box:focus-within { border-color: #DC9808; box-shadow: 0 0 0 3px rgba(220,152,8,0.12); }
+        .amt-box.err { border-color: #DC2626; }
+        .amt-box span { font-size: 17px; font-weight: 800; color: #64748B; }
+        .amt-box input { flex: 1; min-width: 0; border: none; outline: none; background: none; font-size: 22px; font-weight: 800; color: #0B1220; font-family: inherit; caret-color: #DC9808; }
+        .err-msg { min-height: 16px; font-size: 11.5px; color: #DC2626; font-weight: 600; margin: 6px 2px 8px; }
+        .chips { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 18px; }
+        .chip { border: 1px solid #D5DAE1; background: #F8FAFC; border-radius: 18px; padding: 8px 0; font-size: 12.5px; font-weight: 700; color: #475569; cursor: pointer; font-family: inherit; }
+        .chip.sel { border-color: #DC9808; background: #FFF6DB; color: #B07400; }
+
+        .acc { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; border: 1px solid #E5E7EB; background: #FFF; border-radius: 14px; padding: 12px 14px; margin-bottom: 8px; cursor: pointer; font-family: inherit; }
+        .acc.sel { border-color: #DC9808; background: #FFFBF0; }
+        .acc-logo { width: 38px; height: 38px; border-radius: 50%; background: #E3F2FD; color: #1E5FB4; font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .acc-info { flex: 1; min-width: 0; }
+        .acc-info strong { display: block; font-size: 13.5px; font-weight: 800; color: #0B1220; }
+        .acc-info small { font-size: 11px; color: #64748B; font-weight: 500; }
+        .acc-check { width: 20px; height: 20px; border-radius: 50%; background: #FFF6DB; color: #DC9808; display: none; align-items: center; justify-content: center; flex-shrink: 0; }
+        .acc.sel .acc-check { display: flex; }
+        .add-acc { display: inline-block; border: none; background: none; color: #DC9808; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; padding: 4px 0 2px; }
+        .acc-form { display: none; flex-direction: column; gap: 10px; border: 1px dashed #D5DAE1; border-radius: 14px; padding: 14px; margin-top: 6px; }
+        .acc-form.open { display: flex; }
+        .acc-form select, .acc-form input { width: 100%; border: 1px solid #E5E7EB; border-radius: 10px; padding: 11px 12px; font-size: 13.5px; font-family: inherit; background: #FFF; outline: none; }
+        .acc-form select:focus, .acc-form input:focus { border-color: #DC9808; }
+        .acc-form .row { display: flex; gap: 8px; }
+        .btn-sm { flex: 1; border-radius: 10px; padding: 10px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; border: 1px solid #D5DAE1; background: #FFF; color: #475569; }
+        .btn-sm.primary { background: #DC9808; border-color: #DC9808; color: #FFF; }
+
+        .sum { border-top: 1px solid #E5E7EB; margin-top: 14px; padding-top: 14px; display: flex; flex-direction: column; gap: 10px; }
+        .sum div { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #64748B; font-weight: 500; }
+        .sum .free { color: #16A34A; font-weight: 800; }
+        .sum .total { color: #0B1220; font-weight: 700; }
+        .sum .total strong { font-size: 16px; font-weight: 800; }
+        .btn-confirm { width: 100%; margin-top: 18px; padding: 16px; border: none; border-radius: 14px; background: #DC9808; color: #FFF; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; box-shadow: 0 8px 18px rgba(220,152,8,0.3); }
+        .btn-confirm:active { transform: scale(0.98); }
+        .btn-confirm:disabled { background: #E2C98A; box-shadow: none; cursor: not-allowed; }
+
+        .toast { position: absolute; left: 16px; right: 16px; bottom: 96px; background: #0B1220; color: #FFF; font-size: 13px; font-weight: 600; padding: 12px 16px; border-radius: 12px; z-index: 200; opacity: 0; transform: translateY(10px); pointer-events: none; transition: 0.25s; }
+        .toast.show { opacity: 1; transform: none; }
+
+        .bottom-nav { background: #FFF; }
+        .nav-item { padding: 10px 14px; color: #6B7280; }
+        .nav-item svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+        .nav-item.active { background: #FFF6DB; color: #C98A00; flex-direction: row; gap: 8px; padding: 10px 18px; }
+        .nav-item.active span { font-weight: 800; }
+    </style>
+</head>
+<body>
+    <div class="app-container dashboard">
+        <div class="page-content" id="pageContent">
+            <div class="w-top">
+                <h1>My Wallet</h1>
+                <button type="button" class="btn-hist" id="btnHist" aria-label="Riwayat transaksi">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/><path d="M12 8v4l3 2"/></svg>
+                </button>
+            </div>
+
+            <div class="bal-card">
+                <div><small>Available Balance</small><strong id="balance">Rp 0</strong></div>
+                <button type="button" class="btn-withdraw" id="btnWithdraw">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7H5a2 2 0 0 1 0-4h13v4"/><path d="M3 5v14a2 2 0 0 0 2 2h15V7"/><circle cx="16.5" cy="14" r="1.2"/></svg>
+                    Withdraw
+                </button>
+            </div>
+
+            <div class="card">
+                <div class="wk-head"><span>Earnings This Week</span><strong id="weekTotal">Rp 0</strong></div>
+                <div class="chart" id="chart"></div>
+                <div class="wk-stats">
+                    <div class="mini-stat"><small>Completed Deliveries</small><strong id="weekOrders">0 Orders</strong></div>
+                    <div class="mini-stat"><small>Average / Order</small><strong id="weekAvg">Rp 0</strong></div>
+                </div>
+            </div>
+
+            <div class="tx-head" id="txHead"><h2>Transaction History</h2><button type="button" class="see-all" id="seeAll">See All</button></div>
+            <div class="tx-list" id="txList"></div>
+        </div>
+
+        <nav class="bottom-nav">
+            <a href="home-kurir.html" class="nav-item">
+                <svg viewBox="0 0 24 24" width="22" height="22"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>
+                <span>Home</span>
+            </a>
+            <a href="orders-kurir.html" class="nav-item">
+                <svg viewBox="0 0 24 24" width="22" height="22"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>
+                <span>Orders</span>
+            </a>
+            <a href="wallet-kurir.html" class="nav-item active">
+                <svg viewBox="0 0 24 24" width="22" height="22"><path d="M20 7H5a2 2 0 0 1 0-4h13v4"/><path d="M3 5v14a2 2 0 0 0 2 2h15V7"/><circle cx="16.5" cy="14" r="1.2"/></svg>
+                <span>Wallet</span>
+            </a>
+            <a href="profile-kurir.html" class="nav-item">
+                <svg viewBox="0 0 24 24" width="22" height="22"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+                <span>Profile</span>
+            </a>
+        </nav>
+
+        <!-- WITHDRAW SHEET -->
+        <div class="sheet-overlay" id="sheetOverlay" aria-hidden="true">
+            <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+                <div class="sheet-handle"></div>
+                <div class="sheet-head"><h3 id="sheetTitle">Withdraw Funds</h3><button type="button" class="btn-x" id="sheetClose" aria-label="Tutup">&#10005;</button></div>
+                <div class="bal-row"><span>Available Balance</span><strong id="sheetBalance">Rp 0</strong></div>
+
+                <label class="lbl" for="amtInput">Enter Amount</label>
+                <div class="amt-box" id="amtBox"><span>Rp</span><input type="text" id="amtInput" inputmode="numeric" autocomplete="off" placeholder="0"></div>
+                <div class="err-msg" id="amtErr"></div>
+                <div class="chips" id="chips">
+                    <button type="button" class="chip" data-amt="20000">20k</button>
+                    <button type="button" class="chip" data-amt="50000">50k</button>
+                    <button type="button" class="chip" data-amt="100000">100k</button>
+                    <button type="button" class="chip" data-amt="all">All</button>
+                </div>
+
+                <span class="lbl">Transfer To</span>
+                <div id="accList"></div>
+                <button type="button" class="add-acc" id="btnAddAcc">+ Add another account / e-wallet</button>
+                <div class="acc-form" id="accForm">
+                    <select id="accType">
+                        <option value="Bank BCA|BCA">Bank BCA</option>
+                        <option value="Bank Mandiri|MDR">Bank Mandiri</option>
+                        <option value="Bank BNI|BNI">Bank BNI</option>
+                        <option value="Bank BRI|BRI">Bank BRI</option>
+                        <option value="OVO|OVO">OVO</option>
+                        <option value="GoPay|GoPay">GoPay</option>
+                        <option value="DANA|DANA">DANA</option>
+                    </select>
+                    <input type="text" id="accNumber" inputmode="numeric" placeholder="Nomor rekening / nomor HP">
+                    <input type="text" id="accName" placeholder="Atas nama">
+                    <div class="row"><button type="button" class="btn-sm" id="accCancel">Batal</button><button type="button" class="btn-sm primary" id="accSave">Simpan</button></div>
+                </div>
+
+                <div class="sum">
+                    <div><span>Admin Fee</span><span class="free">Free</span></div>
+                    <div class="total"><span>Total Transfer</span><strong id="totalTransfer">Rp 0</strong></div>
+                </div>
+                <button type="button" class="btn-confirm" id="btnConfirm">Confirm Withdrawal</button>
+            </div>
+        </div>
+
+        <div class="toast" id="toast"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyCd_v_YnSXpiVAA_eDxk_MaCCdqo4H5CFE", authDomain: "bbite-ac7e4.firebaseapp.com", projectId: "bbite-ac7e4" };
+        const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+
+        // Hanya kurir yang sudah disetujui admin yang boleh di halaman ini
+        onAuthStateChanged(getAuth(app), async (user) => {
+            if (!user) { window.location.href = "index.html"; return; }
+            try {
+                const snap = await getDoc(doc(getFirestore(app), "users", user.uid));
+                if (!snap.exists() || snap.data().courierStatus !== "active") window.location.href = "home-mahasiswa.html";
+            } catch (e) { console.log("Gagal memuat status kurir:", e); }
+        });
+
+        const $ = (id) => document.getElementById(id);
+        const rp = (n) => "Rp " + Math.abs(n).toLocaleString("id-ID");
+        const esc = (t) => String(t).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+        const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+        const p2 = (n) => String(n).padStart(2, "0");
+
+        let toastTimer;
+        function showToast(msg) {
+            const t = $("toast");
+            t.textContent = msg; t.classList.add("show");
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => t.classList.remove("show"), 3000);
+        }
+
+        // ===== Tampilan wallet =====
+        let showAll = false;
+        const arrowDown = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg>';
+        const arrowUp = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg>';
+
+        function txDate(ts) {
+            if (!ts) return "-";
+            const d = new Date(ts), now = new Date();
+            const y = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+            const time = p2(d.getHours()) + ":" + p2(d.getMinutes());
+            if (d.toDateString() === now.toDateString()) return "Today, " + time;
+            if (d.toDateString() === y.toDateString()) return "Yesterday, " + time;
+            return `${d.getDate()} ${MONTHS[d.getMonth()]}, ${time}`;
+        }
+        function renderWallet() {
+            const w = CourierStore.wallet();
+            $("balance").textContent = rp(w.balance);
+            $("weekTotal").textContent = rp(w.week.total);
+            $("weekOrders").textContent = w.week.orders + " Orders";
+            $("weekAvg").textContent = rp(w.week.avg);
+
+            const max = Math.max(...w.week.days, 1), labels = ["M","T","W","T","F","S","S"];
+            $("chart").innerHTML = w.week.days.map((v, i) => {
+                const h = v ? Math.max(10, Math.round(v / max * 76)) : 4;
+                return `<div class="bar-col ${i === w.week.todayIdx ? "today" : ""}"><div class="bar ${i === w.week.todayIdx ? "today" : ""}" style="height:${h}px" title="${rp(v)}"></div><span>${labels[i]}</span></div>`;
+            }).join("");
+
+            const list = showAll ? w.tx : w.tx.slice(0, 3);
+            $("txList").innerHTML = list.length ? list.map(t => {
+                const inn = t.amount >= 0;
+                return `<div class="tx">
+                    <div class="tx-ico ${inn ? "in" : "out"}">${inn ? arrowDown : arrowUp}</div>
+                    <div class="tx-info"><strong>${esc(t.title)}</strong><small>${txDate(t.at)}</small></div>
+                    <div class="tx-amt ${inn ? "in" : "out"}">${inn ? "+" : "-"}${rp(t.amount)}</div>
+                </div>`;
+            }).join("") : '<div class="tx-empty">Belum ada transaksi.</div>';
+            const btn = $("seeAll");
+            btn.style.display = w.tx.length > 3 ? "" : "none";
+            btn.textContent = showAll ? "Show Less" : "See All";
+        }
+        $("seeAll").addEventListener("click", () => { showAll = !showAll; renderWallet(); });
+        $("btnHist").addEventListener("click", () => {
+            showAll = true; renderWallet();
+            $("txHead").scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+
+        // ===== Withdraw sheet =====
+        const overlay = $("sheetOverlay"), amtInput = $("amtInput");
+        let accountId = "default";
+
+        const parseAmt = () => Number(amtInput.value.replace(/\D/g, "")) || 0;
+        function syncAmount() {
+            const n = parseAmt();
+            amtInput.value = n ? n.toLocaleString("id-ID") : "";
+            const bal = CourierStore.wallet().balance;
+            $("totalTransfer").textContent = rp(n);
+            document.querySelectorAll("#chips .chip").forEach(c => {
+                const v = c.dataset.amt === "all" ? bal : Number(c.dataset.amt);
+                c.classList.toggle("sel", n > 0 && n === v);
+            });
+            let err = "";
+            if (n > bal) err = "Nominal melebihi saldo tersedia";
+            $("amtErr").textContent = err;
+            $("amtBox").classList.toggle("err", !!err);
+            $("btnConfirm").disabled = !(n > 0 && n <= bal);
+        }
+        function renderAccounts() {
+            $("accList").innerHTML = CourierStore.accounts().map(a => `
+                <button type="button" class="acc ${a.id === accountId ? "sel" : ""}" data-id="${esc(a.id)}">
+                    <div class="acc-logo">${esc(a.short)}</div>
+                    <div class="acc-info"><strong>${esc(a.type)} - ${esc(a.number)}</strong><small>a.n. ${esc(a.name)}</small></div>
+                    <div class="acc-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></div>
+                </button>`).join("");
+        }
+        function openSheet() {
+            const bal = CourierStore.wallet().balance;
+            $("sheetBalance").textContent = rp(bal);
+            $("accForm").classList.remove("open");
+            $("btnAddAcc").style.display = "";
+            amtInput.value = Math.min(100000, bal) ? Math.min(100000, bal).toLocaleString("id-ID") : "";
+            renderAccounts();
+            syncAmount();
+            overlay.classList.add("open");
+            overlay.setAttribute("aria-hidden", "false");
+        }
+        function closeSheet() { overlay.classList.remove("open"); overlay.setAttribute("aria-hidden", "true"); }
+
+        $("btnWithdraw").addEventListener("click", openSheet);
+        $("sheetClose").addEventListener("click", closeSheet);
+        overlay.addEventListener("click", (e) => { if (e.target === overlay) closeSheet(); });
+        document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeSheet(); });
+        amtInput.addEventListener("input", syncAmount);
+        $("chips").addEventListener("click", (e) => {
+            const c = e.target.closest(".chip");
+            if (!c) return;
+            const v = c.dataset.amt === "all" ? CourierStore.wallet().balance : Number(c.dataset.amt);
+            amtInput.value = v ? v.toLocaleString("id-ID") : "";
+            syncAmount();
+        });
+        $("accList").addEventListener("click", (e) => {
+            const b = e.target.closest(".acc");
+            if (b) { accountId = b.dataset.id; renderAccounts(); }
+        });
+
+        // tambah rekening / e-wallet
+        $("btnAddAcc").addEventListener("click", () => { $("accForm").classList.add("open"); $("btnAddAcc").style.display = "none"; });
+        $("accCancel").addEventListener("click", () => { $("accForm").classList.remove("open"); $("btnAddAcc").style.display = ""; });
+        $("accSave").addEventListener("click", () => {
+            const [type, short] = $("accType").value.split("|");
+            const number = $("accNumber").value.replace(/\s/g, "");
+            const name = $("accName").value.trim();
+            if (!/^\d{5,20}$/.test(number)) { showToast("Nomor rekening / HP tidak valid"); return; }
+            if (!name) { showToast("Isi nama pemilik rekening"); return; }
+            const acc = CourierStore.addAccount({ type, short, number, name });
+            accountId = acc.id;
+            $("accNumber").value = ""; $("accName").value = "";
+            $("accForm").classList.remove("open"); $("btnAddAcc").style.display = "";
+            renderAccounts();
+        });
+
+        $("btnConfirm").addEventListener("click", () => {
+            const n = parseAmt();
+            const r = CourierStore.withdraw(n, accountId);
+            if (!r.ok) { $("amtErr").textContent = r.error; $("amtBox").classList.add("err"); return; }
+            closeSheet();
+            showAll = false;
+            renderWallet();
+            showToast(`Penarikan ${rp(n)} ke ${r.account.type} diproses`);
+        });
+
+        renderWallet();
+    </script>
+</body>
+</html>

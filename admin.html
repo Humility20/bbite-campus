@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - BBite</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .admin-header { background: #FFFFFF; color: #000000; padding: 24px 24px 20px; text-align: center; margin: -60px -24px 24px -24px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); border-bottom: 1px solid #E5E5E5; }
+        .admin-header h1 { color: #000000; font-size: 20px; margin-bottom: 4px; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .admin-header p { font-size: 12px; color: #666; }
+        
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+        .stat-card { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); display: flex; flex-direction: column; align-items: center; text-align: center; border: 1px solid #E5E5E5; }
+        .stat-icon { width: 48px; height: 48px; background: #FFF6DB; color: #DC9808; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 12px; }
+        .stat-card h3 { font-size: 24px; color: #000; margin-top: 4px; }
+        .stat-card p { font-size: 11px; font-weight: 600; color: #666; }
+        .stat-card-full { grid-column: span 2; flex-direction: row; text-align: left; gap: 16px; align-items: center;}
+        .stat-card-full .stat-icon { margin-bottom: 0; background: #F4F1FF; color: #6B4EFF; }
+
+        .member-list { display: flex; flex-direction: column; gap: 12px; padding-bottom: 100px; }
+        
+        /* Desain Item List yang bisa diklik */
+        .member-item { background: white; border-radius: 16px; padding: 16px; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); border: 1px solid #E5E5E5; position: relative; cursor: pointer; transition: 0.2s;}
+        .member-item:active { transform: scale(0.97); border-color: #DC9808; }
+        
+        .member-avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; background: #F5F5F5; display: flex; justify-content: center; align-items: center; font-size: 16px; font-weight: bold; flex-shrink: 0; color: #555;}
+        .member-info { flex: 1; overflow: hidden; pointer-events: none; }
+        .member-info h4 { font-size: 14px; margin-bottom: 4px; color: #000; font-weight: 700; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;}
+        .member-info p { font-size: 11px; color: #666; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;}
+        
+        .role-badge { font-size: 9px; font-weight: 700; padding: 4px 8px; border-radius: 12px; background: #F5F5F5; display: inline-block; margin-top: 4px;}
+        .btn-action-member { background: transparent; border: none; width: 32px; height: 32px; border-radius: 8px; display: flex; justify-content: center; align-items: center; color: #888; font-size: 18px; pointer-events: none;}
+        
+        .status-badge { position: absolute; top: -8px; left: 16px; color: white; font-size: 9px; font-weight: 700; padding: 2px 8px; border-radius: 10px; border: 2px solid white; display: none; pointer-events: none;}
+        .suspended .status-badge { display: block; background: #F57C00; }
+        .suspended { opacity: 0.7; border-color: #F57C00; }
+        .pending .status-badge { display: block; background: #1976D2; }
+        .pending { border-color: #1976D2; background: #F4F9FF; }
+
+        .profile-avatar-container { width: 100px; height: 100px; position: relative; margin: 0 auto 16px auto; cursor: pointer; display: block; }
+        .profile-avatar { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background-color: #E5E5E5; border: 3px solid #DC9808;}
+        .edit-avatar-btn { position: absolute; bottom: 0; right: 0; background: #DC9808; color: white; border: 2px solid #FFF; border-radius: 50%; width: 30px; height: 30px; display: flex; justify-content: center; align-items: center; font-size: 14px; pointer-events: none; }
+        .upload-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(255,255,255,0.8); border-radius: 50%; display: none; justify-content: center; align-items: center; font-size: 11px; font-weight: 700; color: #000; }
+
+        .custom-modal-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 100; display: none; justify-content: center; align-items: center; padding: 24px; backdrop-filter: blur(3px); }
+        .detail-modal { background: #E8ECEF; width: 100%; border-radius: 20px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); position: relative; display: flex; flex-direction: column; max-height: 90vh; overflow-y: auto;}
+        .modal-header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;}
+        .modal-header-top h3 { font-size: 16px; font-weight: 700; color: #000; margin: 0;}
+        .btn-close-modal { background: none; border: 1px solid #CCC; color: #333; width: 24px; height: 24px; border-radius: 4px; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 16px;}
+        .modal-avatar-lg { width: 70px; height: 70px; border-radius: 50%; border: 2px solid #DC9808; display: flex; justify-content: center; align-items: center; font-size: 24px; font-weight: bold; margin: 0 auto 12px; background: #FFF; color: #DC9808; overflow: hidden;}
+        .modal-user-name { font-size: 18px; font-weight: 700; color: #000; text-align: center; margin: 0;}
+        .modal-user-email { font-size: 12px; color: #666; text-align: center; margin: 2px 0 20px;}
+        .modal-info-box { background: #FFF; border-radius: 12px; padding: 12px 16px; margin-bottom: 12px; }
+        .modal-info-label { font-size: 10px; font-weight: 700; color: #666; margin-bottom: 4px; text-transform: uppercase; }
+        .modal-info-value { font-size: 14px; font-weight: 700; color: #000; }
+        .divider-dashed { border-top: 1px dashed #CCC; margin: 16px 0; }
+        .security-title { font-size: 11px; font-weight: 700; color: #D32F2F; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; text-transform: uppercase;}
+        .security-buttons { display: flex; gap: 12px; }
+        .sec-btn { flex: 1; padding: 14px 10px; border-radius: 12px; font-size: 13px; font-weight: 700; border: none; cursor: pointer; color: #FFF; display:flex; justify-content:center; align-items:center; gap:6px; transition: 0.2s;}
+        .btn-suspend { background: #DC9808; }
+        .btn-ban { background: #D32F2F; }
+        .btn-acc { background: #1B8B6A; }
+        .sec-btn:active { transform: scale(0.96); opacity: 0.9; }
+        .d-none { display: none !important; }
+
+        .toast-notif { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 12px 24px; border-radius: 30px; font-size: 12px; font-weight: 600; z-index: 200; box-shadow: 0 4px 12px rgba(0,0,0,0.2); opacity: 0; pointer-events: none; transition: 0.3s; }
+        .toast-notif.show { opacity: 1; top: 40px; }
+    </style>
+</head>
+<body>
+    <div class="app-container dashboard">
+        
+        <div class="toast-notif" id="toastNotif">Tindakan berhasil diterapkan.</div>
+
+        <div class="dashboard-content" style="padding-top: 60px;">
+
+            <div class="admin-header">
+                <h1 id="headerTitle">
+                    <img src="logo.jpg" alt="BBite Logo" style="height: 24px; object-fit: contain;"> Dashboard
+                </h1>
+                <p id="headerDesc">Ringkasan statistik aplikasi BBite.</p>
+            </div>
+
+            <!-- TAMPILAN 1: DASHBOARD -->
+            <div id="adminDashboardView">
+                <div class="stat-card-full stat-card" style="margin-bottom: 16px;">
+                    <div class="stat-icon" style="background:#E3F2FD; color:#1976D2;">👥</div>
+                    <div>
+                        <p>Total Pengguna Aktif</p>
+                        <h3 id="totalUsersCount" style="margin-top: 4px;">Memuat...</h3>
+                    </div>
+                </div>
+                <div class="stat-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">🏪</div>
+                        <p>Vendor Aktif</p>
+                        <h3 id="vendorCount">0</h3>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:#F4F1FF; color:#6B4EFF;">🛵</div>
+                        <p>Kurir Aktif</p>
+                        <h3>0</h3>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:#FFFDE7; color:#FBC02D;">⏳</div>
+                        <p>Pending Requests</p>
+                        <h3 id="pendingCount">0</h3>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:#E8F5E9; color:#2E7D32;">✅</div>
+                        <p>Pesanan Selesai</p>
+                        <h3>0</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAMPILAN 2: DAFTAR MEMBER -->
+            <div id="adminMembersView" class="d-none">
+                <div class="input-wrapper search-wrapper" style="margin-bottom: 20px;">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" placeholder="Cari member (Mahasiswa & Kurir)..." style="background: #FFF; border-color:#E5E5E5;">
+                </div>
+                <div class="member-list" id="dynamicMemberList">
+                    <p style="text-align:center; font-size: 12px; color: #888;">Memuat data dari Firebase...</p>
+                </div>
+            </div>
+
+            <!-- TAMPILAN 3: REQUESTS / PENGAJUAN -->
+            <div id="adminRequestsView" class="d-none">
+                <div style="margin-bottom: 20px;">
+                    <h2 style="font-size: 18px; color: #000; margin-bottom: 4px;">Pengajuan Merchant</h2>
+                    <p style="font-size: 12px; color: #666;">Tinjau formulir pendaftaran penjual kantin baru.</p>
+                </div>
+                <div class="member-list" id="dynamicRequestList">
+                    <p style="text-align:center; font-size: 12px; color: #888;">Memuat data pengajuan...</p>
+                </div>
+            </div>
+
+            <!-- TAMPILAN 4: SETTINGS -->
+            <div id="adminSettingsView" class="d-none">
+                <div style="background: #FFF; border-radius: 16px; border: 1px solid #E5E5E5; padding: 32px 20px; text-align: center;">
+                    <label for="adminAvatarUpload" class="profile-avatar-container">
+                        <img src="https://via.placeholder.com/100/DC9808/FFFFFF?text=AD" id="adminProfileImage" class="profile-avatar" alt="Admin Profile">
+                        <div class="upload-overlay" id="adminUploadOverlay">Saving...</div>
+                        <div class="edit-avatar-btn">📷</div>
+                    </label>
+                    <input type="file" id="adminAvatarUpload" accept="image/*" style="display: none;">
+                    
+                    <h2 style="font-size: 20px; color: #000;">BBite Admin</h2>
+                    <p style="font-size: 13px; color: #666; margin-top: 4px;">adminBBite@ac.id</p>
+                </div>
+
+                <button class="admin-logout-btn" id="adminLogoutBtn" style="background: #FFEBEE; color: #D32F2F; border: 1px solid #FFCDD2; font-weight: 700; width: 100%; padding: 16px; border-radius: 12px; margin-top: 24px; cursor: pointer;">
+                    🚪 Logout System
+                </button>
+            </div>
+
+        </div>
+
+        <!-- NAVIGASI BAWAH ADMIN -->
+        <nav class="bottom-nav">
+            <div class="nav-item active" onclick="window.switchAdminTab('dashboard', this)">
+                <span style="font-size: 20px;">📊</span>
+                <span>Dashboard</span>
+            </div>
+            <div class="nav-item" onclick="window.switchAdminTab('members', this)">
+                <span style="font-size: 20px;">👥</span>
+                <span>Members</span>
+            </div>
+            <div class="nav-item" onclick="window.switchAdminTab('requests', this)">
+                <span style="font-size: 20px; position: relative;">
+                    📋
+                    <span id="navPendingBadge" style="position: absolute; top: -5px; right: -8px; background: #D32F2F; color: white; border-radius: 50%; width: 14px; height: 14px; font-size: 9px; display: none; align-items: center; justify-content: center; font-weight: bold;">0</span>
+                </span>
+                <span>Requests</span>
+            </div>
+            <div class="nav-item" onclick="window.switchAdminTab('settings', this)">
+                <span style="font-size: 20px;">⚙️</span>
+                <span>Settings</span>
+            </div>
+        </nav>
+        
+        <div class="custom-modal-overlay" id="actionModalOverlay">
+            <div class="detail-modal">
+                <div class="modal-header-top">
+                    <h3>Detail Pengguna</h3>
+                    <button class="btn-close-modal" onclick="window.closeDetailModal()">×</button>
+                </div>
+                
+                <div class="modal-avatar-lg" id="modalAvatar">XX</div>
+                <h4 class="modal-user-name" id="modalName">Nama</h4>
+                <p class="modal-user-email" id="modalEmail">email@domain.com</p>
+
+                <div class="modal-info-box">
+                    <div class="modal-info-label">ROLE / PERAN</div>
+                    <div class="modal-info-value" id="modalRole">Mahasiswa</div>
+                </div>
+
+                <div class="modal-info-box" id="bNameBox" style="display: none;">
+                    <div class="modal-info-label">NAMA TOKO BISNIS</div>
+                    <div class="modal-info-value" id="modalBName">Nama Toko</div>
+                </div>
+
+                <!-- Bagian Review Bukti Usaha -->
+                <div class="modal-info-box" id="bProofBox" style="display: none;">
+                    <div class="modal-info-label">BUKTI USAHA / IZIN (KTP)</div>
+                    <div class="modal-info-value" id="modalBProofContainer">
+                        <!-- Gambar Bukti Akan Muncul Di Sini -->
+                    </div>
+                </div>
+
+                <div class="modal-info-box">
+                    <div class="modal-info-label">STATUS AKUN</div>
+                    <div class="modal-info-value" id="modalStatus" style="color: #2E7D32;">Aktif Terverifikasi</div>
+                </div>
+
+                <div class="divider-dashed"></div>
+                
+                <div id="pendingActions" style="display: none;">
+                    <div class="security-title" style="color: #1976D2;"><span>📋</span> TINJAUAN PENDAFTARAN</div>
+                    <div class="security-buttons">
+                        <button class="sec-btn btn-ban" id="btnRejectPending" onclick="window.executeBan()">Tolak & Hapus</button>
+                        <button class="sec-btn btn-acc" onclick="window.executeAccept()">Terima (ACC)</button>
+                    </div>
+                </div>
+
+                <div id="activeActions" style="display: flex; flex-direction: column;">
+                    <div class="security-title"><span>🛡️</span> TINDAKAN KEAMANAN</div>
+                    <div class="security-buttons" id="securityButtons">
+                        <button class="sec-btn btn-suspend" id="btnSuspend" onclick="window.showSuspendOptions()">⊘ Suspend Akun</button>
+                        <button class="sec-btn btn-ban" id="btnBan" onclick="window.executeBan()">⛌ Blokir (Hapus)</button>
+                        <button class="sec-btn btn-acc" id="btnRestore" style="display:none;" onclick="window.executeRestore()">✅ Pulihkan Akun</button>
+                    </div>
+                </div>
+
+                <div class="suspend-options" id="suspendOptions" style="display: none; flex-direction: column; gap: 8px; margin-top: 12px;">
+                    <div style="font-size: 11px; font-weight: 700; color: #666; text-align: center; margin-bottom: 4px;">Pilih Durasi Suspend</div>
+                    <button class="suspend-day-btn" onclick="window.executeSuspend(3)" style="background: #FFF; border: 1px solid #DC9808; color: #DC9808; padding: 12px; border-radius: 12px; font-weight: 700;">3 Hari</button>
+                    <button class="suspend-day-btn" onclick="window.executeSuspend(5)" style="background: #FFF; border: 1px solid #DC9808; color: #DC9808; padding: 12px; border-radius: 12px; font-weight: 700;">5 Hari</button>
+                    <button class="suspend-day-btn" onclick="window.executeSuspend(7)" style="background: #FFF; border: 1px solid #DC9808; color: #DC9808; padding: 12px; border-radius: 12px; font-weight: 700;">7 Hari</button>
+                    <button class="btn-close-modal" style="width: 100%; border: none; background: #E5E5E5; margin-top: 4px; padding: 8px; border-radius: 12px; height: auto;" onclick="window.closeSuspendOptions()">Batal</button>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, collection, onSnapshot, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyCd_v_YnSXpiVAA_eDxk_MaCCdqo4H5CFE",
+          authDomain: "bbite-ac7e4.firebaseapp.com",
+          projectId: "bbite-ac7e4"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        window.bbiteUsers = {};
+        window.currentTargetId = "";
+
+        function showToast(msg) {
+            const toast = document.getElementById("toastNotif");
+            toast.innerText = msg;
+            toast.classList.add("show");
+            setTimeout(() => toast.classList.remove("show"), 3000);
+        }
+
+        window.fetchFirebaseMembers = function() {
+            const memberList = document.getElementById("dynamicMemberList");
+            const requestList = document.getElementById("dynamicRequestList"); 
+            
+            onSnapshot(collection(db, "users"), (querySnapshot) => {
+                let activeCount = 0;
+                let pendingCount = 0;
+                let vendorCount = 0;
+
+                memberList.innerHTML = "";
+                requestList.innerHTML = "";
+
+                if (querySnapshot.empty) {
+                    memberList.innerHTML = "<p style='text-align:center; font-size: 12px; color: #666;'>Belum ada data member yang mendaftar.</p>";
+                    document.getElementById("totalUsersCount").innerText = 0;
+                    return;
+                }
+
+                querySnapshot.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    const userId = docSnap.id;
+                    
+                    window.bbiteUsers[userId] = data; 
+                    
+                    const userName = data.name || data.displayName || "User";
+                    const userEmail = data.email || "-";
+                    const userRole = data.role || "Mahasiswa";
+                    const bName = data.businessName || "";
+                    
+                    const hasPendingReq = data.status === "pending" || data.courierStatus === "pending";
+                    if(hasPendingReq) pendingCount++;
+                    else activeCount++;
+
+                    if(userRole === "Merchant" && data.status !== "pending") vendorCount++;
+
+                    let initials = "UU";
+                    if(userName) {
+                        const parts = userName.split(" ");
+                        initials = parts[0].charAt(0).toUpperCase();
+                        if (parts.length > 1) initials += parts[1].charAt(0).toUpperCase();
+                        else if (parts[0].length > 1) initials += parts[0].charAt(1).toUpperCase();
+                    }
+
+                    const colors = [
+                        { bg: '#E3F2FD', text: '#1976D2' },
+                        { bg: '#F4F1FF', text: '#6B4EFF' },
+                        { bg: '#FFF6DB', text: '#DC9808' },
+                        { bg: '#E8F5E9', text: '#2E7D32' }
+                    ];
+                    const colorScheme = colors[userId.charCodeAt(0) % colors.length] || colors[0];
+
+                    const photoHtml = data.photoBase64 
+                        ? `<img src="${data.photoBase64}" class="member-avatar">` 
+                        : `<div class="member-avatar" style="background:${colorScheme.bg}; color:${colorScheme.text};">${initials}</div>`;
+
+                    const isPending = hasPendingReq;
+                    const isSuspended = data.status === "suspended";
+                    
+                    let rowClass = "";
+                    let badgeHtml = `<div class="status-badge" id="badge-${userId}">STATUS</div>`;
+
+                    if (isPending) {
+                        rowClass = "pending";
+                        badgeHtml = `<div class="status-badge" id="badge-${userId}" style="display:block;">PENDING APPROVAL</div>`;
+                    } else if (isSuspended) {
+                        rowClass = "suspended";
+                        badgeHtml = `<div class="status-badge" id="badge-${userId}" style="display:block;">SUSPENDED</div>`;
+                    }
+
+                    const html = `
+                        <div class="member-item ${rowClass}" onclick="window.openDetailModal('${userId}')">
+                            ${badgeHtml}
+                            ${photoHtml}
+                            <div class="member-info">
+                                <h4>${userName}</h4>
+                                <p>${userEmail}</p>
+                                <span class="role-badge">${data.courierStatus === "pending" ? userRole + ' + Courier (menunggu)' : userRole} ${bName ? '('+bName+')' : ''}</span>
+                            </div>
+                            <button class="btn-action-member">⋮</button>
+                        </div>
+                    `;
+
+                    if (isPending) {
+                        requestList.innerHTML += html;
+                    } else {
+                        memberList.innerHTML += html;
+                    }
+                });
+
+                if (requestList.innerHTML === "") {
+                    requestList.innerHTML = "<p style='text-align:center; font-size: 12px; color: #666; margin-top: 20px;'>Tidak ada pengajuan merchant baru saat ini.</p>";
+                }
+                if (memberList.innerHTML === "") {
+                    memberList.innerHTML = "<p style='text-align:center; font-size: 12px; color: #666; margin-top: 20px;'>Belum ada data member yang aktif.</p>";
+                }
+
+                const badge = document.getElementById("navPendingBadge");
+                if (pendingCount > 0) {
+                    badge.innerText = pendingCount;
+                    badge.style.display = "flex";
+                } else {
+                    badge.style.display = "none";
+                }
+
+                document.getElementById("totalUsersCount").innerText = activeCount;
+                document.getElementById("pendingCount").innerText = pendingCount;
+                document.getElementById("vendorCount").innerText = vendorCount;
+                
+            }, (error) => {
+                console.log(error);
+                document.getElementById("dynamicMemberList").innerHTML = "<p style='text-align:center;'>Gagal memuat data.</p>";
+            });
+        };
+
+        // Panggil fetch saat halaman dimuat
+        if (localStorage.getItem("bbite_admin_session") === "active") {
+            window.fetchFirebaseMembers();
+        } else {
+            window.location.href = "index.html";
+        }
+
+        window.switchAdminTab = function(tabName, element) {
+            document.getElementById('adminDashboardView').classList.add('d-none');
+            document.getElementById('adminMembersView').classList.add('d-none');
+            document.getElementById('adminRequestsView').classList.add('d-none');
+            document.getElementById('adminSettingsView').classList.add('d-none');
+            
+            document.querySelectorAll('.bottom-nav .nav-item').forEach(nav => nav.classList.remove('active'));
+            element.classList.add('active');
+
+            const headerTitle = document.getElementById('headerTitle');
+            const headerDesc = document.getElementById('headerDesc');
+
+            if (tabName === 'dashboard') {
+                document.getElementById('adminDashboardView').classList.remove('d-none');
+                headerTitle.innerHTML = '<img src="logo.jpg" alt="BBite Logo" style="height: 24px; object-fit: contain;"> Dashboard';
+                headerDesc.innerText = "Ringkasan statistik aplikasi BBite.";
+            } else if (tabName === 'members') {
+                document.getElementById('adminMembersView').classList.remove('d-none');
+                headerTitle.innerHTML = '👥 Members';
+                headerDesc.innerText = "Daftar pengguna aktif di sistem.";
+            } else if (tabName === 'requests') {
+                document.getElementById('adminRequestsView').classList.remove('d-none');
+                headerTitle.innerHTML = '📋 Requests';
+                headerDesc.innerText = "Tinjau pendaftar merchant baru.";
+            } else if (tabName === 'settings') {
+                document.getElementById('adminSettingsView').classList.remove('d-none');
+                headerTitle.innerHTML = '⚙️ Settings';
+                headerDesc.innerText = "Pengaturan profil dan sistem admin.";
+            }
+        };
+
+        window.openDetailModal = function(userId) {
+            const userData = window.bbiteUsers[userId];
+            if(!userData) return;
+
+            window.currentTargetId = userId;
+            
+            const name = userData.name || userData.displayName || "User";
+            const email = userData.email || "-";
+            const role = userData.role || "Mahasiswa";
+            const status = userData.status || "active";
+            const bName = userData.businessName || "";
+            const photoUrl = userData.photoBase64 || "";
+            const proofUrl = userData.businessProof || "";
+            
+            let initials = name.substring(0,2).toUpperCase();
+
+            const avatarEl = document.getElementById("modalAvatar");
+            if(photoUrl && photoUrl !== "") {
+                avatarEl.innerHTML = `<img src="${photoUrl}" style="width:100%; height:100%; object-fit:cover;">`;
+                avatarEl.style.border = "none";
+                avatarEl.style.background = "transparent";
+            } else {
+                avatarEl.innerHTML = initials;
+                avatarEl.style.border = "2px solid #DC9808";
+                avatarEl.style.background = "#FFF";
+            }
+
+            document.getElementById("modalName").innerText = name;
+            document.getElementById("modalEmail").innerText = email;
+            document.getElementById("modalRole").innerText = role;
+
+            // Info Toko & Bukti Usaha (Khusus Merchant)
+            const bProofBox = document.getElementById("bProofBox");
+            const isCourierReq = userData.courierStatus === "pending";
+            if(isCourierReq) {
+                document.getElementById("bNameBox").style.display = "none";
+                bProofBox.style.display = "block";
+                bProofBox.querySelector(".modal-info-label").innerText = "FOTO KTM (PENDAFTAR COURIER) / WA: " + (userData.whatsapp || "-");
+                document.getElementById("modalBProofContainer").innerHTML = userData.ktmProof
+                    ? `<img src="${userData.ktmProof}" style="width: 100%; max-height: 250px; object-fit: contain; background: #F5F5F5; border-radius: 8px; margin-top: 8px; border: 1px solid #E5E5E5;">`
+                    : `<span style="font-size: 12px; color: #888;">Pemohon tidak melampirkan foto KTM.</span>`;
+            } else if(role === "Merchant") {
+                bProofBox.querySelector(".modal-info-label").innerText = "BUKTI USAHA / IZIN (KTP)";
+                document.getElementById("bNameBox").style.display = "block";
+                document.getElementById("modalBName").innerText = bName || "-";
+                
+                bProofBox.style.display = "block";
+                if(proofUrl) {
+                    document.getElementById("modalBProofContainer").innerHTML = `<img src="${proofUrl}" style="width: 100%; max-height: 250px; object-fit: contain; background: #F5F5F5; border-radius: 8px; margin-top: 8px; border: 1px solid #E5E5E5;">`;
+                } else {
+                    document.getElementById("modalBProofContainer").innerHTML = `<span style="font-size: 12px; color: #888;">Pemohon tidak melampirkan dokumen izin/KTP.</span>`;
+                }
+            } else {
+                document.getElementById("bNameBox").style.display = "none";
+                bProofBox.style.display = "none";
+            }
+
+            const statusEl = document.getElementById("modalStatus");
+            const pendingActions = document.getElementById("pendingActions");
+            const activeActions = document.getElementById("activeActions");
+            
+            document.getElementById("btnSuspend").style.display = "flex";
+            document.getElementById("btnBan").style.display = "flex";
+            document.getElementById("btnRestore").style.display = "none";
+            document.getElementById("suspendOptions").style.display = "none";
+            document.getElementById("securityButtons").style.display = "flex";
+
+            // Pendaftaran Courier: "Tolak" hanya menolak peran Courier, akun Binusian-nya tetap ada (tidak dihapus)
+            const rejectBtn = document.getElementById("btnRejectPending");
+            rejectBtn.innerText = isCourierReq ? "Tolak Courier" : "Tolak & Hapus";
+            rejectBtn.onclick = isCourierReq ? window.executeRejectCourier : window.executeBan;
+
+            if (status === "pending" || isCourierReq) {
+                statusEl.innerText = isCourierReq ? "Menunggu Verifikasi KTM Courier" : "Menunggu Persetujuan Admin";
+                statusEl.style.color = "#1976D2";
+                pendingActions.style.display = "block";
+                activeActions.style.display = "none";
+            } else if (status === "suspended") {
+                statusEl.innerText = "Suspended";
+                statusEl.style.color = "#F57C00";
+                pendingActions.style.display = "none";
+                activeActions.style.display = "flex";
+                document.getElementById("btnSuspend").style.display = "none";
+                document.getElementById("btnBan").style.display = "none";
+                document.getElementById("btnRestore").style.display = "flex";
+            } else {
+                statusEl.innerText = "Aktif Terverifikasi";
+                statusEl.style.color = "#2E7D32";
+                pendingActions.style.display = "none";
+                activeActions.style.display = "flex";
+            }
+            
+            document.getElementById("actionModalOverlay").style.display = "flex";
+        };
+
+        window.closeDetailModal = function() {
+            document.getElementById("actionModalOverlay").style.display = "none";
+        };
+
+        window.showSuspendOptions = function() {
+            document.getElementById("securityButtons").style.display = "none";
+            document.getElementById("suspendOptions").style.display = "flex";
+        };
+
+        window.closeSuspendOptions = function() {
+            document.getElementById("suspendOptions").style.display = "none";
+            document.getElementById("securityButtons").style.display = "flex";
+        };
+
+        window.executeAccept = async function() {
+            try {
+                const t = window.bbiteUsers[window.currentTargetId] || {};
+                const upd = {};
+                if (t.status === "pending") upd.status = "active";
+                if (t.courierStatus === "pending") { upd.courierStatus = "active"; upd.courierApprovedAt = Date.now(); }
+                await updateDoc(doc(db, "users", window.currentTargetId), upd);
+                window.closeDetailModal();
+                showToast("Akun berhasil diterima (ACC).");
+            } catch(e) { alert("Error: " + e.message); }
+        };
+
+        window.executeRejectCourier = async function() {
+            if (!confirm("Tolak pendaftaran Courier user ini? Akun Binusian-nya tetap aktif.")) return;
+            try {
+                await updateDoc(doc(db, "users", window.currentTargetId), { courierStatus: "rejected" });
+                window.closeDetailModal();
+                showToast("Pendaftaran Courier ditolak.");
+            } catch(e) { alert("Error: " + e.message); }
+        };
+
+        window.executeSuspend = async function(days) {
+            try {
+                await updateDoc(doc(db, "users", window.currentTargetId), { status: "suspended" });
+                window.closeDetailModal();
+                window.closeSuspendOptions();
+                showToast("Akun telah di-suspend selama " + days + " hari.");
+            } catch(e) { alert("Error: " + e.message); }
+        };
+
+        window.executeRestore = async function() {
+            try {
+                await updateDoc(doc(db, "users", window.currentTargetId), { status: "active" });
+                window.closeDetailModal();
+                showToast("Akun berhasil dipulihkan.");
+            } catch(e) { alert("Error: " + e.message); }
+        };
+
+        window.executeBan = async function() {
+            const isConfirmed = confirm("Hapus akun ini (dan datanya) secara permanen?");
+            if (isConfirmed) {
+                try {
+                    await deleteDoc(doc(db, "users", window.currentTargetId));
+                    window.closeDetailModal();
+                    showToast("Akun berhasil dihapus permanen.");
+                } catch(e) { alert("Error: " + e.message); }
+            }
+        };
+
+        const savedAdminPhoto = localStorage.getItem("admin_photo");
+        if (savedAdminPhoto) {
+            document.getElementById("adminProfileImage").src = savedAdminPhoto;
+        }
+
+        document.getElementById("adminAvatarUpload").addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const overlay = document.getElementById("adminUploadOverlay");
+            overlay.style.display = 'flex';
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    
+                    const MAX_SIZE = 150;
+                    let width = img.width; let height = img.height;
+                    if (width > height) { if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; } } 
+                    else { if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; } }
+                    
+                    canvas.width = width; canvas.height = height;
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    const base64String = canvas.toDataURL('image/jpeg', 0.6);
+                    localStorage.setItem("admin_photo", base64String);
+                    document.getElementById("adminProfileImage").src = base64String;
+                    
+                    overlay.innerText = 'Saved!';
+                    setTimeout(() => { 
+                        overlay.style.display = 'none'; 
+                        overlay.innerText = 'Saving...'; 
+                    }, 800);
+                }
+                img.src = event.target.result;
+            }
+            reader.readAsDataURL(file);
+        });
+
+        document.getElementById("adminLogoutBtn").addEventListener("click", function() {
+            localStorage.removeItem("bbite_admin_session");
+            window.location.href = "index.html";
+        });
+    </script>
+</body>
+</html>

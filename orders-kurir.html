@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BBite Courier - Orders</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="courier-store.js"></script>
+    <style>
+        .app-container.dashboard { background: #F5F7FA; }
+        .page-content { flex: 1; overflow-y: auto; padding: 56px 20px 110px; }
+        .page-title { text-align: center; font-size: 18px; font-weight: 800; color: #0B1220; margin-bottom: 18px; }
+
+        .tabs { display: flex; background: #EEF1F5; border-radius: 14px; padding: 5px; gap: 4px; margin-bottom: 16px; }
+        .tab { flex: 1; border: none; background: none; padding: 11px 0; border-radius: 10px; font-size: 13px; font-weight: 700; color: #64748B; cursor: pointer; font-family: inherit; transition: 0.2s; }
+        .tab.active { background: #DC9808; color: #FFF; box-shadow: 0 4px 10px rgba(220,152,8,0.3); }
+
+        .view { display: none; }
+        .view.show { display: block; }
+        .list { display: flex; flex-direction: column; gap: 14px; }
+
+        /* Kartu order aktif / history */
+        .o-card { background: #FFF; border: 1px solid #E5E7EB; border-radius: 16px; padding: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
+        .o-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+        .o-head strong { font-size: 15px; font-weight: 800; color: #0B1220; }
+        .badge { font-size: 10.5px; font-weight: 700; padding: 4px 10px; border-radius: 12px; }
+        .b-pick { background: #FFF6DB; color: #C98A00; }
+        .b-deliv { background: #E3F2FD; color: #1E88E5; }
+        .b-done { background: #ECFDF3; color: #15803D; }
+        .o-route { display: flex; align-items: center; gap: 8px; padding-bottom: 14px; border-bottom: 1px solid #E5E7EB; }
+        .o-stop { display: flex; align-items: center; gap: 7px; flex: 1; min-width: 0; }
+        .o-stop span { font-size: 12.5px; font-weight: 700; color: #0B1220; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .mini-ico { width: 26px; height: 26px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .mini-ico.pickup { background: #FFF6DB; color: #DC9808; }
+        .mini-ico.drop { background: #E3F2FD; color: #1E88E5; }
+        .o-arrow { color: #64748B; flex-shrink: 0; }
+        .o-foot { display: flex; justify-content: space-between; align-items: center; padding-top: 14px; font-size: 12px; color: #64748B; font-weight: 500; }
+        .o-foot .earn { color: #DC9808; font-weight: 800; font-size: 14px; }
+        .btn-detail { background: #DC9808; color: #FFF; border: none; border-radius: 18px; padding: 9px 20px; font-size: 12.5px; font-weight: 700; cursor: pointer; font-family: inherit; box-shadow: 0 5px 12px rgba(220,152,8,0.28); }
+        .btn-detail:active { transform: scale(0.95); }
+
+
+        /* Kartu History */
+        .h-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; font-size: 12px; color: #64748B; font-weight: 500; }
+        .h-top .h-id { font-weight: 700; color: #475569; }
+        .h-pill { font-size: 11.5px; font-weight: 700; padding: 5px 14px; border-radius: 14px; }
+        .h-pill.completed { background: #D9F5E5; color: #15803D; }
+        .h-pill.cancelled { background: #FDE2E2; color: #DC2626; }
+        .h-earn { font-size: 12px; color: #64748B; font-weight: 500; }
+        .h-earn strong { font-size: 16px; font-weight: 800; color: #0B1220; margin-left: 4px; }
+
+        /* Keadaan kosong */
+        .empty { display: none; flex-direction: column; align-items: center; text-align: center; padding: 70px 16px 0; }
+        .empty.show { display: flex; }
+        .empty-art { width: 108px; height: 108px; border-radius: 22px; overflow: hidden; margin-bottom: 22px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+        .empty h3 { font-size: 16px; font-weight: 800; color: #0B1220; margin-bottom: 8px; }
+        .empty p { font-size: 12.5px; line-height: 1.5; color: #64748B; font-weight: 500; max-width: 280px; margin-bottom: 20px; }
+        .btn-find { display: inline-block; text-decoration: none; background: #FFF; color: #C98A00; border: 1.5px solid #DC9808; border-radius: 22px; padding: 11px 38px; font-size: 14px; font-weight: 700; transition: 0.2s; }
+        .btn-find:active { transform: scale(0.95); background: #FFF6DB; }
+
+        /* Halaman detail order aktif */
+        .detail-page { position: absolute; inset: 0; background: #F5F7FA; z-index: 60; display: flex; flex-direction: column; transform: translateX(100%); visibility: hidden; transition: transform 0.25s, visibility 0.25s; }
+        .detail-page.open { transform: none; visibility: visible; }
+        .dp-top { display: flex; align-items: center; padding: 52px 16px 14px; }
+        .dp-back { width: 32px; height: 32px; border: none; background: none; font-size: 24px; color: #0B1220; cursor: pointer; line-height: 1; text-align: left; }
+        .dp-title { flex: 1; text-align: center; font-size: 17px; font-weight: 800; color: #0B1220; margin-right: 32px; }
+        .dp-body { flex: 1; overflow-y: auto; padding: 4px 16px 20px; display: flex; flex-direction: column; gap: 14px; }
+        .dp-card { background: #FFF; border: 1px solid #E5E7EB; border-radius: 16px; padding: 16px; }
+
+        .cust-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+        .cust-row h4 { font-size: 15px; font-weight: 800; color: #0B1220; margin-bottom: 8px; }
+        .cust-line { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 6px; }
+        .cust-line svg { color: #1E88E5; flex-shrink: 0; }
+        .cust-phone { font-size: 12.5px; color: #64748B; font-weight: 500; }
+        .btn-chat { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; background: #FFF; color: #C98A00; border: 1.5px solid #DC9808; border-radius: 10px; padding: 8px 14px; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+
+        .pick-head { display: flex; align-items: center; gap: 12px; padding-bottom: 14px; border-bottom: 1px solid #E5E7EB; }
+        .pick-head small { display: block; font-size: 10px; font-weight: 700; color: #64748B; letter-spacing: 0.4px; margin-bottom: 2px; }
+        .pick-head strong { font-size: 15px; font-weight: 800; color: #0B1220; }
+        .check-list { display: flex; flex-direction: column; gap: 14px; padding: 16px 0 4px; }
+        .check-item { display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 500; color: #0B1220; cursor: pointer; }
+        .check-item input { appearance: none; -webkit-appearance: none; width: 20px; height: 20px; border: 2px solid #94A3B8; border-radius: 5px; background: #FFF; display: grid; place-content: center; cursor: pointer; flex-shrink: 0; transition: 0.15s; }
+        .check-item input:checked { background: #DC9808; border-color: #DC9808; }
+        .check-item input:checked::after { content: ""; width: 5px; height: 10px; border: solid #FFF; border-width: 0 2.5px 2.5px 0; transform: rotate(45deg) translate(-1px, -1px); }
+        .check-item input:checked + span { color: #64748B; text-decoration: line-through; }
+        .check-item input:disabled { cursor: default; }
+        .note-box { margin-top: 14px; background: #FFF6DB; border: 1px solid #F3E2A9; color: #8A5A00; font-size: 12px; font-style: italic; padding: 10px 12px; border-radius: 10px; }
+
+        .step { display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 700; color: #64748B; position: relative; }
+        .step + .step { margin-top: 24px; }
+        .step + .step::before { content: ""; position: absolute; left: 11px; bottom: 100%; height: 24px; width: 2px; background: #D1D5DB; }
+        .step.done + .step::before, .step.done.linked::before { background: #22A06B; }
+        .dot { width: 24px; height: 24px; border-radius: 50%; border: 2px solid #94A3B8; background: #FFF; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .step.current { color: #DC9808; }
+        .step.current .dot { border-color: #DC9808; }
+        .step.current .dot::after { content: ""; width: 12px; height: 12px; border-radius: 50%; background: #DC9808; }
+        .step.done { color: #15803D; }
+        .step.done .dot { border-color: #22A06B; background: #E8F7EE; color: #15803D; }
+
+        .dp-foot { padding: 12px 16px 28px; }
+        .swipe { position: relative; height: 56px; border-radius: 28px; background: #FFF1D6; overflow: hidden; display: flex; align-items: center; justify-content: center; user-select: none; -webkit-user-select: none; }
+        .swipe-fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: rgba(220,152,8,0.28); }
+        .swipe-label { position: relative; font-size: 13px; font-weight: 800; color: #B07400; pointer-events: none; padding-left: 44px; }
+        .swipe-knob { position: absolute; left: 4px; top: 4px; width: 48px; height: 48px; border-radius: 50%; background: #DC9808; color: #FFF; display: flex; align-items: center; justify-content: center; touch-action: none; cursor: grab; box-shadow: 0 4px 10px rgba(220,152,8,0.4); }
+        .swipe-knob.snap { transition: transform 0.25s; }
+        .done-box { display: none; text-align: center; background: #ECFDF3; border: 1px solid #BBE5CB; border-radius: 16px; padding: 16px; }
+        .done-box strong { display: block; font-size: 16px; font-weight: 800; color: #15803D; margin-bottom: 4px; }
+        .done-box span { display: block; font-size: 12.5px; color: #3F7F5A; font-weight: 600; margin-bottom: 12px; }
+        .btn-back-list { width: 100%; padding: 13px; border: none; border-radius: 12px; background: #DC9808; color: #FFF; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; }
+
+
+        .btn-chat { cursor: pointer; font-family: inherit; }
+
+        /* Halaman chat */
+        .chat-page { position: absolute; inset: 0; background: #F5F7FA; z-index: 80; display: flex; flex-direction: column; transform: translateX(100%); visibility: hidden; transition: transform 0.25s, visibility 0.25s; }
+        .chat-page.open { transform: none; visibility: visible; }
+        .chat-top { display: flex; align-items: center; gap: 12px; padding: 50px 16px 12px; background: #FFF; border-bottom: 1px solid #E5E7EB; position: relative; }
+        .chat-top .dp-back { width: 28px; }
+        .chat-avatar { width: 42px; height: 42px; border-radius: 50%; background: #FFF6DB; color: #C98A00; font-size: 16px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .chat-who { flex: 1; min-width: 0; }
+        .chat-who strong { display: block; font-size: 16px; font-weight: 800; color: #0B1220; }
+        .chat-who small { font-size: 11.5px; color: #64748B; font-weight: 500; }
+        .chat-more { width: 32px; height: 32px; border: none; background: none; font-size: 20px; color: #64748B; cursor: pointer; line-height: 1; }
+        .chat-menu { display: none; position: absolute; right: 14px; top: 92px; background: #FFF; border: 1px solid #E5E7EB; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.12); padding: 6px; z-index: 5; }
+        .chat-menu.open { display: block; }
+        .chat-menu a { display: block; padding: 10px 14px; font-size: 13px; font-weight: 600; color: #0B1220; text-decoration: none; border-radius: 8px; white-space: nowrap; }
+        .chat-menu a:hover { background: #F5F7FA; }
+
+        .chat-body { flex: 1; overflow-y: auto; padding: 16px 16px 8px; display: flex; flex-direction: column; gap: 10px; }
+        .day-chip { align-self: center; background: #E2E8F0; color: #64748B; font-size: 11px; font-weight: 600; padding: 5px 14px; border-radius: 12px; margin: 2px 0 6px; }
+        .chat-empty { margin: auto; text-align: center; color: #64748B; font-size: 12.5px; line-height: 1.6; padding: 0 30px; }
+        .msg { max-width: 78%; padding: 11px 14px 8px; border-radius: 16px; font-size: 14px; line-height: 1.45; word-wrap: break-word; overflow-wrap: anywhere; }
+        .msg.out { align-self: flex-end; background: #DC9808; color: #FFF; border-bottom-right-radius: 6px; }
+        .msg.in { align-self: flex-start; background: #FFF; color: #0B1220; border: 1px solid #E5E7EB; border-bottom-left-radius: 6px; }
+        .msg-time { display: flex; justify-content: flex-end; align-items: center; gap: 4px; font-size: 10.5px; margin-top: 4px; opacity: 0.85; }
+        .msg.in .msg-time { color: #64748B; opacity: 1; }
+        .msg-img { display: block; width: 100%; max-width: 220px; border-radius: 10px; margin-bottom: 6px; cursor: zoom-in; }
+        .msg.img-only { padding: 6px 6px 6px; }
+        .msg.img-only .msg-time { padding: 0 6px; }
+
+        .chat-input { display: flex; align-items: center; gap: 10px; padding: 12px 14px 28px; background: #FFF; border-top: 1px solid #E5E7EB; }
+        .btn-cam { width: 42px; height: 42px; border-radius: 50%; border: 1px solid #E5E7EB; background: #F8FAFC; color: #64748B; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+        .btn-cam:active { background: #EEF1F5; }
+        .chat-input input[type="text"] { flex: 1; min-width: 0; height: 42px; border: 1px solid #E5E7EB; background: #F8FAFC; border-radius: 21px; padding: 0 16px; font-size: 14px; outline: none; font-family: inherit; }
+        .chat-input input[type="text"]:focus { border-color: #DC9808; box-shadow: 0 0 0 3px rgba(220,152,8,0.12); }
+        .btn-send { width: 44px; height: 44px; border-radius: 50%; border: none; background: #DC9808; color: #FFF; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; box-shadow: 0 5px 12px rgba(220,152,8,0.3); }
+        .btn-send:active { transform: scale(0.93); }
+
+        .lightbox { position: absolute; inset: 0; background: rgba(0,0,0,0.88); z-index: 150; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .lightbox.open { display: flex; }
+        .lightbox img { max-width: 100%; max-height: 100%; border-radius: 10px; }
+        .lightbox button { position: absolute; top: 50px; right: 18px; width: 34px; height: 34px; border-radius: 50%; border: none; background: rgba(255,255,255,0.2); color: #FFF; font-size: 15px; cursor: pointer; }
+
+        .toast { position: absolute; left: 16px; right: 16px; bottom: 110px; background: #0B1220; color: #FFF; font-size: 13px; font-weight: 600; padding: 12px 16px; border-radius: 12px; z-index: 200; opacity: 0; transform: translateY(10px); pointer-events: none; transition: 0.25s; }
+        .toast.show { opacity: 1; transform: none; }
+
+        .bottom-nav { background: #FFF; }
+        .nav-item { padding: 10px 14px; color: #6B7280; }
+        .nav-item svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+        .nav-item.active { background: #FFF6DB; color: #C98A00; flex-direction: row; gap: 8px; padding: 10px 18px; }
+        .nav-item.active span { font-weight: 800; }
+    </style>
+</head>
+<body>
+    <div class="app-container dashboard">
+        <div class="page-content">
+            <h1 class="page-title">My Orders</h1>
+
+            <div class="tabs" role="tablist">
+                <button type="button" class="tab active" id="tabActive" role="tab">Active</button>
+                <button type="button" class="tab" id="tabHistory" role="tab">History</button>
+            </div>
+
+            <!-- ACTIVE -->
+            <div class="view show" id="viewActive">
+                <div class="list" id="activeList"></div>
+                <div class="empty" id="emptyActive">
+                    <div class="empty-art"><svg width="108" height="108" viewBox="0 0 108 108" fill="none">
+                        <rect width="108" height="108" fill="#E9E1D5"/>
+                        <rect x="0" y="82" width="108" height="26" fill="#D8CDBC"/>
+                        <rect x="30" y="14" width="26" height="24" rx="2" fill="#FFF" stroke="#7A5C45" stroke-width="2"/>
+                        <path d="M43 14v24M30 26h26" stroke="#7A5C45" stroke-width="1.5"/>
+                        <rect x="64" y="20" width="26" height="16" rx="2" fill="#D9C7AD" stroke="#B59A78" stroke-width="1.5"/>
+                        <rect x="10" y="48" width="42" height="4" fill="#9B7B5C"/>
+                        <rect x="14" y="52" width="3" height="30" fill="#9B7B5C"/><rect x="45" y="52" width="3" height="30" fill="#9B7B5C"/>
+                        <rect x="16" y="38" width="9" height="10" rx="2" fill="#C8744A"/><rect x="28" y="40" width="8" height="8" rx="2" fill="#7FA58F"/>
+                        <circle cx="38" cy="86" r="10" fill="#3B3B3B"/><circle cx="38" cy="86" r="4" fill="#CFCFCF"/>
+                        <circle cx="90" cy="86" r="10" fill="#3B3B3B"/><circle cx="90" cy="86" r="4" fill="#CFCFCF"/>
+                        <path d="M40 84c0-18 10-26 28-26h12c6 0 10 4 10 10v16H52c-6 0-12-1-12 0z" fill="#8FC9B4" stroke="#4F8C77" stroke-width="2"/>
+                        <path d="M70 58V40h10" stroke="#4F8C77" stroke-width="3" stroke-linecap="round"/>
+                        <rect x="50" y="46" width="22" height="9" rx="4" fill="#3F3F3F"/>
+                        <rect x="68" y="30" width="22" height="18" rx="3" fill="#E58A4B" stroke="#B8622B" stroke-width="1.5"/>
+                        <path d="M68 38h22" stroke="#B8622B" stroke-width="1.5"/>
+                    </svg></div>
+                    <h3>No Active Orders</h3>
+                    <p>You are not delivering anything right now. Go to the Home tab to find available orders!</p>
+                    <a href="home-kurir.html" class="btn-find">Find Orders</a>
+                </div>
+            </div>
+
+            <!-- HISTORY -->
+            <div class="view" id="viewHistory">
+                <div class="list" id="historyList"></div>
+                <div class="empty" id="emptyHistory">
+                    <h3>No Order History</h3>
+                    <p>Orders you have completed will show up here.</p>
+                </div>
+            </div>
+        </div>
+
+        <nav class="bottom-nav">
+            <a href="home-kurir.html" class="nav-item">
+                <svg viewBox="0 0 24 24" width="22" height="22"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>
+                <span>Home</span>
+            </a>
+            <a href="orders-kurir.html" class="nav-item active">
+                <svg viewBox="0 0 24 24" width="22" height="22"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>
+                <span>Orders</span>
+            </a>
+            <a href="wallet-kurir.html" class="nav-item">
+                <svg viewBox="0 0 24 24" width="22" height="22"><path d="M20 7H5a2 2 0 0 1 0-4h13v4"/><path d="M3 5v14a2 2 0 0 0 2 2h15V7"/><circle cx="16.5" cy="14" r="1.2"/></svg>
+                <span>Wallet</span>
+            </a>
+            <a href="profile-kurir.html" class="nav-item">
+                <svg viewBox="0 0 24 24" width="22" height="22"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+                <span>Profile</span>
+            </a>
+        </nav>
+
+        <!-- DETAIL ORDER AKTIF -->
+        <div class="detail-page" id="detailPage">
+            <div class="dp-top">
+                <button type="button" class="dp-back" id="dpBack" aria-label="Kembali">&#8592;</button>
+                <div class="dp-title" id="dpTitle">Order</div>
+            </div>
+            <div class="dp-body" id="dpBody"></div>
+            <div class="dp-foot">
+                <div class="swipe" id="swipe">
+                    <div class="swipe-fill" id="swipeFill"></div>
+                    <div class="swipe-label" id="swipeLabel"></div>
+                    <div class="swipe-knob" id="swipeKnob">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                    </div>
+                </div>
+                <div class="done-box" id="doneBox">
+                    <strong>&#10003; Order Completed</strong>
+                    <span id="doneEarn"></span>
+                    <button type="button" class="btn-back-list" id="btnBackList">Back to Orders</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CHAT DENGAN CUSTOMER -->
+        <div class="chat-page" id="chatPage">
+            <div class="chat-top">
+                <button type="button" class="dp-back" id="chatBack" aria-label="Kembali">&#8592;</button>
+                <div class="chat-avatar" id="chatAvatar">B</div>
+                <div class="chat-who"><strong id="chatName">Customer</strong><small id="chatSub"></small></div>
+                <button type="button" class="chat-more" id="chatMore" aria-label="Menu">&#8942;</button>
+                <div class="chat-menu" id="chatMenu"><a id="chatWa" href="#" target="_blank" rel="noopener">Hubungi via WhatsApp</a></div>
+            </div>
+            <div class="chat-body" id="chatBody"></div>
+            <div class="chat-input">
+                <button type="button" class="btn-cam" id="btnCam" aria-label="Kirim gambar">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.5"/></svg>
+                </button>
+                <input type="file" id="chatFile" accept="image/*" hidden>
+                <input type="text" id="chatInput" placeholder="Type a message..." autocomplete="off">
+                <button type="button" class="btn-send" id="btnSend" aria-label="Kirim">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 3L10 14"/><path d="M21 3l-7 18-4-7-7-4z"/></svg>
+                </button>
+            </div>
+            <div class="lightbox" id="lightbox"><button type="button" id="lightboxClose" aria-label="Tutup">&#10005;</button><img id="lightboxImg" alt=""></div>
+        </div>
+
+        <div class="toast" id="toast"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyCd_v_YnSXpiVAA_eDxk_MaCCdqo4H5CFE", authDomain: "bbite-ac7e4.firebaseapp.com", projectId: "bbite-ac7e4" };
+        const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+
+        // Hanya kurir yang sudah disetujui admin yang boleh di halaman ini
+        onAuthStateChanged(getAuth(app), async (user) => {
+            if (!user) { window.location.href = "index.html"; return; }
+            try {
+                const snap = await getDoc(doc(getFirestore(app), "users", user.uid));
+                if (!snap.exists() || snap.data().courierStatus !== "active") window.location.href = "home-mahasiswa.html";
+            } catch (e) { console.log("Gagal memuat status kurir:", e); }
+        });
+
+        const $ = (id) => document.getElementById(id);
+        const rp = (n) => "Rp " + n.toLocaleString("id-ID");
+        const esc = (t) => String(t).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+        const shopSvg = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9l1.5-5h13L20 9"/><path d="M4 9a2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0 5 0"/><path d="M5 12v8h14v-8"/></svg>';
+        const pinSvg = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>';
+        const arrowSvg = '<svg class="o-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+        const chatSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H8l-4 4V5a1 1 0 0 1 1-1z"/></svg>';
+
+        const STATUS = {
+            picking:    { label: "Picking Up Food", cls: "b-pick" },
+            delivering: { label: "Delivering",      cls: "b-deliv" },
+            done:       { label: "Completed",       cls: "b-done" }
+        };
+
+        // ===== Toast =====
+        let toastTimer;
+        function showToast(msg) {
+            const t = $("toast");
+            t.textContent = msg; t.classList.add("show");
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => t.classList.remove("show"), 2600);
+        }
+
+        // ===== Daftar Active / History =====
+        function cardHTML(o, status, foot) {
+            const st = STATUS[status];
+            return `
+            <div class="o-card">
+                <div class="o-head"><strong>Order #${o.id}</strong><span class="badge ${st.cls}">${st.label}</span></div>
+                <div class="o-route">
+                    <div class="o-stop"><div class="mini-ico pickup">${shopSvg}</div><span>${esc(o.pickup)}</span></div>
+                    ${arrowSvg}
+                    <div class="o-stop"><div class="mini-ico drop">${pinSvg}</div><span>${esc(o.dropoff)}</span></div>
+                </div>
+                <div class="o-foot"><span>Customer: ${esc(o.customer)}</span>${foot}</div>
+            </div>`;
+        }
+        const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+        function fmtDate(ts) {
+            if (!ts) return "-";
+            const d = new Date(ts), p2 = (n) => String(n).padStart(2, "0");
+            return `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}, ${p2(d.getHours())}:${p2(d.getMinutes())}`;
+        }
+        function historyCardHTML(e) {
+            const cancelled = e.result === "cancelled";
+            return `
+            <div class="o-card">
+                <div class="h-top"><span>${fmtDate(e.at)}</span><span class="h-id">Order #${String(e.id).padStart(4, "0")}</span></div>
+                <div class="o-route">
+                    <div class="o-stop"><div class="mini-ico pickup">${shopSvg}</div><span>${esc(e.pickup || "-")}</span></div>
+                    ${arrowSvg}
+                    <div class="o-stop"><div class="mini-ico drop">${pinSvg}</div><span>${esc(e.dropoff || "-")}</span></div>
+                </div>
+                <div class="o-foot">
+                    <span class="h-pill ${cancelled ? "cancelled" : "completed"}">${cancelled ? "Cancelled" : "Completed"}</span>
+                    <span class="h-earn">Earnings: <strong>${rp(e.fee || 0)}</strong></span>
+                </div>
+            </div>`;
+        }
+        function renderLists() {
+            const act = CourierStore.active();
+            $("activeList").innerHTML = act.map(a =>
+                cardHTML(a.order, a.status, `<button type="button" class="btn-detail" data-id="${a.order.id}">View Detail</button>`)).join("");
+            $("emptyActive").classList.toggle("show", act.length === 0);
+
+            const hist = CourierStore.history();
+            $("historyList").innerHTML = hist.map(historyCardHTML).join("");
+            $("emptyHistory").classList.toggle("show", hist.length === 0);
+        }
+
+        const tabActive = $("tabActive"), tabHistory = $("tabHistory");
+        function showTab(active) {
+            tabActive.classList.toggle("active", active);
+            tabHistory.classList.toggle("active", !active);
+            $("viewActive").classList.toggle("show", active);
+            $("viewHistory").classList.toggle("show", !active);
+        }
+        tabActive.addEventListener("click", () => showTab(true));
+        tabHistory.addEventListener("click", () => showTab(false));
+        $("activeList").addEventListener("click", (e) => {
+            const b = e.target.closest(".btn-detail");
+            if (b) openDetail(Number(b.dataset.id));
+        });
+
+        // ===== Halaman detail =====
+        const detailPage = $("detailPage");
+        let currentId = null;
+
+        function waLink(phone) {
+            let d = String(phone || "").replace(/\D/g, "");
+            if (d.startsWith("0")) d = "62" + d.slice(1);
+            return "https://wa.me/" + d;
+        }
+        function stepHTML(label, state) {
+            const check = state === "done" ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>' : "";
+            return `<div class="step ${state}"><div class="dot">${check}</div><span>${label}</span></div>`;
+        }
+        function renderDetail() {
+            const o = CourierStore.get(currentId);
+            const st = CourierStore.statusOf(currentId);
+            const checked = CourierStore.checkedOf(currentId);
+            const locked = st !== "picking";
+            $("dpTitle").textContent = "Order #" + o.id;
+            $("dpBody").innerHTML = `
+                <div class="dp-card">
+                    <div class="cust-row">
+                        <div>
+                            <h4>Customer: ${esc(o.customer)}</h4>
+                            <div class="cust-line">${pinSvg}<span>${esc(o.dropoff)}</span></div>
+                            <div class="cust-phone">Phone: ${esc(o.phone)}</div>
+                        </div>
+                        <button type="button" class="btn-chat" id="btnChat">${chatSvg} Chat</button>
+                    </div>
+                </div>
+                <div class="dp-card">
+                    <div class="pick-head"><div class="stop-ico mini-ico pickup" style="width:34px;height:34px">${shopSvg}</div><div><small>PICKUP FROM</small><strong>${esc(o.pickup)}</strong></div></div>
+                    <div class="check-list">${o.items.map((i, idx) => `
+                        <label class="check-item"><input type="checkbox" data-idx="${idx}" ${checked[idx] ? "checked" : ""} ${locked ? "disabled" : ""}><span>${i.qty}x ${esc(i.name)}</span></label>`).join("")}
+                    </div>
+                    ${o.note ? `<div class="note-box">Note: ${esc(o.note)}</div>` : ""}
+                </div>
+                <div class="dp-card">
+                    ${stepHTML("Picking up Food", st === "picking" ? "current" : "done")}
+                    ${stepHTML("Delivering", st === "picking" ? "" : (st === "delivering" ? "current" : "done"))}
+                </div>`;
+            updateFooter(st, o);
+        }
+        function updateFooter(st, o) {
+            const done = st === "done";
+            $("swipe").style.display = done ? "none" : "";
+            $("doneBox").style.display = done ? "block" : "none";
+            if (done) { $("doneEarn").textContent = "+ " + rp(o.fee) + " masuk ke penghasilan hari ini"; return; }
+            $("swipeLabel").textContent = st === "picking" ? "Swipe when Picked Up \u2192" : "Swipe when Delivered \u2192";
+            resetKnob(false);
+        }
+        function openDetail(id) {
+            currentId = id;
+            renderDetail();
+            detailPage.classList.add("open");
+        }
+        function closeDetail() {
+            detailPage.classList.remove("open");
+            renderLists();
+        }
+        $("dpBack").addEventListener("click", closeDetail);
+        $("btnBackList").addEventListener("click", () => { closeDetail(); showTab(false); });
+        $("dpBody").addEventListener("change", (e) => {
+            const cb = e.target.closest('input[type="checkbox"]');
+            if (cb) CourierStore.setChecked(currentId, Number(cb.dataset.idx), cb.checked);
+        });
+
+        // ===== Swipe untuk ganti status =====
+        const knob = $("swipeKnob"), fill = $("swipeFill"), track = $("swipe");
+        let dragging = false, startX = 0, curX = 0;
+        const maxX = () => track.clientWidth - knob.offsetWidth - 8;
+        function setX(x) { curX = x; knob.style.transform = `translateX(${x}px)`; fill.style.width = (x + knob.offsetWidth + 4) + "px"; }
+        function resetKnob(animate) {
+            knob.classList.toggle("snap", !!animate);
+            setX(0); fill.style.width = "0px";
+        }
+        knob.addEventListener("pointerdown", (e) => {
+            dragging = true; startX = e.clientX - curX;
+            knob.classList.remove("snap");
+            knob.setPointerCapture(e.pointerId);
+        });
+        knob.addEventListener("pointermove", (e) => {
+            if (!dragging) return;
+            setX(Math.max(0, Math.min(maxX(), e.clientX - startX)));
+        });
+        function endDrag() {
+            if (!dragging) return;
+            dragging = false;
+            if (curX >= maxX() * 0.85) onSwiped(); else resetKnob(true);
+        }
+        knob.addEventListener("pointerup", endDrag);
+        knob.addEventListener("pointercancel", endDrag);
+
+        function onSwiped() {
+            const st = CourierStore.statusOf(currentId);
+            if (st === "picking" && !CourierStore.allChecked(currentId)) {
+                resetKnob(true);
+                showToast("Centang semua menu yang sudah diambil dulu");
+                return;
+            }
+            knob.classList.add("snap"); setX(maxX());
+            setTimeout(() => {
+                CourierStore.advance(currentId);
+                renderDetail();
+            }, 180);
+        }
+
+        // ===== Chat dengan customer =====
+        const chatPage = $("chatPage"), chatBody = $("chatBody"), chatInput = $("chatInput");
+        const tickSvg = '<svg width="15" height="12" viewBox="0 0 24 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 8.5l4.5 4.5L14 3"/><path d="M10 11.5l1.5 1.5L21 3"/></svg>';
+        const p2 = (n) => String(n).padStart(2, "0");
+        const fmtTime = (ts) => { const d = new Date(ts); return p2(d.getHours()) + ":" + p2(d.getMinutes()); };
+        function fmtTime12(d) { const h = d.getHours(); return (h % 12 || 12) + ":" + p2(d.getMinutes()) + " " + (h < 12 ? "AM" : "PM"); }
+        function dayChip(ts) {
+            const d = new Date(ts);
+            const label = d.toDateString() === new Date().toDateString() ? "Today" : `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+            return `<div class="day-chip">${label}, ${fmtTime12(d)}</div>`;
+        }
+        function renderChat() {
+            const msgs = CourierStore.chatMessages(currentId);
+            if (!msgs.length) {
+                chatBody.innerHTML = '<div class="chat-empty">Belum ada pesan.<br>Kabari customer saat kamu sudah di resto atau hampir sampai.</div>';
+                return;
+            }
+            let lastDay = "", html = "";
+            msgs.forEach((m) => {
+                const day = new Date(m.at).toDateString();
+                if (day !== lastDay) { html += dayChip(m.at); lastDay = day; }
+                const out = m.from === "courier";
+                const imgOnly = m.img && !m.text;
+                html += `<div class="msg ${out ? "out" : "in"} ${imgOnly ? "img-only" : ""}">
+                    ${m.img ? `<img class="msg-img" src="${m.img}" alt="Gambar">` : ""}
+                    ${m.text ? `<div>${esc(m.text).replace(/\n/g, "<br>")}</div>` : ""}
+                    <div class="msg-time"><span>${fmtTime(m.at)}</span>${out ? tickSvg : ""}</div>
+                </div>`;
+            });
+            chatBody.innerHTML = html;
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+        function openChat() {
+            const o = CourierStore.get(currentId);
+            $("chatAvatar").textContent = (o.customer || "?").trim().charAt(0).toUpperCase();
+            $("chatName").textContent = o.customer;
+            $("chatSub").textContent = "Customer - Order #" + o.id;
+            $("chatWa").href = waLink(o.phone);
+            $("chatMenu").classList.remove("open");
+            renderChat();
+            chatPage.classList.add("open");
+        }
+        function closeChat() { chatPage.classList.remove("open"); $("chatMenu").classList.remove("open"); }
+        function sendText() {
+            const t = chatInput.value.trim();
+            if (!t) return;
+            CourierStore.sendMessage(currentId, { type: "text", text: t });
+            chatInput.value = "";
+            renderChat();
+        }
+        // kecilkan gambar dulu supaya hemat penyimpanan
+        function compressImage(file, maxSide = 900, quality = 0.72) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onerror = reject;
+                reader.onload = () => {
+                    const img = new Image();
+                    img.onerror = reject;
+                    img.onload = () => {
+                        const k = Math.min(1, maxSide / Math.max(img.width, img.height));
+                        const c = document.createElement("canvas");
+                        c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+                        c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+                        resolve(c.toDataURL("image/jpeg", quality));
+                    };
+                    img.src = reader.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+        $("dpBody").addEventListener("click", (e) => { if (e.target.closest("#btnChat")) openChat(); });
+        $("chatBack").addEventListener("click", closeChat);
+        $("chatMore").addEventListener("click", (e) => { e.stopPropagation(); $("chatMenu").classList.toggle("open"); });
+        chatPage.addEventListener("click", () => $("chatMenu").classList.remove("open"));
+        $("btnSend").addEventListener("click", sendText);
+        chatInput.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); sendText(); } });
+        $("btnCam").addEventListener("click", () => $("chatFile").click());
+        $("chatFile").addEventListener("change", async (e) => {
+            const f = e.target.files && e.target.files[0];
+            e.target.value = "";
+            if (!f) return;
+            if (!f.type.startsWith("image/")) { showToast("File harus berupa gambar"); return; }
+            try {
+                const data = await compressImage(f);
+                CourierStore.sendMessage(currentId, { type: "image", img: data, text: chatInput.value.trim() });
+                chatInput.value = "";
+                renderChat();
+            } catch (err) { showToast("Gagal memuat gambar"); }
+        });
+        // lihat gambar ukuran penuh
+        chatBody.addEventListener("click", (e) => {
+            const im = e.target.closest(".msg-img");
+            if (im) { $("lightboxImg").src = im.src; $("lightbox").classList.add("open"); }
+        });
+        $("lightbox").addEventListener("click", () => $("lightbox").classList.remove("open"));
+        document.addEventListener("keydown", (e) => {
+            if (e.key !== "Escape") return;
+            if ($("lightbox").classList.contains("open")) $("lightbox").classList.remove("open");
+            else if (chatPage.classList.contains("open")) closeChat();
+        });
+
+        renderLists();
+    </script>
+</body>
+</html>

@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BBite Courier - Profile</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="courier-store.js"></script>
+    <style>
+        .app-container.dashboard { background: #F5F7FA; }
+        .page-content { flex: 1; overflow-y: auto; padding: 56px 20px 110px; }
+        .page-title { text-align: center; font-size: 18px; font-weight: 800; color: #0B1220; margin-bottom: 18px; }
+
+        .who { display: flex; flex-direction: column; align-items: center; margin-bottom: 20px; }
+        .avatar-wrap { position: relative; width: 92px; height: 92px; margin-bottom: 12px; cursor: pointer; }
+        .avatar { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background: #FFF6DB; color: #C98A00; font-size: 30px; font-weight: 800; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(0,0,0,0.1); }
+        .avatar-wrap:active .avatar { transform: scale(0.96); }
+        .verified { position: absolute; right: 2px; bottom: 2px; width: 24px; height: 24px; border-radius: 50%; background: #16A34A; border: 2.5px solid #F5F7FA; color: #FFF; display: flex; align-items: center; justify-content: center; }
+        .upload-ov { position: absolute; inset: 0; border-radius: 50%; background: rgba(255,255,255,0.8); display: none; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; color: #0B1220; }
+        .who h2 { font-size: 22px; font-weight: 800; color: #0B1220; margin-bottom: 4px; text-align: center; }
+        .who .sub { font-size: 12px; color: #64748B; font-weight: 500; margin-bottom: 12px; }
+        .active-pill { background: #16A34A; color: #FFF; font-size: 12px; font-weight: 700; padding: 6px 18px; border-radius: 14px; }
+        .active-pill.pending { background: #DC9808; }
+        .active-pill.other { background: #94A3B8; }
+
+        .stats3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 24px; }
+        .st { background: #FFF; border: 1px solid #E5E7EB; border-radius: 14px; padding: 12px; }
+        .st .ic { display: block; margin-bottom: 6px; line-height: 0; }
+        .st small { display: block; font-size: 10.5px; font-weight: 600; color: #64748B; margin-bottom: 3px; }
+        .st strong { font-size: 17px; font-weight: 800; color: #0B1220; }
+
+        .grp-title { font-size: 11px; font-weight: 700; color: #64748B; letter-spacing: 0.6px; margin: 0 4px 8px; }
+        .menu { background: #FFF; border: 1px solid #E5E7EB; border-radius: 16px; overflow: hidden; margin-bottom: 22px; }
+        .menu-item { display: flex; align-items: center; gap: 14px; width: 100%; padding: 14px 16px; border: none; border-bottom: 1px solid #EEF1F5; background: none; text-align: left; cursor: pointer; font-family: inherit; }
+        .menu-item:last-child { border-bottom: none; }
+        .menu-item:active { background: #F8FAFC; }
+        .menu-ico { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .menu-item span.t { flex: 1; font-size: 14px; font-weight: 700; color: #0B1220; }
+        .menu-item .arr { color: #475569; }
+        .btn-logout { width: 100%; padding: 16px; border: 1px solid #FBCFCF; border-radius: 14px; background: #FEECEC; color: #DC2626; font-size: 15px; font-weight: 800; cursor: pointer; font-family: inherit; }
+        .btn-logout:active { transform: scale(0.98); }
+
+        /* sheet */
+        .sheet-overlay { position: absolute; inset: 0; background: rgba(11,18,32,0.5); z-index: 100; display: flex; align-items: flex-end; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+        .sheet-overlay.open { opacity: 1; pointer-events: auto; }
+        .sheet { width: 100%; max-height: 90%; overflow-y: auto; background: #FFF; border-radius: 28px 28px 0 0; padding: 10px 20px 30px; transform: translateY(100%); transition: transform 0.28s; }
+        .sheet-overlay.open .sheet { transform: none; }
+        .sheet-handle { width: 40px; height: 4px; border-radius: 2px; background: #D1D5DB; margin: 0 auto 16px; }
+        .sheet-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .sheet-head h3 { font-size: 18px; font-weight: 800; color: #0B1220; }
+        .btn-x { width: 28px; height: 28px; border-radius: 50%; border: none; background: #E2E8F0; color: #64748B; font-size: 12px; cursor: pointer; }
+        .info-row { padding: 13px 0; border-bottom: 1px solid #EEF1F5; }
+        .info-row:last-child { border-bottom: none; }
+        .info-row small { display: block; font-size: 11px; font-weight: 600; color: #64748B; margin-bottom: 4px; }
+        .info-row strong { font-size: 14px; font-weight: 700; color: #0B1220; word-break: break-word; }
+        .acc { display: flex; align-items: center; gap: 12px; border: 1px solid #E5E7EB; border-radius: 14px; padding: 12px 14px; margin-bottom: 8px; }
+        .acc-logo { width: 38px; height: 38px; border-radius: 50%; background: #E3F2FD; color: #1E5FB4; font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .acc strong { display: block; font-size: 13.5px; font-weight: 800; color: #0B1220; }
+        .acc small { font-size: 11px; color: #64748B; font-weight: 500; }
+        .add-acc { border: none; background: none; color: #DC9808; font-size: 12.5px; font-weight: 700; cursor: pointer; font-family: inherit; padding: 6px 0; }
+        .acc-form { display: none; flex-direction: column; gap: 10px; border: 1px dashed #D5DAE1; border-radius: 14px; padding: 14px; margin-top: 6px; }
+        .acc-form.open { display: flex; }
+        .acc-form select, .acc-form input { width: 100%; border: 1px solid #E5E7EB; border-radius: 10px; padding: 11px 12px; font-size: 13.5px; font-family: inherit; background: #FFF; outline: none; }
+        .acc-form select:focus, .acc-form input:focus { border-color: #DC9808; }
+        .acc-form .row { display: flex; gap: 8px; }
+        .btn-sm { flex: 1; border-radius: 10px; padding: 10px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; border: 1px solid #D5DAE1; background: #FFF; color: #475569; }
+        .btn-sm.primary { background: #DC9808; border-color: #DC9808; color: #FFF; }
+        .btn-sm.danger { background: #DC2626; border-color: #DC2626; color: #FFF; }
+
+        .modal-ov { position: absolute; inset: 0; background: rgba(11,18,32,0.5); z-index: 120; display: none; align-items: center; justify-content: center; padding: 24px; }
+        .modal-ov.open { display: flex; }
+        .modal { width: 100%; background: #FFF; border-radius: 20px; padding: 24px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .modal h3 { font-size: 18px; font-weight: 800; color: #0B1220; }
+        .modal p { font-size: 13px; color: #64748B; line-height: 1.5; margin-bottom: 6px; }
+
+        .toast { position: absolute; left: 16px; right: 16px; bottom: 96px; background: #0B1220; color: #FFF; font-size: 13px; font-weight: 600; padding: 12px 16px; border-radius: 12px; z-index: 200; opacity: 0; transform: translateY(10px); pointer-events: none; transition: 0.25s; }
+        .toast.show { opacity: 1; transform: none; }
+
+        .bottom-nav { background: #FFF; }
+        .nav-item { padding: 10px 14px; color: #6B7280; }
+        .nav-item svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+        .nav-item.active { background: #FFF6DB; color: #C98A00; flex-direction: row; gap: 8px; padding: 10px 18px; }
+        .nav-item.active span { font-weight: 800; }
+    </style>
+</head>
+<body>
+    <div class="app-container dashboard">
+        <div class="page-content">
+            <h1 class="page-title">My Profile</h1>
+
+            <div class="who">
+                <label class="avatar-wrap" for="avatarFile" title="Ganti foto">
+                    <div class="avatar" id="avatar">&nbsp;</div>
+                    <div class="verified"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></div>
+                    <div class="upload-ov" id="uploadOv">Saving...</div>
+                </label>
+                <input type="file" id="avatarFile" accept="image/*" hidden>
+                <h2 id="pName">&nbsp;</h2>
+                <div class="sub" id="pSub">&nbsp;</div>
+                <span class="active-pill" id="pStatus">Active Courier</span>
+            </div>
+
+            <div class="stats3">
+                <div class="st"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#DC9808" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l2.7 5.6 6.1.8-4.5 4.3 1.1 6.1L12 17l-5.4 2.8 1.1-6.1L3.2 9.4l6.1-.8z"/></svg></span><small>Rating</small><strong>4.9</strong></div>
+                <div class="st"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/></svg></span><small>Acceptance</small><strong>95%</strong></div>
+                <div class="st"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1E88E5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><small>Avg. Time</small><strong>8 Min</strong></div>
+            </div>
+
+            <div class="grp-title">ACCOUNT</div>
+            <div class="menu">
+                <button type="button" class="menu-item" id="miPersonal">
+                    <span class="menu-ico" style="background:#FFF1E6;color:#E8731A"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></span>
+                    <span class="t">Personal Information</span><span class="arr">&#8594;</span>
+                </button>
+                <button type="button" class="menu-item" id="miBank">
+                    <span class="menu-ico" style="background:#FFF1E6;color:#E8731A"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10.5h18M7 15h4"/></svg></span>
+                    <span class="t">Bank Accounts &amp; E-Wallets</span><span class="arr">&#8594;</span>
+                </button>
+            </div>
+
+            <div class="grp-title">SUPPORT &amp; ABOUT</div>
+            <div class="menu">
+                <button type="button" class="menu-item" data-soon="Help Center &amp; Support">
+                    <span class="menu-ico" style="background:#E3F2FD;color:#1E88E5"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/></svg></span>
+                    <span class="t">Help Center &amp; Support</span><span class="arr">&#8594;</span>
+                </button>
+                <button type="button" class="menu-item" data-soon="Privacy &amp; Security">
+                    <span class="menu-ico" style="background:#E3F7EA;color:#16A34A"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></svg></span>
+                    <span class="t">Privacy &amp; Security</span><span class="arr">&#8594;</span>
+                </button>
+                <button type="button" class="menu-item" data-soon="Terms of Service">
+                    <span class="menu-ico" style="background:#EEF1F5;color:#475569"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg></span>
+                    <span class="t">Terms of Service</span><span class="arr">&#8594;</span>
+                </button>
+            </div>
+
+            <button type="button" class="btn-logout" id="btnLogout">Log Out</button>
+        </div>
+
+        <nav class="bottom-nav">
+            <a href="home-kurir.html" class="nav-item">
+                <svg viewBox="0 0 24 24" width="22" height="22"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>
+                <span>Home</span>
+            </a>
+            <a href="orders-kurir.html" class="nav-item">
+                <svg viewBox="0 0 24 24" width="22" height="22"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>
+                <span>Orders</span>
+            </a>
+            <a href="wallet-kurir.html" class="nav-item">
+                <svg viewBox="0 0 24 24" width="22" height="22"><path d="M20 7H5a2 2 0 0 1 0-4h13v4"/><path d="M3 5v14a2 2 0 0 0 2 2h15V7"/><circle cx="16.5" cy="14" r="1.2"/></svg>
+                <span>Wallet</span>
+            </a>
+            <a href="profile-kurir.html" class="nav-item active">
+                <svg viewBox="0 0 24 24" width="22" height="22"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+                <span>Profile</span>
+            </a>
+        </nav>
+
+        <!-- Bottom sheet (Personal Info / Bank Accounts) -->
+        <div class="sheet-overlay" id="sheetOv" aria-hidden="true">
+            <div class="sheet" role="dialog" aria-modal="true">
+                <div class="sheet-handle"></div>
+                <div class="sheet-head"><h3 id="sheetTitle"></h3><button type="button" class="btn-x" id="sheetClose" aria-label="Tutup">&#10005;</button></div>
+                <div id="sheetBody"></div>
+            </div>
+        </div>
+
+        <!-- Konfirmasi Log Out -->
+        <div class="modal-ov" id="logoutOv">
+            <div class="modal">
+                <h3>Log Out</h3>
+                <p>Yakin ingin keluar dari akun BBite kamu?</p>
+                <div style="display:flex;gap:10px">
+                    <button type="button" class="btn-sm" id="logoutCancel">Batal</button>
+                    <button type="button" class="btn-sm danger" id="logoutOk">Keluar</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="toast" id="toast"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyCd_v_YnSXpiVAA_eDxk_MaCCdqo4H5CFE", authDomain: "bbite-ac7e4.firebaseapp.com", projectId: "bbite-ac7e4" };
+        const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+        const auth = getAuth(app), db = getFirestore(app);
+
+        const $ = (id) => document.getElementById(id);
+        const esc = (t) => String(t).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+        let toastTimer;
+        function showToast(msg) {
+            const t = $("toast");
+            t.textContent = msg; t.classList.add("show");
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => t.classList.remove("show"), 2600);
+        }
+
+        // ===== Data user dari Firebase =====
+        let currentUser = null, profile = {};
+        function initials(name) {
+            const p = String(name || "?").trim().split(/\s+/);
+            return (p[0].charAt(0) + (p[1] ? p[1].charAt(0) : "")).toUpperCase();
+        }
+        function renderProfile() {
+            const name = profile.name || (currentUser && (currentUser.displayName || currentUser.email.split("@")[0])) || "Courier";
+            $("pName").textContent = name;
+            $("pSub").textContent = "NIM: " + (profile.nim && profile.nim !== "-" ? profile.nim : "-") + " \u2022 Kampus Anggrek";
+            const av = $("avatar");
+            if (profile.photoBase64) { av.innerHTML = `<img src="${profile.photoBase64}" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover">`; av.style.background = "transparent"; }
+            else { av.textContent = initials(name); av.style.background = ""; }
+            const st = profile.courierStatus, pill = $("pStatus");
+            pill.className = "active-pill" + (st === "active" ? "" : st === "pending" ? " pending" : " other");
+            pill.textContent = st === "active" ? "Active Courier" : st === "pending" ? "Pending Approval" : "Courier";
+        }
+
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) { window.location.href = "index.html"; return; }
+            currentUser = user;
+            renderProfile();
+            try {
+                const snap = await getDoc(doc(db, "users", user.uid));
+                // Hanya kurir yang sudah disetujui admin yang boleh di halaman ini
+                if (!snap.exists() || snap.data().courierStatus !== "active") { window.location.href = "home-mahasiswa.html"; return; }
+                profile = snap.data();
+                renderProfile();
+            } catch (e) { console.log("Gagal memuat profil:", e); }
+        });
+
+        // ===== Ganti foto profil (disimpan ke Firestore sebagai photoBase64, sama seperti profil mahasiswa) =====
+        function compress(file, max = 256, quality = 0.75) {
+            return new Promise((resolve, reject) => {
+                const r = new FileReader();
+                r.onerror = reject;
+                r.onload = () => {
+                    const img = new Image();
+                    img.onerror = reject;
+                    img.onload = () => {
+                        const k = Math.min(1, max / Math.max(img.width, img.height));
+                        const c = document.createElement("canvas");
+                        c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+                        c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+                        resolve(c.toDataURL("image/jpeg", quality));
+                    };
+                    img.src = r.result;
+                };
+                r.readAsDataURL(file);
+            });
+        }
+        $("avatarFile").addEventListener("change", async (e) => {
+            const f = e.target.files && e.target.files[0];
+            e.target.value = "";
+            if (!f || !currentUser) return;
+            $("uploadOv").style.display = "flex";
+            try {
+                const data = await compress(f);
+                await setDoc(doc(db, "users", currentUser.uid), { photoBase64: data }, { merge: true });
+                profile.photoBase64 = data;
+                renderProfile();
+                showToast("Foto profil diperbarui");
+            } catch (err) { showToast("Gagal menyimpan foto"); }
+            $("uploadOv").style.display = "none";
+        });
+
+        // ===== Bottom sheet =====
+        const sheetOv = $("sheetOv");
+        function openSheet(title, html) {
+            $("sheetTitle").textContent = title;
+            $("sheetBody").innerHTML = html;
+            sheetOv.classList.add("open");
+            sheetOv.setAttribute("aria-hidden", "false");
+        }
+        function closeSheet() { sheetOv.classList.remove("open"); sheetOv.setAttribute("aria-hidden", "true"); }
+        $("sheetClose").addEventListener("click", closeSheet);
+        sheetOv.addEventListener("click", (e) => { if (e.target === sheetOv) closeSheet(); });
+
+        // Personal Information (hanya baca: data kurir sudah diverifikasi admin lewat KTM)
+        $("miPersonal").addEventListener("click", () => {
+            const row = (l, v) => `<div class="info-row"><small>${l}</small><strong>${esc(v || "-")}</strong></div>`;
+            openSheet("Personal Information",
+                row("Nama Lengkap", profile.name || (currentUser && currentUser.displayName)) +
+                row("Email Kampus", currentUser && currentUser.email) +
+                row("NIM", profile.nim && profile.nim !== "-" ? profile.nim : "") +
+                row("WhatsApp", profile.whatsapp) +
+                row("Status Courier", profile.courierStatus === "active" ? "Aktif (terverifikasi admin)" : profile.courierStatus));
+        });
+
+        // Bank Accounts & E-Wallets (rekening yang sama dengan menu Withdraw di Wallet)
+        function bankHTML() {
+            return CourierStore.accounts().map(a => `
+                <div class="acc"><div class="acc-logo">${esc(a.short)}</div>
+                <div><strong>${esc(a.type)} - ${esc(a.number)}</strong><small>a.n. ${esc(a.name)}</small></div></div>`).join("") + `
+                <button type="button" class="add-acc" id="bkAdd">+ Add another account / e-wallet</button>
+                <div class="acc-form" id="bkForm">
+                    <select id="bkType">
+                        <option value="Bank BCA|BCA">Bank BCA</option><option value="Bank Mandiri|MDR">Bank Mandiri</option>
+                        <option value="Bank BNI|BNI">Bank BNI</option><option value="Bank BRI|BRI">Bank BRI</option>
+                        <option value="OVO|OVO">OVO</option><option value="GoPay|GoPay">GoPay</option><option value="DANA|DANA">DANA</option>
+                    </select>
+                    <input type="text" id="bkNumber" inputmode="numeric" placeholder="Nomor rekening / nomor HP">
+                    <input type="text" id="bkName" placeholder="Atas nama">
+                    <div class="row"><button type="button" class="btn-sm" id="bkCancel">Batal</button><button type="button" class="btn-sm primary" id="bkSave">Simpan</button></div>
+                </div>`;
+        }
+        function openBank() { openSheet("Bank Accounts & E-Wallets", bankHTML()); }
+        $("miBank").addEventListener("click", openBank);
+        $("sheetBody").addEventListener("click", (e) => {
+            const id = e.target.id;
+            if (id === "bkAdd") { $("bkForm").classList.add("open"); $("bkAdd").style.display = "none"; }
+            else if (id === "bkCancel") { $("bkForm").classList.remove("open"); $("bkAdd").style.display = ""; }
+            else if (id === "bkSave") {
+                const [type, short] = $("bkType").value.split("|");
+                const number = $("bkNumber").value.replace(/\s/g, ""), name = $("bkName").value.trim();
+                if (!/^\d{5,20}$/.test(number)) { showToast("Nomor rekening / HP tidak valid"); return; }
+                if (!name) { showToast("Isi nama pemilik rekening"); return; }
+                CourierStore.addAccount({ type, short, number, name });
+                openBank();
+                showToast("Rekening ditambahkan");
+            }
+        });
+
+        // Menu yang belum ada isinya
+        document.querySelectorAll("[data-soon]").forEach(b => b.addEventListener("click", () => {
+            showToast(b.dataset.soon.replace(/&amp;/g, "&") + " sedang dikembangkan");
+        }));
+
+        // ===== Log out =====
+        $("btnLogout").addEventListener("click", () => $("logoutOv").classList.add("open"));
+        $("logoutCancel").addEventListener("click", () => $("logoutOv").classList.remove("open"));
+        $("logoutOk").addEventListener("click", () => {
+            signOut(auth).then(() => { window.location.href = "index.html"; })
+                .catch((err) => showToast("Gagal keluar: " + err.message));
+        });
+        document.addEventListener("keydown", (e) => {
+            if (e.key !== "Escape") return;
+            $("logoutOv").classList.remove("open"); closeSheet();
+        });
+    </script>
+</body>
+</html>

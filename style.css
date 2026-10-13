@@ -1,0 +1,179 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+    -webkit-tap-highlight-color: transparent; 
+}
+
+body {
+    background-color: #333333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* === BINGKAI UTAMA APLIKASI === */
+.app-container {
+    width: 100%;
+    max-width: 390px;
+    height: 844px;
+    background-color: #FDFCF8;
+    border-radius: 40px;
+    position: relative;
+    overflow: hidden; 
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    padding-top: 60px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+}
+
+.app-container.dashboard {
+    padding: 0; 
+    background-color: #FAFAFA; /* Warna background dashboard Figma terbaru */
+}
+
+/* === UTILITY CLASS === */
+.d-none { display: none !important; }
+
+/* =========================================================
+   1. HALAMAN AUTENTIKASI (LOGIN, SIGNUP, FORGOT)
+   ========================================================= */
+.header { display: flex; flex-direction: column; margin-bottom: 24px; }
+.back-button { font-size: 24px; text-decoration: none; color: #000; margin-bottom: 20px; transition: 0.2s; cursor: pointer; display: inline-block; }
+.back-button:active { opacity: 0.5; transform: translateX(-5px); }
+h1 { font-size: 28px; font-weight: 700; color: #000; margin-bottom: 8px; }
+.text-desc { font-size: 14px; color: #666; line-height: 1.5; margin-bottom: 24px; }
+
+.logo-central-wrapper { flex: 1; display: flex; justify-content: center; align-items: center; }
+.logo-central-wrapper img { width: 180px; height: auto; border-radius: 32px; box-shadow: 0 6px 18px rgba(0,0,0,0.1); object-fit: contain; }
+
+form { display: flex; flex-direction: column; gap: 16px; flex: 1; }
+.hidden { display: none !important; }
+.input-group { display: flex; flex-direction: column; gap: 8px; }
+.input-group label { font-size: 12px; font-weight: 600; color: #333; }
+.input-wrapper { position: relative; display: flex; align-items: center; width: 100%; }
+.input-wrapper input, .input-wrapper select { 
+    width: 100%; padding: 16px; border: 1px solid #E5E5E5; border-radius: 12px; font-size: 14px; background-color: #FFFFFF; outline: none; appearance: none; transition: 0.2s;
+}
+.input-wrapper input:focus, .input-wrapper select:focus {
+    border-color: #DC9808;
+    box-shadow: 0 0 0 3px rgba(220,152,8, 0.1);
+}
+.input-wrapper input::placeholder { color: #A0A0A0; }
+.input-icon { position: absolute; right: 16px; color: #A0A0A0; cursor: pointer; font-style: normal; }
+
+.otp-container { display: flex; gap: 12px; margin-bottom: 8px; }
+.otp-container input { width: 100%; aspect-ratio: 1 / 1; border: 1px solid #E5E5E5; border-radius: 12px; text-align: center; font-size: 24px; font-weight: 700; background-color: #FFFFFF; outline: none; }
+.resend-text { text-align: center; font-size: 12px; color: #666; margin-top: 16px; font-weight: 600; }
+
+.button-group { display: flex; flex-direction: column; gap: 12px; margin-top: auto; margin-bottom: 20px; }
+.btn { width: 100%; padding: 16px; border-radius: 12px; font-size: 14px; font-weight: 600; text-align: center; text-decoration: none; cursor: pointer; border: none; display: block; transition: all 0.2s ease; }
+.btn:active { transform: scale(0.96); opacity: 0.9; }
+.btn-primary { background-color: #DC9808; color: white; }
+.btn-outline { background-color: white; color: black; border: 1px solid #000; }
+.btn-black { background-color: #000000; color: #FFFFFF; }
+
+.footer-text { text-align: center; font-size: 10px; color: #666; margin-top: 16px; }
+.footer-text a { color: #000; font-weight: 600; text-decoration: underline; }
+.forgot-password { text-align: right; font-size: 12px; color: #000; text-decoration: none; margin-top: -8px; }
+.signup-link { text-align: center; font-size: 12px; color: #666; margin-top: auto; padding-bottom: 20px; }
+.signup-link a { color: #000; font-weight: 700; text-decoration: none; }
+
+.notification-bar { position: absolute; top: 60px; left: 24px; right: 24px; padding: 14px; background-color: #FFFFFF; border-radius: 12px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: none; z-index: 10;}
+.notification-bar span { font-size: 12px; font-weight: 600; color: #000; }
+
+
+/* =========================================================
+   2. HALAMAN HOME MAHASISWA & DASHBOARD
+   ========================================================= */
+.dashboard-content {
+    flex: 1; overflow-y: auto; overflow-x: hidden; padding: 24px; padding-top: 50px; padding-bottom: 100px; scroll-behavior: smooth;
+}
+.dashboard-content::-webkit-scrollbar { display: none; }
+
+.dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.dash-greeting h1 { font-size: 22px; margin-bottom: 4px; color: #000; font-weight: 700;}
+.dash-greeting p { font-size: 12px; color: #666; }
+
+/* Profil Inisial RE (Biru) */
+.profile-initials { width: 45px; height: 45px; border-radius: 50%; background-color: #90CAF9; color: #000; display: flex; justify-content: center; align-items: center; font-size: 16px; font-weight: 500; cursor: pointer; transition: 0.2s; }
+.profile-initials:active { transform: scale(0.9); opacity: 0.8; }
+
+.dash-section { margin-bottom: 24px; }
+.dash-section > label { display: block; font-size: 12px; font-weight: 700; color: #000; margin-bottom: 8px; }
+
+/* Input Search Kustom Dashboard */
+.search-wrapper input { width: 100%; padding: 14px 14px 14px 45px; border-radius: 20px; background-color: #F5F5F5; border: 1px solid transparent; font-size: 13px; outline: none; transition: 0.2s ease;}
+.search-wrapper input:focus { background-color: #FFFFFF; border-color: #DC9808; }
+.search-icon { position: absolute; left: 16px; font-size: 16px; color: #000; z-index: 2; font-weight: bold; pointer-events: none;}
+
+/* Banner Promo */
+.promo-banner { background-color: #FFF6DB; padding: 14px 16px; border-radius: 12px; display: flex; align-items: center; gap: 10px; justify-content: center; cursor: pointer; transition: 0.2s ease; margin-bottom: 24px; }
+.promo-banner:active { transform: scale(0.97); background-color: #FFEBB8; }
+.promo-banner p { font-size: 11px; font-weight: 600; color: #000; }
+
+.section-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.section-head h2 { font-size: 18px; font-weight: 700; color: #000; }
+.section-head a { font-size: 12px; font-weight: 600; color: #6B4EFF; text-decoration: none; transition: 0.2s; cursor: pointer; padding: 4px; } 
+.section-head a:active { opacity: 0.6; }
+
+/* Grid Kantin */
+.canteen-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px 8px; }
+.canteen-item { display: flex; flex-direction: column; align-items: center; text-align: center; text-decoration: none; gap: 8px; cursor: pointer; transition: 0.2s ease; position: relative; z-index: 5;}
+.canteen-item:active { transform: scale(0.92); opacity: 0.8; }
+.canteen-icon { width: 65px; height: 65px; background-color: #FFF; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); display: flex; justify-content: center; align-items: center; padding: 12px; overflow: hidden; pointer-events: none; }
+.canteen-icon img { width: 100%; height: 100%; object-fit: contain; border-radius: 8px; }
+.canteen-item span { font-size: 11px; font-weight: 600; color: #000; line-height: 1.2; pointer-events: none; }
+
+/* Popular Picks */
+.picks-scroll { display: flex; overflow-x: auto; gap: 16px; padding-bottom: 12px; padding-right: 24px; scrollbar-width: none; cursor: grab; position: relative; z-index: 5;}
+.picks-scroll::-webkit-scrollbar { display: none; } 
+.picks-scroll:active { cursor: grabbing; }
+.food-card { min-width: 200px; background-color: #FFF; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: flex; flex-direction: column; text-decoration: none; transition: transform 0.2s ease; }
+.food-card:active { transform: scale(0.95); }
+.food-card img { width: 100%; height: 130px; object-fit: cover; pointer-events: none; }
+
+/* Navigasi Bawah (Bottom Nav) - Diperbaiki z-index nya */
+.bottom-nav { position: absolute; bottom: 0; left: 0; right: 0; height: 85px; background-color: #FFFFFF; border-top: 1px solid #E5E5E5; display: flex; justify-content: space-around; align-items: center; padding: 0 10px 15px 10px; z-index: 50; }
+.nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: #A0A0A0; padding: 10px 24px; border-radius: 24px; transition: 0.2s ease; cursor: pointer; }
+.nav-item:active { transform: scale(0.95); opacity: 0.8; }
+.nav-item span { font-size: 11px; font-weight: 600; pointer-events: none; }
+.nav-item svg { width: 22px; height: 22px; fill: currentColor; pointer-events: none; }
+
+/* State Navigasi Aktif (Pill Ungu Muda) */
+.nav-item.active { background-color: #F4F1FF; color: #6B4EFF; }
+
+/* =========================================================
+   3. HALAMAN MENU (Untuk menu-kantin.html)
+   ========================================================= */
+.canteen-header-detail { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+.canteen-header-logo { width: 65px; height: 65px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); background-color: #FFF; padding: 10px; }
+.canteen-header-logo img { width: 100%; height: 100%; object-fit: contain; }
+.canteen-header-info h1 { font-size: 20px; margin-bottom: 6px; }
+
+.category-tabs { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 20px; scrollbar-width: none; }
+.category-tabs::-webkit-scrollbar { display: none; }
+.tab-btn { padding: 8px 18px; border-radius: 20px; border: 1px solid #E5E5E5; background: #FFFFFF; font-size: 13px; font-weight: 600; color: #666; white-space: nowrap; cursor: pointer; transition: 0.2s;}
+.tab-btn.active { background: #DC9808; color: #FFFFFF; border-color: #DC9808; }
+
+.menu-list-container { display: flex; flex-direction: column; gap: 16px; padding-bottom: 100px;}
+.menu-item { display: flex; align-items: center; gap: 14px; background: #FFFFFF; padding: 12px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
+.menu-item img { width: 75px; height: 75px; border-radius: 12px; object-fit: cover; }
+.menu-item-info { flex: 1; pointer-events: none; }
+.menu-item-info h3 { font-size: 14px; font-weight: 700; color: #000; margin-bottom: 6px; }
+.menu-item-info p { font-size: 14px; font-weight: 700; color: #6B4EFF; }
+.add-btn { width: 36px; height: 36px; border-radius: 10px; background: #F4F1FF; color: #6B4EFF; border: none; display: flex; justify-content: center; align-items: center; font-size: 20px; font-weight: bold; cursor: pointer; transition: 0.2s;}
+.add-btn:active { background: #6B4EFF; color: #FFFFFF; transform: scale(0.9); }
+
+.floating-checkout { position: absolute; bottom: 30px; left: 24px; right: 24px; background: #DC9808; border-radius: 16px; padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; text-decoration: none; box-shadow: 0 8px 24px rgba(220,152,8,0.35); z-index: 60; transition: 0.2s ease; cursor: pointer; }
+.floating-checkout:active { transform: scale(0.96); opacity: 0.9; }
+.checkout-left { display: flex; align-items: center; gap: 16px; pointer-events: none; }
+.cart-icon-wrapper { position: relative; display: flex; align-items: center; }
+.cart-badge { position: absolute; top: -8px; right: -10px; background: #FFFFFF; color: #DC9808; font-size: 11px; font-weight: 800; width: 20px; height: 20px; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1);}
+.checkout-left span { font-weight: 700; font-size: 16px; color: #FFFFFF; }
+.checkout-right { font-weight: 700; font-size: 14px; color: #FFFFFF; pointer-events: none; }
