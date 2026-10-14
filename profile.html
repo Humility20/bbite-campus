@@ -3,237 +3,370 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile - Mahasiswa</title>
+    <title>BBite - Profile</title>
     <link rel="stylesheet" href="style.css">
     <script src="security.js" data-guard></script>
     <style>
-        .profile-header-simple {
-            display: flex; flex-direction: column; align-items: center;
-            margin-bottom: 24px; margin-top: 10px;
-        }
-        .profile-avatar-container {
-            width: 90px; height: 90px; position: relative;
-            margin-bottom: 12px; cursor: pointer; display: block;
-        }
-        .profile-avatar {
-            width: 100%; height: 100%; border-radius: 50%;
-            object-fit: cover; background-color: #E5E5E5;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.06); transition: 0.2s;
-        }
-        .profile-avatar-container:active .profile-avatar { transform: scale(0.95); }
-        .edit-avatar-btn {
-            position: absolute; bottom: 0; right: 0; background: #000000;
-            color: white; border: 2px solid #FAFAFA; border-radius: 50%;
-            width: 28px; height: 28px; display: flex; justify-content: center;
-            align-items: center; font-size: 12px; pointer-events: none;
-        }
-        
-        .upload-overlay {
-            position: absolute; top:0; left:0; width:100%; height:100%;
-            background: rgba(255,255,255,0.8); border-radius: 50%;
-            display: none; justify-content: center; align-items: center;
-            font-size: 10px; font-weight: 700; color: #000;
-        }
+        .app-container.dashboard { background: #F5F7FA; }
+        .page-content { flex: 1; overflow-y: auto; padding: 56px 20px 110px; }
+        .page-title { text-align: center; font-size: 18px; font-weight: 800; color: #0B1220; margin-bottom: 18px; }
 
-        .section-title {
-            font-size: 13px; color: #888; margin-bottom: 10px;
-            margin-left: 4px; font-weight: 700; text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+        .who { display: flex; flex-direction: column; align-items: center; margin-bottom: 24px; }
+        .avatar-wrap { position: relative; display: block; width: 92px; height: 92px; margin-bottom: 12px; cursor: pointer; }
+        .avatar { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background: #FFF6DB; color: #C98A00; font-size: 30px; font-weight: 800; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(0,0,0,0.1); overflow: hidden; }
+        .avatar-wrap:active .avatar { transform: scale(0.96); }
+        .edit-badge { position: absolute; right: 2px; bottom: 2px; width: 26px; height: 26px; border-radius: 50%; background: #DC9808; border: 2.5px solid #F5F7FA; color: #FFF; display: flex; align-items: center; justify-content: center; pointer-events: none; }
+        .upload-ov { position: absolute; inset: 0; border-radius: 50%; background: rgba(255,255,255,0.8); display: none; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; color: #0B1220; }
+        .who h2 { font-size: 22px; font-weight: 800; color: #0B1220; margin-bottom: 4px; text-align: center; }
+        .who .sub { font-size: 12px; color: #64748B; font-weight: 500; margin-bottom: 12px; text-align: center; }
+        .role-pill { background: #16A34A; color: #FFF; font-size: 12px; font-weight: 700; padding: 6px 18px; border-radius: 14px; }
 
-        .info-card {
-            background: #FFFFFF; border-radius: 16px; padding: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.02); margin-bottom: 24px;
-            border: 1px solid #E5E5E5; display: flex; flex-direction: column; gap: 16px;
-        }
-        .info-item { display: flex; flex-direction: column; gap: 4px; }
-        .info-label { font-size: 11px; color: #A0A0A0; font-weight: 600; }
-        .info-value { font-size: 14px; color: #000; font-weight: 600; }
+        .grp-title { font-size: 11px; font-weight: 700; color: #64748B; letter-spacing: 0.6px; margin: 0 4px 8px; }
+        .menu { background: #FFF; border: 1px solid #E5E7EB; border-radius: 16px; overflow: hidden; margin-bottom: 22px; }
+        .menu-item { display: flex; align-items: center; gap: 14px; width: 100%; padding: 14px 16px; border: none; border-bottom: 1px solid #EEF1F5; border-radius: 0; box-shadow: none; margin: 0; background: none; text-align: left; cursor: pointer; font-family: inherit; }
+        .menu-item:last-child { border-bottom: none; }
+        .menu-item:active { background: #F8FAFC; }
+        .menu-ico { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .menu-item span.t { flex: 1; font-size: 14px; font-weight: 700; color: #0B1220; }
+        .menu-item .arr { color: #475569; }
+        .btn-logout { width: 100%; padding: 16px; border: 1px solid #FBCFCF; border-radius: 14px; background: #FEECEC; color: #DC2626; font-size: 15px; font-weight: 800; cursor: pointer; font-family: inherit; }
+        .btn-logout:active { transform: scale(0.98); }
 
-        .edit-btn {
-            background: none; border: none; font-size: 16px; 
-            color: #DC9808; cursor: pointer; padding: 4px; 
-            display: flex; align-items: center; justify-content: center; transition: 0.2s;
-        }
-        .edit-btn:active { transform: scale(0.8); opacity: 0.7; }
+        /* sheet */
+        .sheet-overlay { position: absolute; inset: 0; background: rgba(11,18,32,0.5); z-index: 100; display: flex; align-items: flex-end; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+        .sheet-overlay.open { opacity: 1; pointer-events: auto; }
+        .sheet { width: 100%; max-height: 90%; overflow-y: auto; background: #FFF; border-radius: 28px 28px 0 0; padding: 10px 20px 30px; transform: translateY(100%); transition: transform 0.28s; }
+        .sheet-overlay.open .sheet { transform: none; }
+        .sheet-handle { width: 40px; height: 4px; border-radius: 2px; background: #D1D5DB; margin: 0 auto 16px; }
+        .sheet-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .sheet-head h3 { font-size: 18px; font-weight: 800; color: #0B1220; }
+        .btn-x { width: 28px; height: 28px; border-radius: 50%; border: none; background: #E2E8F0; color: #64748B; font-size: 12px; cursor: pointer; }
+        .info-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 0; border-bottom: 1px solid #EEF1F5; }
+        .info-row:last-child { border-bottom: none; }
+        .info-row .col { min-width: 0; }
+        .info-row small { display: block; font-size: 11px; font-weight: 600; color: #64748B; margin-bottom: 4px; }
+        .info-row strong { font-size: 14px; font-weight: 700; color: #0B1220; word-break: break-word; }
+        .row-edit { border: none; background: #FFF6DB; color: #A8730A; font-size: 12px; font-weight: 800; padding: 7px 14px; border-radius: 10px; cursor: pointer; font-family: inherit; flex-shrink: 0; }
+        .row-edit:active { transform: scale(0.95); }
 
-        .settings-list { 
-            background: #FFFFFF; border-radius: 16px; overflow: hidden; 
-            box-shadow: 0 2px 10px rgba(0,0,0,0.02); border: 1px solid #E5E5E5; margin-bottom: 40px;
-        }
-        .settings-item {
-            display: flex; align-items: center; gap: 16px; padding: 16px 20px;
-            border-bottom: 1px solid #F5F5F5; text-decoration: none; color: #333;
-            font-weight: 600; font-size: 14px; cursor: pointer; transition: 0.2s;
-        }
-        .settings-item:last-child { border-bottom: none; }
-        .settings-item:active { background-color: #F9F9F9; }
-        .settings-icon { font-size: 18px; width: 24px; text-align: center; color: #000; font-style: normal;}
-        
-        .text-danger { color: #D32F2F !important; }
-        .text-danger .settings-icon { color: #D32F2F; }
+        .modal-ov { position: absolute; inset: 0; background: rgba(11,18,32,0.5); z-index: 120; display: none; align-items: center; justify-content: center; padding: 24px; }
+        .modal-ov.open { display: flex; }
+        .modal { width: 100%; background: #FFF; border-radius: 20px; padding: 24px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .modal h3 { font-size: 18px; font-weight: 800; color: #0B1220; }
+        .modal p { font-size: 13px; color: #64748B; line-height: 1.5; margin-bottom: 6px; }
+        .modal input, .modal select { width: 100%; box-sizing: border-box; border: 1px solid #E5E7EB; border-radius: 12px; padding: 13px 14px; font-size: 14px; font-family: inherit; background: #FFF; outline: none; }
+        .modal input:focus, .modal select:focus { border-color: #DC9808; box-shadow: 0 0 0 3px rgba(220,152,8,0.1); }
+        .modal-row { display: flex; gap: 10px; margin-top: 6px; }
+        .btn-sm { flex: 1; border-radius: 12px; padding: 13px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; border: 1px solid #D5DAE1; background: #FFF; color: #475569; }
+        .btn-sm.primary { background: #DC9808; border-color: #DC9808; color: #FFF; }
+        .btn-sm:disabled { opacity: 0.6; }
 
-        /* MODAL CUSTOM */
-        .custom-modal-overlay {
-            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.4); z-index: 100;
-            display: none; justify-content: center; align-items: center;
-            padding: 24px; backdrop-filter: blur(2px);
-        }
-        .custom-modal {
-            background: #FFFFFF; width: 100%; border-radius: 20px;
-            padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            display: flex; flex-direction: column; gap: 12px;
-        }
-        .custom-modal h3 { font-size: 18px; color: #000; font-weight: 700; margin: 0; }
-        .custom-modal p { font-size: 12px; color: #666; margin: 0; margin-bottom: 4px; }
-        .custom-modal input, .custom-modal select {
-            width: 100%; padding: 14px; border: 1px solid #E5E5E5;
-            border-radius: 12px; font-size: 14px; outline: none; transition: 0.2s; background: #FFF;
-        }
-        .custom-modal input:focus, .custom-modal select:focus { border-color: #DC9808; box-shadow: 0 0 0 3px rgba(220,152,8, 0.1); }
-        .modal-buttons { display: flex; gap: 12px; margin-top: 8px; }
-        .modal-buttons button {
-            flex: 1; padding: 14px; border-radius: 12px; font-size: 14px;
-            font-weight: 600; border: none; cursor: pointer; transition: 0.2s;
-        }
-        .btn-cancel { background: #F5F5F5; color: #333; }
-        .btn-cancel:active { background: #E5E5E5; transform: scale(0.96); }
-        .btn-save { background: #DC9808; color: #FFF; }
-        .btn-save:active { transform: scale(0.96); opacity: 0.9; }
-        .btn-danger-modal { background: #D32F2F; color: #FFF; }
-        .btn-danger-modal:active { transform: scale(0.96); opacity: 0.9; }
+        /* ===== Pop up Log Out ===== */
+        .lo-modal { align-items: center; text-align: center; padding: 28px 22px 22px; gap: 0; border-radius: 24px; }
+        .lo-ic { width: 60px; height: 60px; border-radius: 50%; background: #FDECEC; color: #E5565B; display: flex; align-items: center; justify-content: center; margin-bottom: 18px; }
+        .lo-modal h3 { font-size: 19px; margin-bottom: 10px; }
+        .lo-modal p { font-size: 12px; line-height: 1.6; color: #64748B; font-weight: 500; margin-bottom: 22px; padding: 0 2px; }
+        .lo-yes, .lo-stay { width: 100%; border: none; border-radius: 14px; padding: 15px; font-size: 14px; font-weight: 800; font-family: inherit; cursor: pointer; }
+        .lo-yes { background: #EE6A6F; color: #FFF; box-shadow: 0 8px 18px rgba(238,106,111,0.28); margin-bottom: 10px; }
+        .lo-yes:active { transform: scale(0.98); }
+        .lo-yes:disabled { opacity: 0.7; pointer-events: none; }
+        .lo-stay { background: #EEF1F5; color: #0B1220; font-weight: 700; }
+        .lo-stay:active { background: #E2E8F0; }
+
+        .toast { position: absolute; left: 16px; right: 16px; bottom: 96px; background: #0B1220; color: #FFF; font-size: 13px; font-weight: 600; padding: 12px 16px; border-radius: 12px; z-index: 200; opacity: 0; transform: translateY(10px); pointer-events: none; transition: 0.25s; }
+        .toast.show { opacity: 1; transform: none; }
+
+        .bottom-nav { background: #FFF; border-top: 1px solid #E5E7EB; box-shadow: none; }
+        .nav-item { color: #6B7280; }
+        .nav-item svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+        .nav-item.active { background: #FFF6DB; color: #C98A00; flex-direction: row; gap: 8px; padding: 10px 18px; }
+        .nav-item.active span { font-weight: 800; }
     </style>
 </head>
 <body>
     <div class="app-container dashboard">
-        
-        <div class="dashboard-content">
-            
-            <h1 style="font-size: 24px; margin-bottom: 8px; padding: 0 4px;">Profile</h1>
+        <div class="page-content">
+            <h1 class="page-title">My Profile</h1>
 
-            <div class="profile-header-simple">
-                <label for="avatarUpload" class="profile-avatar-container">
-                    <img src="https://via.placeholder.com/90?text=+" id="profileImage" class="profile-avatar" alt="Profile">
-                    <div class="upload-overlay" id="uploadOverlay">Wait...</div>
-                    <div class="edit-avatar-btn">✎</div>
+            <div class="who">
+                <label for="avatarUpload" class="avatar-wrap" id="avatarWrap" title="Ganti foto profil">
+                    <div class="avatar" id="avatar">&nbsp;</div>
+                    <div class="upload-ov" id="uploadOv">Saving...</div>
+                    <div class="edit-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></div>
                 </label>
-                <input type="file" id="avatarUpload" accept="image/*" style="display: none;">
+                <input type="file" id="avatarUpload" accept="image/*" style="display:none">
+                <h2 id="pName">&nbsp;</h2>
+                <div class="sub" id="pSub">&nbsp;</div>
+                <span class="role-pill" id="pRole">Mahasiswa</span>
             </div>
 
-            <!-- DATA DIRI -->
-            <div>
-                <h3 class="section-title">Data Diri</h3>
-                <div class="info-card">
-                    <div class="info-item">
-                        <span class="info-label">Nama Lengkap</span>
-                        <span class="info-value" id="infoName">Memuat...</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Email Kampus</span>
-                        <span class="info-value" id="infoEmail">memuat.data@binus.ac.id</span>
-                    </div>
-                    
-                    <div class="info-item" style="flex-direction: row; justify-content: space-between; align-items: center;">
-                        <div style="display: flex; flex-direction: column; gap: 4px;">
-                            <span class="info-label">ID / NIM</span>
-                            <span class="info-value" id="infoNim">-</span>
-                        </div>
-                        <button id="editNimBtn" class="edit-btn" title="Edit ID/NIM">✎</button>
-                    </div>
-
-                    <!-- TAMBAHAN ROLE -->
-                    <div class="info-item" style="flex-direction: row; justify-content: space-between; align-items: center; border-top: 1px dashed #E5E5E5; padding-top: 16px;">
-                        <div style="display: flex; flex-direction: column; gap: 4px;">
-                            <span class="info-label">Pengguna Sebagai</span>
-                            <span class="info-value" id="infoRole">Mahasiswa</span>
-                        </div>
-                        <button id="editRoleBtn" class="edit-btn" title="Edit Role">✎</button>
-                    </div>
-
-                </div>
+            <div class="grp-title">ACCOUNT</div>
+            <div class="menu">
+                <button type="button" class="menu-item" id="miPersonal">
+                    <span class="menu-ico" style="background:#FFF1E6;color:#E8731A"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></span>
+                    <span class="t">Personal Information</span><span class="arr">&#8594;</span>
+                </button>
             </div>
 
-            <!-- SUPPORT & ABOUT -->
-            <div>
-                <h3 class="section-title">Support & About</h3>
-                <div class="settings-list">
-                    <a href="#" class="settings-item" onclick="alert('Fitur Report a problem sedang dikembangkan.'); return false;">
-                        <span class="settings-icon">⚑</span>
-                        <span>Report a problem</span>
-                    </a>
-                    <a href="#" class="settings-item" onclick="alert('Syarat dan Ketentuan BBite...'); return false;">
-                        <span class="settings-icon">ⓘ</span>
-                        <span>Terms and Conditions</span>
-                    </a>
-                    <div id="logoutBtn" class="settings-item text-danger">
-                        <span class="settings-icon">🚪</span>
-                        <span>Log out</span>
-                    </div>
-                </div>
+            <div class="grp-title">SUPPORT &amp; ABOUT</div>
+            <div class="menu">
+                <button type="button" class="menu-item" data-soon="Help Center &amp; Support">
+                    <span class="menu-ico" style="background:#E3F2FD;color:#1E88E5"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/></svg></span>
+                    <span class="t">Help Center &amp; Support</span><span class="arr">&#8594;</span>
+                </button>
+                <button type="button" class="menu-item" data-soon="Privacy &amp; Security">
+                    <span class="menu-ico" style="background:#E3F7EA;color:#16A34A"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></svg></span>
+                    <span class="t">Privacy &amp; Security</span><span class="arr">&#8594;</span>
+                </button>
+                <button type="button" class="menu-item" data-soon="Terms of Service">
+                    <span class="menu-ico" style="background:#EEF1F5;color:#475569"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg></span>
+                    <span class="t">Terms of Service</span><span class="arr">&#8594;</span>
+                </button>
             </div>
 
-        </div>
-
-        <!-- MODAL EDIT NIM (Sembunyi by default) -->
-        <div class="custom-modal-overlay" id="nimModalOverlay">
-            <div class="custom-modal">
-                <h3>Edit ID / NIM</h3>
-                <p>Masukkan Nomor Induk Mahasiswa atau ID Dosen kamu.</p>
-                <input type="number" id="nimInputModal" placeholder="Contoh: 2602123456">
-                <div class="modal-buttons">
-                    <button class="btn-cancel" id="btnCancelNim">Batal</button>
-                    <button class="btn-save" id="btnSaveNim">Simpan</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- MODAL EDIT ROLE (Sembunyi by default) -->
-        <div class="custom-modal-overlay" id="roleModalOverlay">
-            <div class="custom-modal">
-                <h3>Edit Role Pengguna</h3>
-                <p>Pilih peran kamu di kampus.</p>
-                <select id="roleInputModal">
-                    <option value="Mahasiswa">Mahasiswa</option>
-                    <option value="Dosen">Dosen</option>
-                </select>
-                <div class="modal-buttons">
-                    <button class="btn-cancel" id="btnCancelRole">Batal</button>
-                    <button class="btn-save" id="btnSaveRole">Simpan</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- MODAL LOG OUT (Sembunyi by default) -->
-        <div class="custom-modal-overlay" id="logoutModalOverlay">
-            <div class="custom-modal">
-                <h3>Log out</h3>
-                <p>Yakin ingin keluar dari akun BBite kamu?</p>
-                <div class="modal-buttons">
-                    <button class="btn-cancel" id="btnCancelLogout">Batal</button>
-                    <button class="btn-danger-modal" id="btnConfirmLogout">Keluar</button>
-                </div>
-            </div>
+            <button type="button" class="btn-logout" id="btnLogout">Log Out</button>
         </div>
 
         <nav class="bottom-nav">
             <a href="home-mahasiswa.html" class="nav-item">
-                <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>
                 <span>Home</span>
             </a>
             <a href="#" class="nav-item">
-                <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>
                 <span>Order</span>
             </a>
             <a href="profile.html" class="nav-item active">
-                <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
                 <span>Profile</span>
             </a>
         </nav>
 
+        <!-- Bottom sheet (Personal Information) -->
+        <div class="sheet-overlay" id="sheetOv" aria-hidden="true">
+            <div class="sheet" role="dialog" aria-modal="true">
+                <div class="sheet-handle"></div>
+                <div class="sheet-head"><h3 id="sheetTitle"></h3><button type="button" class="btn-x" id="sheetClose" aria-label="Tutup">&#10005;</button></div>
+                <div id="sheetBody"></div>
+            </div>
+        </div>
+
+        <!-- Edit NIM -->
+        <div class="modal-ov" id="nimOv" aria-hidden="true">
+            <div class="modal" role="dialog" aria-modal="true">
+                <h3>Edit ID / NIM</h3>
+                <p>Masukkan Nomor Induk Mahasiswa atau ID Dosen kamu.</p>
+                <input type="text" id="nimInput" inputmode="numeric" placeholder="Contoh: 2602123456">
+                <div class="modal-row"><button type="button" class="btn-sm" id="nimCancel">Batal</button><button type="button" class="btn-sm primary" id="nimSave">Simpan</button></div>
+            </div>
+        </div>
+
+        <!-- Edit Role -->
+        <div class="modal-ov" id="roleOv" aria-hidden="true">
+            <div class="modal" role="dialog" aria-modal="true">
+                <h3>Edit Role Pengguna</h3>
+                <p>Pilih peran kamu di kampus.</p>
+                <select id="roleInput"><option value="Mahasiswa">Mahasiswa</option><option value="Dosen">Dosen</option></select>
+                <div class="modal-row"><button type="button" class="btn-sm" id="roleCancel">Batal</button><button type="button" class="btn-sm primary" id="roleSave">Simpan</button></div>
+            </div>
+        </div>
+
+        <!-- Konfirmasi Log Out -->
+        <div class="modal-ov" id="logoutOv" aria-hidden="true">
+            <div class="modal lo-modal" role="dialog" aria-modal="true" aria-labelledby="loTitle">
+                <div class="lo-ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg></div>
+                <h3 id="loTitle">Log Out of Your Account?</h3>
+                <p>Are you sure you want to log out<span id="loName"></span>? You will need to sign in again to place orders and track your food.</p>
+                <button type="button" class="lo-yes" id="logoutOk">Yes, Log Out</button>
+                <button type="button" class="lo-stay" id="logoutCancel">Stay Logged In</button>
+            </div>
+        </div>
+
+        <div class="toast" id="toast"></div>
     </div>
 
-    <!-- PANGGIL FILE SCRIPT EKSTERNAL -->
-    <script type="module" src="script.js"></script>
+    <script type="module">
+        import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyDleckycfk_xnbhXMnPivz3F1NCS9x5wCQ", authDomain: "bbite-campus.firebaseapp.com", projectId: "bbite-campus" };
+        const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+        const auth = getAuth(app), db = getFirestore(app);
+
+        const $ = (id) => document.getElementById(id);
+        const esc = (t) => String(t).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+        let toastTimer;
+        function showToast(msg) {
+            const t = $("toast");
+            t.textContent = msg; t.classList.add("show");
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => t.classList.remove("show"), 2600);
+        }
+
+        // ===== Data user dari Firebase =====
+        let currentUser = null, profile = {};
+
+        function titleCase(w) { return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase(); }
+        function fallbackName() {
+            if (!currentUser) return "";
+            const raw = currentUser.displayName || (currentUser.email || "").split("@")[0] || "";
+            return raw.split(/[.\s_-]+/).filter(Boolean).map(titleCase).join(" ");
+        }
+        function initials(name) {
+            const p = String(name || "?").trim().split(/\s+/);
+            return (p[0].charAt(0) + (p[1] ? p[1].charAt(0) : "")).toUpperCase();
+        }
+        const hasNim = () => profile.nim && profile.nim !== "-";
+        const displayName = () => profile.name || fallbackName() || "Student";
+
+        function renderProfile() {
+            const name = displayName();
+            $("pName").textContent = name;
+            $("pSub").textContent = "NIM: " + (hasNim() ? profile.nim : "-") + " \u2022 Kampus Anggrek";
+            $("pRole").textContent = profile.role === "Dosen" ? "Dosen" : (profile.role || "Mahasiswa");
+            const av = $("avatar");
+            if (/^data:image\//.test(profile.photoBase64 || "")) {
+                av.innerHTML = `<img src="${profile.photoBase64}" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover">`;
+                av.style.background = "transparent";
+            } else {
+                av.textContent = initials(name); av.style.background = "";
+            }
+        }
+
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) { window.location.href = "index.html"; return; }
+            currentUser = user;
+            renderProfile();
+            try {
+                const snap = await getDoc(doc(db, "users", user.uid));
+                if (snap.exists()) profile = snap.data();
+                renderProfile();
+            } catch (e) { console.log("Gagal memuat profil:", e); }
+        });
+
+        async function saveField(data) {
+            await setDoc(doc(db, "users", currentUser.uid), data, { merge: true });
+            Object.assign(profile, data);
+            renderProfile();
+        }
+
+        // ===== Ganti foto profil =====
+        function compressImage(file, callback) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const MAX = 200;
+                    let w = img.width, h = img.height;
+                    if (w > h) { if (w > MAX) { h *= MAX / w; w = MAX; } }
+                    else { if (h > MAX) { w *= MAX / h; h = MAX; } }
+                    const c = document.createElement("canvas");
+                    c.width = w; c.height = h;
+                    c.getContext("2d").drawImage(img, 0, 0, w, h);
+                    callback(c.toDataURL("image/jpeg", 0.7));
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+        $("avatarUpload").addEventListener("change", (e) => {
+            const file = e.target.files[0];
+            if (!file || !currentUser) return;
+            const ov = $("uploadOv");
+            ov.style.display = "flex"; ov.textContent = "Saving...";
+            compressImage(file, async (base64) => {
+                try {
+                    await saveField({ photoBase64: base64 });
+                    ov.textContent = "Saved!";
+                    setTimeout(() => { ov.style.display = "none"; }, 1000);
+                } catch (err) {
+                    ov.style.display = "none";
+                    showToast("Gagal menyimpan foto: " + err.message);
+                }
+            });
+            e.target.value = "";
+        });
+
+        // ===== Bottom sheet: Personal Information =====
+        const sheetOv = $("sheetOv");
+        function openSheet(title, html) {
+            $("sheetTitle").textContent = title;
+            $("sheetBody").innerHTML = html;
+            sheetOv.classList.add("open");
+            sheetOv.setAttribute("aria-hidden", "false");
+        }
+        function closeSheet() { sheetOv.classList.remove("open"); sheetOv.setAttribute("aria-hidden", "true"); }
+        $("sheetClose").addEventListener("click", closeSheet);
+        sheetOv.addEventListener("click", (e) => { if (e.target === sheetOv) closeSheet(); });
+
+        function personalHTML() {
+            const row = (l, v, editId) => `<div class="info-row"><div class="col"><small>${l}</small><strong>${esc(v || "-")}</strong></div>${editId ? `<button type="button" class="row-edit" id="${editId}">Edit</button>` : ""}</div>`;
+            return row("Nama Lengkap", displayName()) +
+                   row("Email Kampus", currentUser && currentUser.email) +
+                   row("ID / NIM", hasNim() ? profile.nim : "", "editNim") +
+                   row("Pengguna Sebagai", profile.role || "Mahasiswa", "editRole");
+        }
+        function openPersonal() { openSheet("Personal Information", personalHTML()); }
+        $("miPersonal").addEventListener("click", openPersonal);
+
+        const nimOv = $("nimOv"), roleOv = $("roleOv");
+        const openModal = (el) => { el.classList.add("open"); el.setAttribute("aria-hidden", "false"); };
+        const closeModal = (el) => { el.classList.remove("open"); el.setAttribute("aria-hidden", "true"); };
+
+        $("sheetBody").addEventListener("click", (e) => {
+            if (e.target.id === "editNim") { $("nimInput").value = hasNim() ? profile.nim : ""; openModal(nimOv); $("nimInput").focus(); }
+            else if (e.target.id === "editRole") { $("roleInput").value = profile.role === "Dosen" ? "Dosen" : "Mahasiswa"; openModal(roleOv); }
+        });
+        $("nimCancel").addEventListener("click", () => closeModal(nimOv));
+        $("roleCancel").addEventListener("click", () => closeModal(roleOv));
+        [nimOv, roleOv].forEach(ov => ov.addEventListener("click", (e) => { if (e.target === ov) closeModal(ov); }));
+
+        $("nimSave").addEventListener("click", async () => {
+            const nim = $("nimInput").value.trim();
+            if (!/^\d{4,20}$/.test(nim)) { showToast("ID / NIM harus berupa angka"); return; }
+            const b = $("nimSave"); b.disabled = true;
+            try { await saveField({ nim }); closeModal(nimOv); openPersonal(); showToast("ID / NIM disimpan"); }
+            catch (err) { showToast("Gagal menyimpan: " + err.message); }
+            finally { b.disabled = false; }
+        });
+        $("roleSave").addEventListener("click", async () => {
+            const b = $("roleSave"); b.disabled = true;
+            try { await saveField({ role: $("roleInput").value }); closeModal(roleOv); openPersonal(); showToast("Role disimpan"); }
+            catch (err) { showToast("Gagal menyimpan: " + err.message); }
+            finally { b.disabled = false; }
+        });
+
+        // Menu yang belum ada isinya
+        document.querySelectorAll("[data-soon]").forEach(b => b.addEventListener("click", () => {
+            showToast(b.dataset.soon.replace(/&amp;/g, "&") + " sedang dikembangkan");
+        }));
+
+        // ===== Log out =====
+        const logoutOv = $("logoutOv");
+        function openLogout() {
+            const f = ($("pName").textContent || "").trim().split(/\s+/)[0];
+            $("loName").textContent = f ? ", " + f : "";
+            openModal(logoutOv);
+        }
+        $("btnLogout").addEventListener("click", openLogout);
+        $("logoutCancel").addEventListener("click", () => closeModal(logoutOv));
+        logoutOv.addEventListener("click", (e) => { if (e.target === logoutOv) closeModal(logoutOv); });
+        $("logoutOk").addEventListener("click", () => {
+            const b = $("logoutOk");
+            b.disabled = true; b.textContent = "Logging out...";
+            BBSec.lock();
+            // Jika Biometric Login aktif: sesi dipertahankan tetapi aplikasi terkunci (masuk lagi dengan fingerprint).
+            if (currentUser && BBSec.get(currentUser.uid).bio) { window.location.href = "index.html"; return; }
+            signOut(auth).then(() => { window.location.href = "index.html"; })
+                .catch((err) => { b.disabled = false; b.textContent = "Yes, Log Out"; closeModal(logoutOv); showToast("Gagal keluar: " + err.message); });
+        });
+
+        document.addEventListener("keydown", (e) => {
+            if (e.key !== "Escape") return;
+            closeModal(logoutOv); closeModal(nimOv); closeModal(roleOv); closeSheet();
+        });
+    </script>
 </body>
 </html>
