@@ -1,0 +1,33 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===== KUOTA PRE-ORDER: maks. 25 per kantin per tanggal per jam =====
+    // Dokumen id: <merchantId>_<YYYY-MM-DD>_<HHMM>
+    match /slots/{slotId} {
+      allow read: if true;
+
+      // slot baru: harus login, mulai dari count = 1
+      allow create: if request.auth != null
+                    && request.resource.data.keys().hasOnly(['merchantId', 'date', 'time', 'count'])
+                    && request.resource.data.count == 1;
+
+      // slot sudah ada: hanya boleh naik 1 dan tidak boleh lewat 25
+      allow update: if request.auth != null
+                    && request.resource.data.merchantId == resource.data.merchantId
+                    && request.resource.data.date == resource.data.date
+                    && request.resource.data.time == resource.data.time
+                    && request.resource.data.count == resource.data.count + 1
+                    && request.resource.data.count <= 25;
+
+      allow delete: if false;
+    }
+
+    // ===== Koleksi lain: dibiarkan terbuka dulu =====
+    // Alasan: halaman admin.html login lewat localStorage (bukan Firebase Auth),
+    // jadi belum bisa dibatasi per-role dengan aman. Perketat di tahap berikutnya.
+    match /users/{id}         { allow read, write: if true; }
+    match /orders/{id}        { allow read, write: if true; }
+    match /canteenZones/{id}  { allow read, write: if true; }
+  }
+}

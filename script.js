@@ -3,12 +3,12 @@ import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/fi
 import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyCd_v_YnSXpiVAA_eDxk_MaCCdqo4H5CFE",
-    authDomain: "bbite-ac7e4.firebaseapp.com",
-    projectId: "bbite-ac7e4",
-    storageBucket: "bbite-ac7e4.firebasestorage.app",
-    messagingSenderId: "44670181579",
-    appId: "1:44670181579:web:3d6a5ba474891b0a977b4e"
+    apiKey: "AIzaSyDleckycfk_xnbhXMnPivz3F1NCS9x5wCQ",
+    authDomain: "bbite-campus.firebaseapp.com",
+    projectId: "bbite-campus",
+    storageBucket: "bbite-campus.firebasestorage.app",
+    messagingSenderId: "565374480300",
+    appId: "1:565374480300:web:01ca31aa952835a6d0d409"
 };
 
 const app = initializeApp(firebaseConfig);

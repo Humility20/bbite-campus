@@ -256,12 +256,12 @@
     <script type="module">
         import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, serverTimestamp, doc, getDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, serverTimestamp, doc, getDoc, query, where, getDocs, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
         const firebaseConfig = {
-            apiKey: "AIzaSyCd_v_YnSXpiVAA_eDxk_MaCCdqo4H5CFE",
-            authDomain: "bbite-ac7e4.firebaseapp.com",
-            projectId: "bbite-ac7e4"
+            apiKey: "AIzaSyDleckycfk_xnbhXMnPivz3F1NCS9x5wCQ",
+            authDomain: "bbite-campus.firebaseapp.com",
+            projectId: "bbite-campus"
         };
         const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
         const auth = getAuth(app);
@@ -578,6 +578,7 @@
             document.getElementById('checkoutView').classList.remove('d-none');
             document.getElementById('placeOrderBar').classList.remove('d-none');
             window.scrollTo(0,0);
+            refreshSlotAvailability();
         });
 
         document.getElementById('backToMenuBtn').addEventListener('click', (e) => {
@@ -592,6 +593,42 @@
             document.querySelectorAll('.delivery-toggle .toggle-btn').forEach(btn => btn.classList.remove('active'));
             element.classList.add('active');
             window.updateCartUI();   // ongkir & field lokasi ikut menyesuaikan (Pickup: tanpa lokasi & tanpa ongkir)
+        }
+
+        // ===== KUOTA PRE-ORDER PER JADWAL =====
+        const MAX_PREORDER_PER_SLOT = 25;   // ubah angka ini kalau kuota berubah
+
+        function todayWIB() {
+            return new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Jakarta' }); // YYYY-MM-DD
+        }
+        function slotDocId(merchantId, date, time) {
+            const safe = String(merchantId).replace(/[^A-Za-z0-9_-]/g, '_');
+            return safe + '_' + date + '_' + String(time).replace(':', '');
+        }
+
+        // Tandai jadwal yang sudah penuh di dropdown "Class schedule"
+        async function refreshSlotAvailability() {
+            const sel = document.getElementById('checkoutTime');
+            if (!sel || !currentData.id) return;
+            const counts = {};
+            try {
+                const q = query(collection(db, "slots"),
+                    where("merchantId", "==", currentData.id),
+                    where("date", "==", todayWIB()));
+                const snap = await getDocs(q);
+                snap.forEach(d => { counts[d.data().time] = d.data().count || 0; });
+            } catch (e) { console.warn("Gagal memuat kuota jadwal", e); }
+
+            Array.from(sel.options).forEach(opt => {
+                if (!opt.value && !opt.dataset.time) return;       // placeholder
+                const time = opt.dataset.time || opt.value || opt.textContent.trim();
+                opt.dataset.time = time; opt.value = time;
+                const used = counts[time] || 0;
+                const left = MAX_PREORDER_PER_SLOT - used;
+                opt.disabled = left <= 0;
+                opt.textContent = left <= 0 ? time + ' · Penuh' : time + ' · sisa ' + left;
+            });
+            if (sel.selectedOptions[0] && sel.selectedOptions[0].disabled) sel.value = '';
         }
 
         // Firebase Submit Order Logic
@@ -651,13 +688,29 @@
             };
 
             try {
-                await addDoc(collection(db, "orders"), orderData);
+                // Cek kuota + buat order dalam SATU transaksi (aman dari checkout bersamaan)
+                const today = todayWIB();
+                const slotRef = doc(db, "slots", slotDocId(currentData.id, today, scheduledTime));
+                const orderRef = doc(collection(db, "orders"));
+                orderData.slotDate = today;
+                await runTransaction(db, async (tx) => {
+                    const slotSnap = await tx.get(slotRef);
+                    const used = slotSnap.exists() ? (slotSnap.data().count || 0) : 0;
+                    if (used >= MAX_PREORDER_PER_SLOT) throw new Error("SLOT_FULL");
+                    tx.set(slotRef, { merchantId: currentData.id, date: today, time: scheduledTime, count: used + 1 });
+                    tx.set(orderRef, orderData);
+                });
                 alert("Pesanan berhasil dibuat! Menunggu konfirmasi kantin.");
                 
                 cart = {}; window.updateCartUI();
                 document.getElementById('backToMenuBtn').click();
             } catch (error) {
-                alert("Gagal membuat pesanan: " + error.message);
+                if (error.message === "SLOT_FULL") {
+                    alert("Maaf, jadwal " + scheduledTime + " sudah penuh (maks. " + MAX_PREORDER_PER_SLOT + " pre-order). Pilih jadwal lain.");
+                    refreshSlotAvailability();
+                } else {
+                    alert("Gagal membuat pesanan: " + error.message);
+                }
             } finally {
                 btn.innerText = "Place order"; btn.disabled = false;
             }
