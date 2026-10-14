@@ -121,6 +121,7 @@
         .pay-sandbox { font-size: 11px; color: #94A3B8; font-weight: 500; margin: 2px 0 12px; }
         .pay-btn-outline { width: 100%; margin-top: 12px; background: #FFF; color: #A8730A; border: 1.5px solid #DC9808; border-radius: 12px; padding: 12px 10px; font-family: inherit; font-size: 13px; font-weight: 800; cursor: pointer; transition: 0.15s; }
         .pay-btn-outline:active { transform: scale(0.97); background: #FFF6DB; }
+        .pay-sandbox-link { background: none; border: none; padding: 0; margin: 0 0 10px; font-family: inherit; font-size: 11.5px; font-weight: 700; color: #A8730A; text-decoration: underline; cursor: pointer; }
         .pay-msg { min-height: 18px; font-size: 12.5px; font-weight: 600; text-align: center; margin-bottom: 12px; color: #6B7280; }
         .pay-msg.warn { color: #B45309; } .pay-msg.err { color: #B91C1C; } .pay-msg.ok { color: #15803D; }
         .pay-how-title { font-size: 14px; font-weight: 800; color: #0B1220; margin-bottom: 10px; }
@@ -303,6 +304,7 @@
                     </div>
                     <div class="pay-merchant" id="payMerchant">BBite - Canteen Delivery</div>
                     <div class="pay-sandbox d-none" id="paySandboxNote">Sandbox QR &mdash; not valid for real payment</div>
+                    <button type="button" class="pay-sandbox-link d-none" id="btnCopyQrUrl">Copy QR link for Midtrans simulator</button>
                     <button type="button" class="pay-btn-outline" id="btnDownloadQr">Download QR Code</button>
                 </div>
 
@@ -851,6 +853,7 @@
             $('payStepAmount').textContent = formatRupiah(pay.amount);
             $('payMerchant').textContent = 'BBite - Canteen ' + (pay.type === 'Pickup' ? 'Pickup' : 'Delivery');
             $('paySandboxNote').classList.toggle('d-none', !pay.sandbox);
+            $('btnCopyQrUrl').classList.toggle('d-none', !(pay.sandbox && pay.qrUrl));
             $('payTimerBox').classList.remove('expired');
             $('payPending').classList.remove('d-none');
             $('paySuccess').classList.add('d-none');
@@ -948,6 +951,13 @@
         }
 
         $('btnDownloadQr').addEventListener('click', downloadQr);
+
+        // Khusus sandbox: simulator Midtrans meminta URL gambar QR
+        $('btnCopyQrUrl').addEventListener('click', async () => {
+            if (!pay || !pay.qrUrl) return;
+            try { await navigator.clipboard.writeText(pay.qrUrl); setPayMsg('QR link copied. Paste it in the Midtrans QRIS simulator.', 'ok'); }
+            catch (e) { window.prompt('Copy this link and paste it in the Midtrans QRIS simulator:', pay.qrUrl); }
+        });
 
         $('btnCheckPayment').addEventListener('click', async () => {
             if (!pay) return;
