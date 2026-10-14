@@ -5,45 +5,106 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Menu Kantin</title>
     <link rel="stylesheet" href="style.css">
+    <script src="security.js" data-guard></script>
     <style>
-        /* === TAMBAHAN STYLING KHUSUS CHECKOUT === */
-        .delivery-toggle { display: flex; background: #F5F5F5; border-radius: 24px; padding: 4px; margin-bottom: 24px; }
-        .toggle-btn { flex: 1; padding: 10px; border-radius: 20px; border: none; background: transparent; font-size: 13px; font-weight: 700; color: #888; cursor: pointer; transition: 0.3s; }
-        .toggle-btn.active { background: #DC9808; color: #FFF; box-shadow: 0 4px 10px rgba(220,152,8,0.3); }
+        /* ===== TAMPILAN CHECKOUT (sesuai desain, warna emas BBite) ===== */
+        .co-top { display: flex; align-items: center; justify-content: center; position: relative; margin: 10px 0 18px; }
+        .co-top .rh-back { position: absolute; left: 0; }
+        .co-top h1 { font-size: 17px; font-weight: 800; color: #0B1220; margin: 0; }
 
-        .checkout-section { margin-bottom: 20px; }
-        .checkout-section > label { display: block; font-size: 11px; font-weight: 700; color: #000; margin-bottom: 8px; }
-        .checkout-input { width: 100%; padding: 14px 14px 14px 40px; border: 1px solid #E5E5E5; border-radius: 12px; font-size: 13px; outline: none; background: #FFF; transition: 0.2s; appearance: none; }
+        .delivery-toggle { display: flex; gap: 6px; background: #FAFAFA; border: 1px solid #E5E7EB; border-radius: 16px; padding: 4px; margin-bottom: 18px; }
+        .toggle-btn { flex: 1; padding: 11px 10px; border-radius: 12px; border: 1px solid #E5E7EB; background: #FFF; font-family: inherit; font-size: 13px; font-weight: 700; color: #374151; cursor: pointer; transition: 0.2s; }
+        .toggle-btn.active { background: #DC9808; border-color: #DC9808; color: #FFF; box-shadow: 0 4px 10px rgba(220,152,8,0.3); }
+
+        .checkout-section { margin-bottom: 14px; }
+        .checkout-section > label { display: block; font-size: 12px; font-weight: 700; color: #0B1220; margin-bottom: 8px; }
+        .co-field { position: relative; display: flex; align-items: center; }
+        .co-field .ico-l { position: absolute; left: 14px; display: flex; color: #DC9808; pointer-events: none; z-index: 2; }
+        .co-field .ico-r { position: absolute; right: 14px; display: flex; color: #0B1220; pointer-events: none; z-index: 2; }
+        .checkout-input { width: 100%; box-sizing: border-box; padding: 14px 40px 14px 44px; border: 1px solid #E5E7EB; border-radius: 14px; font-size: 14px; font-family: inherit; color: #0B1220; outline: none; background: #FFF; transition: 0.2s; appearance: none; -webkit-appearance: none; }
+        .checkout-input::placeholder { color: #94A3B8; }
+        select.checkout-input:required:invalid { color: #94A3B8; }
         .checkout-input:focus { border-color: #DC9808; }
-        .input-icon-left { position: absolute; left: 14px; font-size: 16px; color: #6B4EFF; z-index: 2; pointer-events: none;}
-        .input-icon-right { position: absolute; right: 14px; font-size: 16px; color: #000; font-weight: bold; pointer-events: none;}
+        .checkout-input.co-error { border-color: #E53935; }
+        .checkout-input.plain { padding-left: 14px; padding-right: 14px; }
 
-        .order-card { background: #FFF; border-radius: 16px; padding: 16px; margin-bottom: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.03); border: 1px solid #E5E5E5; }
-        .order-resto-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px dashed #E5E5E5; }
-        .order-resto-header img { width: 24px; height: 24px; object-fit: contain; }
-        .order-resto-header h3 { font-size: 14px; font-weight: 700; margin: 0; }
+        .order-card { background: #FFF; border-radius: 16px; padding: 14px 14px 6px; margin-bottom: 14px; box-shadow: 0 2px 12px rgba(15,23,42,0.04); border: 1px solid #E5E7EB; }
+        .order-resto-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+        .order-resto-logo { width: 34px; height: 34px; border-radius: 50%; overflow: hidden; background: #FFF9EA; border: 1px solid #FBE7A8; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+        .order-resto-header h3 { font-size: 15px; font-weight: 800; color: #0B1220; margin: 0; }
 
-        .checkout-item { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
-        .checkout-item:last-child { margin-bottom: 0; }
-        .checkout-item img { width: 50px; height: 50px; border-radius: 10px; object-fit: cover; background: #F5F5F5;}
-        .checkout-item-info { flex: 1; overflow: hidden; }
-        .checkout-item-info h4 { font-size: 12px; font-weight: 700; margin-bottom: 4px; color: #000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .checkout-item-info p { font-size: 12px; font-weight: 700; color: #6B4EFF; }
+        .checkout-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid #F0F1F3; }
+        .checkout-item img { width: 56px; height: 56px; border-radius: 12px; object-fit: cover; background: #F5F5F5; flex-shrink: 0; }
+        .checkout-item-info { flex: 1; min-width: 0; }
+        .checkout-item-info h4 { font-size: 13px; font-weight: 800; margin: 0 0 4px; color: #0B1220; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .checkout-item-info p { font-size: 12px; font-weight: 500; color: #6B7280; margin: 0; }
 
-        .qty-controls { display: flex; align-items: center; gap: 12px; background: #F4F1FF; color: #6B4EFF; padding: 6px 12px; border-radius: 16px; font-weight: 700; font-size: 14px; }
-        .qty-btn { cursor: pointer; user-select: none; font-size: 16px;}
+        .qty-controls { display: flex; align-items: center; gap: 12px; background: #FFF1D1; color: #C98A00; padding: 6px 12px; border-radius: 16px; font-weight: 800; font-size: 14px; }
+        .qty-controls .q { color: #0B1220; min-width: 10px; text-align: center; }
+        .qty-btn { cursor: pointer; user-select: none; font-size: 18px; line-height: 1; }
         .qty-btn:active { opacity: 0.5; }
 
-        .checkout-textarea { width: 100%; padding: 14px; border: 1px solid #E5E5E5; border-radius: 12px; font-size: 13px; outline: none; resize: none; background: #FFF; font-family: 'Inter', sans-serif; }
-        .payment-method { display: flex; align-items: center; justify-content: space-between; padding: 16px; background: #FFF; border-radius: 12px; border: 1px solid #E5E5E5; margin-bottom: 20px; cursor: pointer; }
-        .price-breakdown { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
-        .price-row { display: flex; justify-content: space-between; font-size: 12px; color: #666; }
-        .price-row.total { font-size: 14px; font-weight: 700; color: #000; padding-top: 12px; border-top: 1px dashed #E5E5E5; margin-top: 4px; }
+        .co-pay { background: #FFF; border: 1px solid #E5E7EB; border-radius: 16px; padding: 14px; margin-bottom: 14px; box-shadow: 0 2px 12px rgba(15,23,42,0.04); }
+        .payment-method { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-bottom: 14px; margin-bottom: 12px; border-bottom: 1px solid #F0F1F3; }
+        .pay-ico { width: 38px; height: 38px; border-radius: 10px; background: #FFF6DB; color: #DC9808; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .price-breakdown { display: flex; flex-direction: column; gap: 9px; }
+        .price-row { display: flex; justify-content: space-between; gap: 8px; font-size: 12.5px; color: #374151; font-weight: 500; }
+        .price-row span:last-child { font-weight: 700; color: #0B1220; white-space: nowrap; }
+        .price-row small { font-size: 10.5px; color: #94A3B8; font-weight: 500; margin-left: 4px; }
+        .price-row.total { font-size: 15px; font-weight: 800; color: #0B1220; padding-top: 10px; border-top: 1px dashed #E5E7EB; margin-top: 2px; }
+        .price-note { font-size: 10.5px; color: #94A3B8; margin-top: -2px; }
 
-        /* Floating Place Order Bar */
-        .bottom-checkout-bar { position: absolute; bottom: 0; left: 0; right: 0; background: #FFF; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 -4px 20px rgba(0,0,0,0.05); z-index: 60; border-radius: 0 0 40px 40px; }
-        .btn-place-order { background: #DC9808; color: #FFF; font-weight: 700; font-size: 14px; padding: 14px 24px; border-radius: 12px; border: none; cursor: pointer; transition: 0.2s; }
+        /* Bar Place Order */
+        .bottom-checkout-bar { position: absolute; bottom: 16px; left: 12px; right: 12px; background: #FFF; padding: 12px 14px 12px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 6px 24px rgba(15,23,42,0.14); border: 1px solid #F0F1F3; z-index: 60; border-radius: 20px; }
+        .btn-place-order { background: #DC9808; color: #FFF; font-family: inherit; font-weight: 800; font-size: 15px; padding: 14px 28px; border-radius: 14px; border: none; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 12px rgba(220,152,8,0.3); }
         .btn-place-order:active { transform: scale(0.95); opacity: 0.9; }
+        .btn-place-order:disabled { opacity: 0.6; }
+
+        /* ===== TAMPILAN MENU KANTIN (sesuai desain, warna emas BBite) ===== */
+        .rh-top { display: flex; justify-content: space-between; align-items: center; margin: 10px 0 18px; }
+        .rh-back { width: 40px; height: 40px; border-radius: 50%; border: 1px solid #E5E7EB; background: #FFF; color: #0B1220; display: flex; align-items: center; justify-content: center; text-decoration: none; box-shadow: 0 2px 8px rgba(15,23,42,0.05); transition: 0.15s; }
+        .rh-back:active { transform: scale(0.92); }
+        .rh-brand { font-size: 18px; font-weight: 800; color: #DC9808; letter-spacing: 0.2px; }
+        .rh-hero { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+        .rh-logo { width: 68px; height: 68px; flex-shrink: 0; border-radius: 50%; background: #FFF9EA; border: 2px solid #FBE7A8; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        .rh-logo-ph { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800; color: #DC9808; background: #FFF6DB; }
+        .rh-info { min-width: 0; }
+        .rh-info h1 { font-size: 26px; font-weight: 800; color: #0B1220; margin: 0 0 4px; line-height: 1.15; }
+        .rh-stats { font-size: 11.5px; line-height: 1.5; color: #6B7280; font-weight: 500; margin: 0; }
+        .rh-stats .star { color: #DC9808; }
+        .rh-stats b { color: #0B1220; font-weight: 700; }
+        #menuTabs { gap: 8px; margin-bottom: 14px; }
+        #menuTabs .tab-btn { padding: 8px 16px; font-size: 12.5px; font-weight: 700; }
+        .rh-bar { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; }
+        .rh-bar h2 { font-size: 17px; font-weight: 800; color: #0B1220; margin: 0; }
+        .rh-bar span { font-size: 11.5px; font-weight: 500; color: #94A3B8; }
+
+        #menuContainer { gap: 12px; }
+        .mi-card { display: flex; align-items: center; gap: 12px; background: #FFF; padding: 10px; border-radius: 18px; border: 1px solid #F0F1F3; box-shadow: 0 4px 14px rgba(15,23,42,0.05); }
+        .mi-photo { width: 84px; height: 84px; flex-shrink: 0; border-radius: 14px; overflow: hidden; background: #FFF9EA; }
+        .mi-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .mi-ph { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #FFF6DB; color: #DC9808; font-size: 20px; font-weight: 800; }
+        .mi-info { flex: 1; min-width: 0; }
+        .mi-info h3 { font-size: 13.5px; font-weight: 800; line-height: 1.3; color: #0B1220; margin: 0 0 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .mi-price { font-size: 14px; font-weight: 800; color: #0B1220; margin: 0 0 4px; }
+        .mi-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 8px; font-size: 10.5px; color: #94A3B8; font-weight: 500; }
+        .mi-incart { font-size: 10px; font-weight: 800; color: #C98A00; background: #FFF6DB; padding: 2px 8px; border-radius: 8px; }
+        .mi-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+        .mi-add, .mi-minus { border: none; border-radius: 50%; background: #FFF6DB; color: #C98A00; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.15s; padding: 0; font-family: inherit; }
+        .mi-add { width: 36px; height: 36px; }
+        .mi-minus { width: 30px; height: 30px; }
+        .mi-add:active, .mi-minus:active { background: #DC9808; color: #FFF; transform: scale(0.9); }
+        .mi-add:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        /* Bar keranjang: muncul hanya setelah minimal 1 menu dipilih */
+        .cart-bar { position: absolute; bottom: 24px; left: 16px; right: 16px; background: #DC9808; border-radius: 20px; padding: 12px 12px 12px 18px; display: flex; justify-content: space-between; align-items: center; text-decoration: none; box-shadow: 0 8px 24px rgba(220,152,8,0.38); z-index: 60; cursor: pointer; transition: transform 0.15s ease; animation: cartUp 0.25s ease-out; }
+        .cart-bar:active { transform: scale(0.97); }
+        @keyframes cartUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+        .cb-left { display: flex; align-items: center; gap: 14px; color: #FFF; pointer-events: none; }
+        .cb-icon { position: relative; display: flex; }
+        .cb-badge { position: absolute; top: -8px; right: -9px; min-width: 18px; height: 18px; padding: 0 4px; box-sizing: border-box; border-radius: 9px; background: #FFF; color: #C98A00; font-size: 10.5px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+        #cartTotal { font-size: 15px; font-weight: 700; color: #FFF; }
+        .cb-btn { background: #FFF; color: #0B1220; font-size: 14px; font-weight: 800; padding: 11px 20px; border-radius: 14px; pointer-events: none; }
         .d-none { display: none !important; }
     </style>
 </head>
@@ -51,57 +112,67 @@
     <div class="app-container dashboard">
         
         <!-- VIEW 1: MENU KANTIN -->
-        <div id="menuView" class="dashboard-content" style="padding-bottom: 110px;">
-            <div style="margin-bottom: 24px; margin-top: 10px;">
-                <a href="home-mahasiswa.html" class="back-button" style="display: inline-block; margin-bottom: 0;">&#8592;</a>
+        <div id="menuView" class="dashboard-content" style="padding-bottom: 120px;">
+            <div class="rh-top">
+                <a href="home-mahasiswa.html" class="rh-back" aria-label="Kembali">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+                </a>
+                <span class="rh-brand">BBite</span>
             </div>
 
-            <div class="canteen-header-detail">
-                <div class="canteen-header-logo" id="restoLogoContainer"></div>
-                <div class="canteen-header-info">
-                    <h1 id="restoName" style="font-size: 24px; margin-bottom: 4px;">Loading...</h1>
-                    <p id="restoStats" style="font-size: 12px; font-weight: 500;"></p>
+            <div class="rh-hero">
+                <div class="rh-logo" id="restoLogoContainer"></div>
+                <div class="rh-info">
+                    <h1 id="restoName">Loading...</h1>
+                    <p class="rh-stats" id="restoStats"></p>
                 </div>
             </div>
 
             <div class="category-tabs" id="menuTabs"></div>
-            <h2 style="font-size: 16px; font-weight: 700; margin-bottom: 16px;">Daftar Menu</h2>
+
+            <div class="rh-bar">
+                <h2>Popular menu</h2>
+                <span id="dishCount"></span>
+            </div>
 
             <div class="menu-list-container" id="menuContainer">
                 <p style="text-align:center; color:#888; font-size:12px; margin-top:30px;">Memuat menu...</p>
             </div>
         </div>
 
-        <!-- Tombol Checkout Floating -->
-        <a href="#" class="floating-checkout" id="checkoutBtn" style="display: none;">
-            <div class="checkout-left">
-                <div class="cart-icon-wrapper">
-                    <span style="font-size: 18px;">🛒</span>
-                    <div class="cart-badge" id="cartCount">0</div>
+        <!-- Bar Checkout: tersembunyi di awal, muncul setelah user memilih minimal 1 menu -->
+        <a href="#" class="cart-bar" id="checkoutBtn" style="display: none;">
+            <div class="cb-left">
+                <div class="cb-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h12l-1 12H7L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+                    <span class="cb-badge" id="cartCount">0</span>
                 </div>
-                <span id="cartTotal">Rp 0</span>
+                <span id="cartTotal">0 item &#8226; Rp 0</span>
             </div>
-            <div class="checkout-right">Checkout</div>
+            <div class="cb-btn">Checkout</div>
         </a>
 
         <!-- VIEW 2: CHECKOUT DETAIL -->
-        <div id="checkoutView" class="dashboard-content d-none" style="padding-bottom: 120px;">
-            <div style="display: flex; align-items: center; justify-content: center; position: relative; margin-bottom: 24px; margin-top: 10px;">
-                <a href="#" class="back-button" id="backToMenuBtn" style="position: absolute; left: 0; margin-bottom: 0;">&#8592;</a>
-                <h1 style="font-size: 16px; margin-bottom: 0;">Checkout</h1>
+        <div id="checkoutView" class="dashboard-content d-none" style="padding-bottom: 130px;">
+            <div class="co-top">
+                <a href="#" class="rh-back" id="backToMenuBtn" aria-label="Kembali">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+                </a>
+                <h1>Checkout</h1>
             </div>
 
             <div class="delivery-toggle">
-                <button class="toggle-btn active" id="modeDelivery" onclick="window.switchDeliveryMode(this)">Delivery</button>
-                <button class="toggle-btn" id="modePickup" onclick="window.switchDeliveryMode(this)">Pickup</button>
+                <button type="button" class="toggle-btn active" id="modeDelivery" onclick="window.switchDeliveryMode(this)">Delivery</button>
+                <button type="button" class="toggle-btn" id="modePickup" onclick="window.switchDeliveryMode(this)">Pickup</button>
             </div>
 
             <div class="checkout-section">
-                <label>Schedule Time</label>
-                <div class="input-wrapper" style="display: flex; align-items: center; position: relative;">
-                    <span class="input-icon-left">🕒</span>
-                    <select id="checkoutTime" class="checkout-input" style="padding-left: 40px; color: #333;">
-                        <option value="Sekarang" selected>Sekarang</option>
+                <label for="checkoutTime">Class schedule</label>
+                <div class="co-field">
+                    <span class="ico-l"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+                    <select id="checkoutTime" class="checkout-input" required>
+                        <option value="" disabled selected>Select class schedule</option>
+                        <option>09:00</option>
                         <option>10:00</option>
                         <option>11:00</option>
                         <option>12:00</option>
@@ -111,69 +182,71 @@
                         <option>16:00</option>
                         <option>17:00</option>
                     </select>
-                    <span class="input-icon-right" style="transform: rotate(90deg); font-size:12px;">></span>
+                    <span class="ico-r"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
                 </div>
             </div>
 
-            <div class="checkout-section">
-                <label>Delivery location / Notes</label>
-                <div class="input-wrapper" style="display: flex; align-items: center;">
-                    <span class="input-icon-left">📍</span>
-                    <input type="text" id="checkoutLocation" class="checkout-input" placeholder="Enter your room number or notes">
-                    <span class="input-icon-right">></span>
+            <div class="checkout-section" id="deliveryLocationSection">
+                <label for="checkoutLocation">Delivery location</label>
+                <div class="co-field">
+                    <span class="ico-l"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6-5.2-6-10a6 6 0 0 1 12 0c0 4.8-6 10-6 10z"/><circle cx="12" cy="11" r="2.2"/></svg></span>
+                    <input type="text" id="checkoutLocation" class="checkout-input" placeholder="Enter your room number">
+                    <span class="ico-r"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
                 </div>
             </div>
 
             <div class="order-card">
                 <div class="order-resto-header">
-                    <div id="checkoutRestoLogo" style="width: 24px; height: 24px; display:flex; justify-content:center; align-items:center;"></div>
+                    <div class="order-resto-logo" id="checkoutRestoLogo"></div>
                     <h3 id="checkoutRestoName">Restaurant Name</h3>
                 </div>
                 <div id="checkoutItemsList"></div>
             </div>
 
             <div class="checkout-section">
-                <label>Notes for the restaurant</label>
-                <textarea id="checkoutNotes" class="checkout-textarea" placeholder="e.g. less spicy, no onions..." rows="2"></textarea>
+                <label for="checkoutNotes">Notes for the restaurant</label>
+                <input type="text" id="checkoutNotes" class="checkout-input plain" placeholder="e.g. less spicy, no onions...">
             </div>
 
-            <div class="payment-method">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <span style="font-size: 18px; color: #6B4EFF;">💳</span>
-                    <div>
-                        <div style="font-size: 10px; color: #888; font-weight: 700; margin-bottom: 2px;">Payment method</div>
-                        <div style="font-size: 13px; font-weight: 700; color: #000;">E-Wallet / Cash</div>
+            <div class="co-pay">
+                <div class="payment-method">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span class="pay-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18M16 14.5h2"/></svg></span>
+                        <div>
+                            <div style="font-size: 10.5px; color: #94A3B8; font-weight: 600; margin-bottom: 2px;">Payment method</div>
+                            <div style="font-size: 14px; font-weight: 800; color: #0B1220;" id="paymentMethodText">E-Wallet / QRIS</div>
+                        </div>
                     </div>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0B1220" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
                 </div>
-                <span style="font-weight: bold; color: #000;">></span>
-            </div>
 
-            <div class="price-breakdown">
-                <div class="price-row">
-                    <span id="orderItemsText">Order total (0 items)</span>
-                    <span id="subtotalDisplay">Rp 0</span>
+                <div class="price-breakdown">
+                    <div class="price-row">
+                        <span id="orderItemsText">Order total (0 items)</span>
+                        <span id="subtotalDisplay">Rp 0</span>
+                    </div>
+                    <div class="price-row" id="deliveryFeeRow">
+                        <span>Delivery fee<small id="deliveryZoneText"></small></span>
+                        <span id="deliveryFeeDisplay">Rp 3.000</span>
+                    </div>
+                    <div class="price-row">
+                        <span>Service fee</span>
+                        <span id="serviceFeeDisplay">Rp 2.000</span>
+                    </div>
+                    <div class="price-row total">
+                        <span>Total</span>
+                        <span id="finalTotalDisplay">Rp 0</span>
+                    </div>
+                    <div class="price-note">Includes all fees</div>
                 </div>
-                <div class="price-row">
-                    <span>Delivery fee</span>
-                    <span id="deliveryFeeDisplay">Rp 3.000</span>
-                </div>
-                <div class="price-row">
-                    <span>Service fee</span>
-                    <span>Rp 2.000</span>
-                </div>
-                <div class="price-row total">
-                    <span>Total</span>
-                    <span id="finalTotalDisplay">Rp 0</span>
-                </div>
-                <div style="font-size: 10px; color: #A0A0A0; text-align: right; margin-top: -4px;">Includes all fees</div>
             </div>
         </div>
 
-        <!-- Floating Place Order Bar -->
+        <!-- Bar Place Order -->
         <div class="bottom-checkout-bar d-none" id="placeOrderBar">
             <div>
-                <div style="font-size: 11px; color: #666; font-weight: 600; margin-bottom: 2px;">Total</div>
-                <div style="font-size: 18px; font-weight: 700; color: #000;" id="placeOrderTotalDisplay">Rp 0</div>
+                <div style="font-size: 11px; color: #6B7280; font-weight: 600; margin-bottom: 2px;">Total</div>
+                <div style="font-size: 20px; font-weight: 800; color: #0B1220;" id="placeOrderTotalDisplay">Rp 0</div>
             </div>
             <button class="btn-place-order" id="btnPlaceOrder">Place order</button>
         </div>
@@ -201,6 +274,28 @@
         let cart = {}; 
         const SERVICE_FEE = 2000;
         let DELIVERY_FEE = 3000;
+
+        // ===== ONGKIR BERDASARKAN WILAYAH KANTIN =====
+        // Wilayah kantin disimpan di database (field "deliveryZone" pada akun merchant, atau dokumen "canteenZones/<kantin>" untuk kantin bawaan).
+        const ZONE_FEES   = { campus: 3000, outside_50m: 4000, outside_100m: 5000 };
+        const ZONE_LABELS = { campus: 'Inside campus', outside_50m: '50 m outside campus', outside_100m: '100 m outside campus' };
+        let currentZone = 'campus';   // default bila wilayah belum diisi di database
+        function normalizeZone(v) {
+            const t = String(v == null ? '' : v).toLowerCase();
+            if (t.includes('100')) return 'outside_100m';
+            if (t.includes('50')) return 'outside_50m';
+            return 'campus';
+        }
+        const isPickupMode = () => document.getElementById('modePickup').classList.contains('active');
+        function refreshDeliveryFee() {
+            const pickup = isPickupMode();
+            DELIVERY_FEE = pickup ? 0 : ZONE_FEES[currentZone];
+            document.getElementById('deliveryFeeDisplay').innerText = formatRupiah(DELIVERY_FEE);
+            document.getElementById('deliveryZoneText').innerText = '\u00B7 ' + ZONE_LABELS[currentZone];
+            document.getElementById('deliveryFeeRow').classList.toggle('d-none', pickup);
+            document.getElementById('deliveryLocationSection').classList.toggle('d-none', pickup);
+            document.getElementById('serviceFeeDisplay').innerText = formatRupiah(SERVICE_FEE);
+        }
         let FINAL_TOTAL_ORDER = 0;
 
         // Ambil Data Dari URL
@@ -242,6 +337,7 @@
                 };
 
                 // 2. Timpa dan Gabungkan dengan Menu Kustom dari Firestore
+                let zoneRaw = null;
                 let fbCustomMenus = [];
                 let fbDeletedMenus = [];
 
@@ -263,32 +359,65 @@
                     if (merchantDocSnap && merchantDocSnap.exists()) {
                         const mData = merchantDocSnap.data();
                         if (mData.photoBase64) currentData.logo = mData.photoBase64;
+                        if (mData.prepTime) currentData.prepTime = mData.prepTime;
+                        if (mData.location) currentData.location = mData.location;
+                        zoneRaw = mData.deliveryZone || mData.zone || mData.area || null;
                         if (mData.customMenus) fbCustomMenus = mData.customMenus;
                         if (mData.deletedMenus) fbDeletedMenus = mData.deletedMenus;
                     }
                 } catch(e) { console.warn("Firebase fetch error", e); }
+
+                // Wilayah kantin untuk ongkir: dari akun merchant, atau dari koleksi "canteenZones" (kantin bawaan menu.json)
+                if (!zoneRaw) {
+                    try {
+                        const zs = await getDoc(doc(db, "canteenZones", jsonKey || restoNameParam.toLowerCase()));
+                        if (zs.exists()) zoneRaw = zs.data().zone;
+                    } catch(e) { console.warn("Zone fetch error", e); }
+                }
+                currentZone = normalizeZone(zoneRaw);
 
                 // Bersihkan menu dasar yang sudah dihapus oleh merchant, lalu gabungkan
                 let finalBaseMenus = currentData.menus.filter(m => !fbDeletedMenus.includes(m.id));
                 currentData.menus = [...fbCustomMenus, ...finalBaseMenus];
 
                 initUI();
+
+                // Datang dari tombol "+" di halaman Popular Picks: langsung masukkan menu ke keranjang
+                const addId = urlParams.get('add');
+                if (addId) {
+                    const picked = currentData.menus.find(m => String(m.id) === addId);
+                    if (picked && picked.price) window.addToCart(picked.id, picked.name, picked.price, picked.img || '');
+                    urlParams.delete('add');
+                    const cleanQs = urlParams.toString();
+                    history.replaceState(null, '', window.location.pathname + (cleanQs ? '?' + cleanQs : ''));
+                }
             } catch (error) {
                 document.getElementById('menuContainer').innerHTML = '<p style="text-align:center; color:#D32F2F; margin-top:30px;">Gagal memuat data menu.</p>';
             }
         }
 
+        const PLACEHOLDER_IMG = 'https://via.placeholder.com/150x150/F5F5F5/A0A0A0?text=No+Photo';
+        const esc = (t) => String(t == null ? '' : t).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+        const initialsOf = (name) => { const w = String(name || '?').trim().split(/\s+/); return (w[0].charAt(0) + (w[1] ? w[1].charAt(0) : '')).toUpperCase(); };
+
         function initUI() {
             document.title = 'Menu Kantin - ' + currentData.name;
             document.getElementById('restoName').textContent = currentData.name;
-            
-            let statsHtml = `<span style="color: #DC9808;">⭐ ${currentData.rating}</span> (${currentData.reviewCount})`;
-            document.getElementById('restoStats').innerHTML = statsHtml;
 
-            const logoHtml = currentData.logo 
-                ? `<img src="${currentData.logo}" alt="${currentData.name}" style="width:100%; height:100%; object-fit:cover; border-radius:8px; padding:2px;">` 
-                : `<div style="width:100%; height:100%; background:#F8F8F8; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#333; font-weight:bold; font-size:10px;">${currentData.name.substring(0,6)}</div>`;
-            
+            // Baris info: rating • estimasi siap • lokasi
+            const ratingTxt = (currentData.reviewCount && currentData.reviewCount !== 'New')
+                ? `<span class="star">&#9733;</span> <b>${esc(currentData.rating)}</b> (${esc(currentData.reviewCount)} ratings)`
+                : `<span class="star">&#9733;</span> <b>New</b>`;
+            const parts = [ratingTxt];
+            if (currentData.prepTime) parts.push('Ready in ' + esc(currentData.prepTime) + (/min/i.test(currentData.prepTime) ? '' : ' min'));
+            parts.push(esc(currentData.location || 'Campus Canteen'));
+            document.getElementById('restoStats').innerHTML = parts.join(' &bull; ');
+
+            const fit = (currentData.logo && String(currentData.logo).startsWith('data:')) ? 'cover' : 'contain';
+            const logoHtml = currentData.logo
+                ? `<img src="${esc(currentData.logo)}" alt="${esc(currentData.name)}" style="width:100%; height:100%; object-fit:${fit}; padding:${fit === 'contain' ? '6px' : '0'}; box-sizing:border-box; border-radius:50%;">`
+                : `<div class="rh-logo-ph">${esc(initialsOf(currentData.name))}</div>`;
+
             document.getElementById('restoLogoContainer').innerHTML = logoHtml;
             document.getElementById('checkoutRestoName').innerText = currentData.name;
             document.getElementById('checkoutRestoLogo').innerHTML = logoHtml;
@@ -305,35 +434,64 @@
             window.renderMenu('Semua');
         }
 
+        function menuCardHtml(menu) {
+            const priceNum = Number(menu.price) || 0;
+            const ph = `<div class="mi-ph">${esc(initialsOf(menu.name))}</div>`;
+            const photo = menu.img
+                ? `<img src="${esc(menu.img)}" alt="${esc(menu.name)}" loading="lazy" draggable="false" onerror="this.parentNode.innerHTML=this.parentNode.dataset.ph">`
+                : ph;
+            return `<div class="mi-card" data-id="${esc(menu.id)}">
+                <div class="mi-photo" data-ph="${esc(ph)}">${photo}</div>
+                <div class="mi-info">
+                    <h3>${esc(menu.name)}</h3>
+                    <p class="mi-price">${formatRupiah(priceNum)}</p>
+                    <div class="mi-meta"><span>${esc(menu.category || '')}</span><span class="mi-incart d-none"></span></div>
+                </div>
+                <div class="mi-actions">
+                    <button type="button" class="mi-minus d-none" data-act="minus" aria-label="Kurangi">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M5 12h14"/></svg>
+                    </button>
+                    <button type="button" class="mi-add" data-act="add" aria-label="Tambah" ${priceNum === 0 ? 'disabled' : ''}>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                    </button>
+                </div>
+            </div>`;
+        }
+
+        // Tandai menu yang sudah ada di keranjang ("N in cart") + tombol minus
+        function refreshCardState() {
+            document.querySelectorAll('#menuContainer .mi-card').forEach(card => {
+                const it = cart[card.dataset.id];
+                const q = it ? it.qty : 0;
+                const tag = card.querySelector('.mi-incart');
+                tag.textContent = q + ' in cart';
+                tag.classList.toggle('d-none', !q);
+                card.querySelector('.mi-minus').classList.toggle('d-none', !q);
+            });
+        }
+
         window.renderMenu = function(category) {
             const menuContainer = document.getElementById('menuContainer');
-            menuContainer.innerHTML = ''; 
-            
             const filteredMenus = (category === 'Semua') ? currentData.menus : currentData.menus.filter(m => m.category === category);
+            document.getElementById('dishCount').textContent = filteredMenus.length + (filteredMenus.length === 1 ? ' dish' : ' dishes');
 
             if (filteredMenus.length === 0) {
                 menuContainer.innerHTML = '<p style="text-align:center; color:#888; font-size:12px; margin-top:30px;">Belum ada menu yang didaftarkan.</p>';
                 return;
             }
-
-            filteredMenus.forEach(menu => {
-                const imgSrc = menu.img ? menu.img : 'https://via.placeholder.com/150x150/F5F5F5/A0A0A0?text=No+Photo';
-                const safeName = menu.name.replace(/'/g, "\\'"); 
-                const priceNum = menu.price || 0;
-
-                const html = `
-                    <div class="menu-item">
-                        <img src="${imgSrc}" alt="${menu.name}" onerror="this.src='https://via.placeholder.com/150x150/F5F5F5/A0A0A0?text=No+Photo'">
-                        <div class="menu-item-info">
-                            <h3>${menu.name}</h3>
-                            <p>${formatRupiah(priceNum)}</p>
-                        </div>
-                        <button class="add-btn" onclick="window.addToCart('${menu.id}', '${safeName}', ${priceNum}, '${imgSrc}')" ${priceNum === 0 ? 'disabled' : ''}>+</button>
-                    </div>
-                `;
-                menuContainer.innerHTML += html;
-            });
+            menuContainer.innerHTML = filteredMenus.map(menuCardHtml).join('');
+            refreshCardState();
         }
+
+        document.getElementById('menuContainer').addEventListener('click', (e) => {
+            const btn = e.target.closest('[data-act]');
+            if (!btn) return;
+            const card = btn.closest('.mi-card');
+            const menu = currentData.menus.find(m => String(m.id) === card.dataset.id);
+            if (!menu) return;
+            if (btn.dataset.act === 'add') window.addToCart(menu.id, menu.name, Number(menu.price) || 0, menu.img || PLACEHOLDER_IMG);
+            else window.updateQty(menu.id, -1);
+        });
 
         document.getElementById('menuTabs').addEventListener('click', (e) => {
             if(e.target.classList.contains('tab-btn')) {
@@ -363,6 +521,7 @@
         }
 
         window.updateCartUI = function() {
+            refreshDeliveryFee();
             let totalItems = 0; let subtotal = 0;
             for (const id in cart) {
                 totalItems += cart[id].qty;
@@ -371,9 +530,10 @@
 
             const checkoutBtn = document.getElementById('checkoutBtn');
             if (totalItems > 0) {
-                checkoutBtn.style.display = 'flex';
+                // Bar checkout tampil hanya di halaman menu (bukan saat halaman checkout terbuka)
+                checkoutBtn.style.display = document.getElementById('checkoutView').classList.contains('d-none') ? 'flex' : 'none';
                 document.getElementById('cartCount').innerText = totalItems;
-                document.getElementById('cartTotal').innerText = formatRupiah(subtotal);
+                document.getElementById('cartTotal').innerText = totalItems + (totalItems === 1 ? ' item' : ' items') + ' \u2022 ' + formatRupiah(subtotal);
             } else {
                 checkoutBtn.style.display = 'none';
                 if (!document.getElementById('checkoutView').classList.contains('d-none')) {
@@ -381,20 +541,22 @@
                 }
             }
 
+            refreshCardState();
+
             const list = document.getElementById('checkoutItemsList');
             list.innerHTML = '';
             for (const id in cart) {
                 const item = cart[id];
                 list.innerHTML += `
                     <div class="checkout-item">
-                        <img src="${item.img}" alt="${item.name}">
+                        <img src="${esc(item.img)}" alt="${esc(item.name)}">
                         <div class="checkout-item-info">
-                            <h4>${item.name}</h4>
+                            <h4>${esc(item.name)}</h4>
                             <p>${formatRupiah(item.price)}</p>
                         </div>
                         <div class="qty-controls">
                             <span class="qty-btn" onclick="window.updateQty('${id}', -1)">−</span>
-                            <span>${item.qty}</span>
+                            <span class="q">${item.qty}</span>
                             <span class="qty-btn" onclick="window.updateQty('${id}', 1)">+</span>
                         </div>
                     </div>
@@ -412,6 +574,7 @@
         document.getElementById('checkoutBtn').addEventListener('click', (e) => {
             e.preventDefault();
             document.getElementById('menuView').classList.add('d-none');
+            document.getElementById('checkoutBtn').style.display = 'none';
             document.getElementById('checkoutView').classList.remove('d-none');
             document.getElementById('placeOrderBar').classList.remove('d-none');
             window.scrollTo(0,0);
@@ -422,18 +585,13 @@
             document.getElementById('checkoutView').classList.add('d-none');
             document.getElementById('placeOrderBar').classList.add('d-none');
             document.getElementById('menuView').classList.remove('d-none');
+            window.updateCartUI();
         });
 
         window.switchDeliveryMode = function(element) {
             document.querySelectorAll('.delivery-toggle .toggle-btn').forEach(btn => btn.classList.remove('active'));
             element.classList.add('active');
-
-            if(element.innerText === 'Pickup') {
-                DELIVERY_FEE = 0; document.getElementById('deliveryFeeDisplay').innerText = formatRupiah(0);
-            } else {
-                DELIVERY_FEE = 3000; document.getElementById('deliveryFeeDisplay').innerText = formatRupiah(3000);
-            }
-            window.updateCartUI(); 
+            window.updateCartUI();   // ongkir & field lokasi ikut menyesuaikan (Pickup: tanpa lokasi & tanpa ongkir)
         }
 
         // Firebase Submit Order Logic
@@ -459,12 +617,19 @@
                 return;
             }
 
+            const orderType = document.querySelector('.delivery-toggle .active').innerText;
+            const isPickup = orderType === 'Pickup';
+            const timeEl = document.getElementById('checkoutTime');
+            const locEl = document.getElementById('checkoutLocation');
+            [timeEl, locEl].forEach(el => el.classList.remove('co-error'));
+            if (!timeEl.value) { timeEl.classList.add('co-error'); timeEl.focus(); alert("Pilih jadwal kelas terlebih dahulu."); return; }
+            if (!isPickup && !locEl.value.trim()) { locEl.classList.add('co-error'); locEl.focus(); alert("Isi lokasi pengantaran (misalnya nomor ruangan)."); return; }
+
             const btn = document.getElementById('btnPlaceOrder');
             btn.innerText = "Processing..."; btn.disabled = true;
 
-            const orderType = document.querySelector('.delivery-toggle .active').innerText;
-            const scheduledTime = document.getElementById('checkoutTime').value;
-            const locNotes = document.getElementById('checkoutLocation').value || "-";
+            const scheduledTime = timeEl.value;
+            const locNotes = isPickup ? "-" : locEl.value.trim();
             const extraNotes = document.getElementById('checkoutNotes').value || "-";
 
             const orderData = {
@@ -473,6 +638,10 @@
                 merchantId: currentData.id, // UID Akun Merchant (atau nama restoran jika fallback JSON)
                 items: Object.values(cart),
                 totalPrice: FINAL_TOTAL_ORDER,
+                deliveryFee: DELIVERY_FEE,
+                serviceFee: SERVICE_FEE,
+                deliveryZone: isPickup ? null : currentZone,
+                paymentMethod: 'E-Wallet / QRIS',
                 status: 'pending',
                 type: orderType,
                 time: scheduledTime,

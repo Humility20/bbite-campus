@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BBite Courier - Terms of Service</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="security.js" data-guard></script>
+    <style>
+        .app-container.dashboard { background: #F5F7FA; }
+        .page-content { flex: 1; overflow-y: auto; padding: 0 16px 120px; }
+        .page-content::-webkit-scrollbar { display: none; }
+        .head { position: relative; text-align: center; padding: 56px 0 16px; }
+        .btn-back { position: absolute; left: 0; top: 52px; width: 34px; height: 34px; border: none; background: none; color: #F5A623; cursor: pointer; display: flex; align-items: center; text-decoration: none; }
+        .btn-back:active { transform: scale(0.9); }
+        .head h1 { font-size: 21px; font-weight: 800; color: #0B1220; margin: 0 30px 6px; }
+        .head p { font-size: 11px; color: #94A3B8; font-weight: 500; }
+
+        .doc { background: #FFF; border: 1px solid #EEF1F5; border-radius: 18px; box-shadow: 0 2px 8px rgba(15,23,42,0.04); padding: 22px 20px 20px; }
+        .doc h2 { font-size: 15.5px; font-weight: 800; color: #0B1220; margin: 0 0 10px; }
+        .doc section + section { margin-top: 22px; }
+        .doc p { font-size: 13.5px; line-height: 1.65; color: #334155; font-weight: 500; }
+        .doc ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+        .doc li { position: relative; padding-left: 18px; font-size: 13.5px; line-height: 1.6; color: #334155; font-weight: 500; }
+        .doc li::before { content: ""; position: absolute; left: 4px; top: 9px; width: 5px; height: 5px; border-radius: 50%; background: #334155; }
+
+        .actions { display: flex; flex-direction: column; gap: 12px; margin-top: 24px; }
+        .btn-act { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; border: none; border-radius: 22px; padding: 14px; background: #EEF1F5; color: #0B1220; font-size: 12.5px; font-weight: 700; font-family: inherit; cursor: pointer; transition: 0.15s; }
+        .btn-act:active { transform: scale(0.98); background: #E2E8F0; }
+        .btn-act svg { color: #475569; }
+
+        .toast { position: absolute; left: 16px; right: 16px; bottom: 100px; background: #0B1220; color: #FFF; font-size: 13px; font-weight: 600; padding: 12px 16px; border-radius: 12px; z-index: 200; opacity: 0; transform: translateY(10px); pointer-events: none; transition: 0.25s; text-align: center; }
+        .toast.show { opacity: 1; transform: none; }
+
+        .bottom-nav { background: #FFF; }
+        .nav-item { padding: 10px 14px; color: #6B7280; }
+        .nav-item svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+        .nav-item.active { background: #FFF6DB; color: #C98A00; flex-direction: row; gap: 8px; padding: 10px 18px; }
+        .nav-item.active span { font-weight: 800; }
+
+        /* Download PDF: cetak halaman -> "Save as PDF" */
+        @media print {
+            body { background: #FFF; }
+            .app-container, .app-container.dashboard { position: static !important; height: auto !important; max-height: none !important; overflow: visible !important; box-shadow: none !important; border: none !important; width: 100% !important; }
+            .page-content { overflow: visible !important; padding: 0 !important; }
+            .bottom-nav, .btn-back, .actions, .toast { display: none !important; }
+            .doc { border: none; box-shadow: none; padding: 0; }
+            .head { padding-top: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container dashboard">
+        <div class="page-content">
+            <div class="head">
+                <a href="profile-kurir.html" class="btn-back" aria-label="Kembali">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+                </a>
+                <h1>Terms of Service</h1>
+                <p>Last updated: October 2026 &bull; Version 1.2</p>
+            </div>
+
+            <article class="doc">
+                <section>
+                    <h2>1. Courier Partnership Scope</h2>
+                    <p>By using the BBite Courier application, you agree to comply with campus food delivery regulations, maintain delivery accuracy, and adhere to safety standards on university grounds.</p>
+                </section>
+                <section>
+                    <h2>2. Code of Conduct &amp; Food Handling</h2>
+                    <ul>
+                        <li>Hand over food items safely and promptly to customers.</li>
+                        <li>Maintain clean delivery thermal bags and respect campus rules.</li>
+                        <li>Report any order discrepancies or cancelled orders immediately via Support.</li>
+                    </ul>
+                </section>
+                <section>
+                    <h2>3. Earnings &amp; Payout Terms</h2>
+                    <p>Delivery fees and commissions per order are calculated based on distance and order complexity. Balance withdrawals are processed into verified bank or e-wallet accounts.</p>
+                </section>
+                <section>
+                    <h2>4. Account Status &amp; Violations</h2>
+                    <p>BBite reserves the right to suspend or terminate courier accounts in cases of fraud, severe order delays, unfulfilled deliveries, or violation of university policies.</p>
+                </section>
+
+                <div class="actions">
+                    <button type="button" class="btn-act" id="btnPdf">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>
+                        Download PDF Version
+                    </button>
+                    <button type="button" class="btn-act" id="btnPolicy">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>
+                        Privacy Policy Link
+                    </button>
+                </div>
+            </article>
+        </div>
+
+        <nav class="bottom-nav">
+            <a href="home-kurir.html" class="nav-item">
+                <svg viewBox="0 0 24 24" width="22" height="22"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>
+                <span>Home</span>
+            </a>
+            <a href="orders-kurir.html" class="nav-item">
+                <svg viewBox="0 0 24 24" width="22" height="22"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>
+                <span>Orders</span>
+            </a>
+            <a href="wallet-kurir.html" class="nav-item">
+                <svg viewBox="0 0 24 24" width="22" height="22"><path d="M20 7H5a2 2 0 0 1 0-4h13v4"/><path d="M3 5v14a2 2 0 0 0 2 2h15V7"/><circle cx="16.5" cy="14" r="1.2"/></svg>
+                <span>Wallet</span>
+            </a>
+            <a href="profile-kurir.html" class="nav-item active">
+                <svg viewBox="0 0 24 24" width="22" height="22"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+                <span>Profile</span>
+            </a>
+        </nav>
+
+        <div class="toast" id="toast"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyCd_v_YnSXpiVAA_eDxk_MaCCdqo4H5CFE", authDomain: "bbite-ac7e4.firebaseapp.com", projectId: "bbite-ac7e4" };
+        const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+        onAuthStateChanged(getAuth(app), (user) => { if (!user) window.location.href = "index.html"; });
+
+        const $ = (id) => document.getElementById(id);
+        let toastTimer;
+        function showToast(msg) {
+            const t = $("toast");
+            t.textContent = msg; t.classList.add("show");
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => t.classList.remove("show"), 2600);
+        }
+
+        // Download PDF: buka dialog cetak, pilih "Save as PDF" (belum ada file PDF resmi)
+        $("btnPdf").addEventListener("click", () => window.print());
+        $("btnPolicy").addEventListener("click", () => { window.location.href = "privacy-policy-kurir.html"; });
+    </script>
+</body>
+</html>

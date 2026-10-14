@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BBite Courier - Live Chat Support</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="security.js" data-guard></script>
+    <style>
+        .app-container.dashboard { background: #F5F7FA; display: flex; flex-direction: column; }
+
+        .chat-head { display: flex; align-items: center; gap: 10px; padding: 52px 18px 12px; background: #FFF; border-bottom: 1px solid #EEF1F5; flex-shrink: 0; }
+        .btn-back { width: 30px; height: 34px; border: none; background: none; color: #F5A623; cursor: pointer; display: flex; align-items: center; text-decoration: none; margin-left: -4px; flex-shrink: 0; }
+        .btn-back:active { transform: scale(0.9); }
+        .head-mid { flex: 1; display: flex; flex-direction: column; align-items: center; margin-right: 26px; }
+        .head-title { display: flex; align-items: center; gap: 8px; font-size: 17px; font-weight: 800; color: #0B1220; }
+        .av { width: 30px; height: 30px; border-radius: 50%; background: #FFF1DC; color: #F5A623; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .status { display: flex; align-items: center; gap: 6px; margin-top: 4px; font-size: 11.5px; color: #64748B; font-weight: 500; }
+        .dot { width: 7px; height: 7px; border-radius: 50%; background: #16A34A; }
+
+        .msgs { flex: 1; overflow-y: auto; padding: 16px 16px 12px; display: flex; flex-direction: column; gap: 10px; }
+        .msgs::-webkit-scrollbar { display: none; }
+        .day { text-align: center; font-size: 11.5px; color: #94A3B8; font-weight: 500; margin: 2px 0 6px; }
+        .sys { text-align: center; font-size: 11px; color: #94A3B8; font-weight: 500; margin: 6px 0; }
+
+        .row { display: flex; align-items: flex-end; gap: 8px; }
+        .row.me { justify-content: flex-end; }
+        .row .av { width: 24px; height: 24px; margin-bottom: 18px; }
+        .col { display: flex; flex-direction: column; max-width: 78%; }
+        .row.me .col { align-items: flex-end; }
+        .bubble { font-size: 13px; line-height: 1.5; font-weight: 500; padding: 12px 14px; border-radius: 16px; word-break: break-word; white-space: pre-wrap; }
+        .row.them .bubble { background: #FFF; color: #0B1220; border-bottom-left-radius: 5px; box-shadow: 0 1px 4px rgba(15,23,42,0.06); }
+        .row.me .bubble { background: #F5A623; color: #FFF; border-bottom-right-radius: 5px; }
+        .meta { font-size: 10.5px; color: #94A3B8; font-weight: 500; margin-top: 4px; }
+        .row.them .col { align-items: flex-start; }
+
+        .row.me.failed .bubble { background: #FEECEC; color: #DC2626; }
+        .retry { border: none; background: none; color: #DC2626; font-size: 11px; font-weight: 700; cursor: pointer; font-family: inherit; margin-top: 4px; }
+
+        .chips { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 2px 0 2px 32px; }
+        .chip { border: 1.5px solid #F5A623; background: #FFF; color: #E8820C; font-size: 12px; font-weight: 700; padding: 10px 6px; border-radius: 20px; cursor: pointer; font-family: inherit; transition: 0.15s; }
+        .chip:active { background: #FFF6E3; transform: scale(0.97); }
+        .chips.used { display: none; }
+
+        .typing .bubble { display: flex; align-items: center; gap: 6px; padding: 12px 14px; color: #94A3B8; font-size: 12px; }
+        .typing .dots { display: flex; gap: 3px; }
+        .typing .dots i { width: 5px; height: 5px; border-radius: 50%; background: #CBD5E1; animation: blink 1.2s infinite; }
+        .typing .dots i:nth-child(2) { animation-delay: 0.2s; }
+        .typing .dots i:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes blink { 0%, 80%, 100% { opacity: 0.3; } 40% { opacity: 1; } }
+
+        .input-bar { display: flex; align-items: center; gap: 10px; padding: 10px 14px 26px; background: #FFF; border-top: 1px solid #EEF1F5; flex-shrink: 0; }
+        .btn-attach { width: 34px; height: 34px; border: none; background: none; color: #94A3B8; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .input-bar input { flex: 1; min-width: 0; border: 1.5px solid transparent; background: #EEF1F5; border-radius: 22px; padding: 12px 16px; font-size: 13px; font-family: inherit; color: #0B1220; outline: none; transition: 0.2s; }
+        .input-bar input:focus { border-color: #F5A623; background: #FFF; }
+        .input-bar input::placeholder { color: #94A3B8; }
+        .btn-send { width: 40px; height: 40px; border: none; border-radius: 50%; background: #CBD5E1; color: #FFF; display: flex; align-items: center; justify-content: center; cursor: default; flex-shrink: 0; transition: 0.2s; }
+        .btn-send.on { background: #F5A623; cursor: pointer; }
+        .btn-send.on:active { transform: scale(0.92); }
+
+        .toast { position: absolute; left: 16px; right: 16px; bottom: 100px; background: #0B1220; color: #FFF; font-size: 13px; font-weight: 600; padding: 12px 16px; border-radius: 12px; z-index: 200; opacity: 0; transform: translateY(10px); pointer-events: none; transition: 0.25s; text-align: center; }
+        .toast.show { opacity: 1; transform: none; }
+    </style>
+</head>
+<body>
+    <div class="app-container dashboard">
+        <header class="chat-head">
+            <a href="help-center-kurir.html" class="btn-back" aria-label="Kembali">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+            </a>
+            <div class="head-mid">
+                <div class="head-title"><span class="av" id="headAv"></span>Live Chat Support</div>
+                <div class="status"><span class="dot"></span>Online &middot; balasan sekitar 5 menit</div>
+            </div>
+        </header>
+
+        <div class="msgs" id="msgs"></div>
+
+        <div class="input-bar">
+            <button type="button" class="btn-attach" id="btnAttach" aria-label="Lampirkan file">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5l-8.6 8.6a5.5 5.5 0 0 1-7.8-7.8l8.6-8.6a3.7 3.7 0 0 1 5.2 5.2l-8.6 8.6a1.8 1.8 0 0 1-2.6-2.6L15.8 7"/></svg>
+            </button>
+            <input type="text" id="msgInput" placeholder="Type your message..." autocomplete="off" maxlength="500">
+            <button type="button" class="btn-send" id="btnSend" aria-label="Kirim">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>
+            </button>
+        </div>
+
+        <div class="toast" id="toast"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyCd_v_YnSXpiVAA_eDxk_MaCCdqo4H5CFE", authDomain: "bbite-ac7e4.firebaseapp.com", projectId: "bbite-ac7e4" };
+        const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+        const auth = getAuth(app), db = getFirestore(app);
+
+        const $ = (id) => document.getElementById(id);
+        const esc = (t) => String(t).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+        const p2 = (n) => String(n).padStart(2, "0");
+        const nowTime = () => { const d = new Date(); return p2(d.getHours()) + ":" + p2(d.getMinutes()); };
+
+        let toastTimer;
+        function showToast(msg) {
+            const t = $("toast");
+            t.textContent = msg; t.classList.add("show");
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => t.classList.remove("show"), 2600);
+        }
+
+        const HEADSET = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/></svg>';
+        $("headAv").innerHTML = HEADSET;
+
+        const box = $("msgs");
+        const toBottom = () => { box.scrollTop = box.scrollHeight; };
+
+        // ===== Render =====
+        function addDay(label) { box.insertAdjacentHTML("beforeend", `<div class="day">${label}</div>`); }
+        function addSys(text) { box.insertAdjacentHTML("beforeend", `<div class="sys">${esc(text)}</div>`); toBottom(); }
+        function addThem(text, who, time) {
+            const meta = (who ? who + " \u00B7 " : "") + (time || nowTime());
+            box.insertAdjacentHTML("beforeend", `<div class="row them"><span class="av">${HEADSET}</span><div class="col"><div class="bubble">${esc(text)}</div><div class="meta">${meta}</div></div></div>`);
+            toBottom();
+        }
+        function addMe(text, time) {
+            const el = document.createElement("div");
+            el.className = "row me";
+            el.innerHTML = `<div class="col"><div class="bubble">${esc(text)}</div><div class="meta">${time || nowTime()}</div></div>`;
+            box.appendChild(el); toBottom();
+            return el;
+        }
+        function addChips() {
+            const LIST = ["Orders & Deliveries", "Payments & Earnings", "Account & Profile", "App & Technical"];
+            const el = document.createElement("div");
+            el.className = "chips"; el.id = "chips";
+            el.innerHTML = LIST.map(t => `<button type="button" class="chip">${esc(t)}</button>`).join("");
+            el.querySelectorAll(".chip").forEach(b => b.addEventListener("click", () => { el.classList.add("used"); send(b.textContent); }));
+            box.appendChild(el); toBottom();
+        }
+        let typingEl = null;
+        function showTyping() {
+            hideTyping();
+            typingEl = document.createElement("div");
+            typingEl.className = "row them typing";
+            typingEl.innerHTML = `<span class="av">${HEADSET}</span><div class="col"><div class="bubble"><span class="dots"><i></i><i></i><i></i></span> typing...</div></div>`;
+            box.appendChild(typingEl); toBottom();
+        }
+        function hideTyping() { if (typingEl) { typingEl.remove(); typingEl = null; } }
+
+        // ===== Alur chat (simulasi front end; belum terhubung ke agent sungguhan) =====
+        let agentJoined = false, replies = 0;
+        const FOLLOW_UPS = [
+            "Terima kasih infonya, Gihon. Saya cek dulu ke sistem ya, mohon tunggu sebentar.",
+            "Sudah saya catat. Kalau ada kendala lain, kabari saja di sini ya."
+        ];
+        function agentReply() {
+            showTyping();
+            setTimeout(() => {
+                hideTyping();
+                if (!agentJoined) {
+                    agentJoined = true;
+                    addSys("Agent Rina joined the chat");
+                    addThem("Hi " + firstName + ", saya Rina. Boleh kirim nomor pesanan dan lokasi kamu saat ini? Saya bantu cek ya.", "Rina");
+                } else {
+                    addThem(FOLLOW_UPS[Math.min(replies, FOLLOW_UPS.length - 1)], "Rina");
+                    replies++;
+                }
+            }, 1600);
+        }
+        function send(text) {
+            text = String(text || "").trim();
+            if (!text) return;
+            addMe(text);
+            $("msgInput").value = ""; syncSend();
+            agentReply();
+        }
+
+        const input = $("msgInput"), btn = $("btnSend");
+        function syncSend() { btn.classList.toggle("on", !!input.value.trim()); }
+        input.addEventListener("input", syncSend);
+        input.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); send(input.value); } });
+        btn.addEventListener("click", () => { if (btn.classList.contains("on")) { $("chips") && $("chips").classList.add("used"); send(input.value); } });
+        input.addEventListener("keydown", (e) => { if (e.key === "Enter" && $("chips")) $("chips").classList.add("used"); });
+        $("btnAttach").addEventListener("click", () => showToast("Lampiran sedang dikembangkan"));
+
+        // ===== Mulai: sapaan memakai nama depan kurir =====
+        let firstName = "", started = false;
+        const first = (n) => String(n || "").trim().split(/\s+/)[0];
+        function start() {
+            if (started) return; started = true;
+            const demo = new URLSearchParams(location.search).has("demo");
+            addDay("Today");
+            addThem("Hi" + (firstName ? " " + firstName : "") + "! Welcome to BBite Support. How can we help you today?", "", demo ? "09:41" : null);
+            addChips();
+            if (demo) {
+                // ?demo=1 -> tampilkan contoh percakapan seperti desain
+                addMe("Hi, saya sudah di Binus Anggrek, tapi belum menemukan penerima pesanan. Apa yang harus saya lakukan?", "09:42");
+                agentJoined = true;
+                addSys("Agent Rina joined the chat");
+                addThem("Hi " + (firstName || "Gihon") + ", saya Rina. Boleh kirim nomor pesanan dan lokasi kamu saat ini? Saya bantu cek ya.", "Rina", "09:43");
+                showTyping();
+            }
+        }
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) { window.location.href = "index.html"; return; }
+            firstName = first(user.displayName || (user.email || "").split("@")[0]);
+            try {
+                const snap = await getDoc(doc(db, "users", user.uid));
+                if (!snap.exists() || snap.data().courierStatus !== "active") { window.location.href = "home-mahasiswa.html"; return; }
+                if (snap.data().name) firstName = first(snap.data().name);
+            } catch (e) { console.log("Gagal memuat profil:", e); }
+            start();
+        });
+    </script>
+</body>
+</html>

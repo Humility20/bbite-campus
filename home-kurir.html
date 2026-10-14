@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BBite Courier - Home</title>
     <link rel="stylesheet" href="style.css">
+    <script src="security.js" data-guard></script>
     <script src="courier-store.js"></script>
     <style>
         .app-container.dashboard { background: #F5F7FA; }
@@ -250,6 +251,8 @@
         }
         renderStats();
         renderOrders();
+        // Saat kembali ke halaman ini lewat tombol Back, muat ulang angka dan daftar order
+        window.addEventListener("pageshow", (e) => { if (e.persisted) { renderStats(); renderOrders(); } });
 
         // ===== Toast =====
         const toastEl = document.getElementById("toast");

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BBite Courier - Wallet</title>
     <link rel="stylesheet" href="style.css">
+    <script src="security.js" data-guard></script>
     <script src="courier-store.js"></script>
     <style>
         .app-container.dashboard { background: #F5F7FA; }
@@ -101,6 +102,47 @@
         .toast { position: absolute; left: 16px; right: 16px; bottom: 96px; background: #0B1220; color: #FFF; font-size: 13px; font-weight: 600; padding: 12px 16px; border-radius: 12px; z-index: 200; opacity: 0; transform: translateY(10px); pointer-events: none; transition: 0.25s; }
         .toast.show { opacity: 1; transform: none; }
 
+
+        /* ===== Halaman Transaction History (full) ===== */
+        .history-page { position: absolute; inset: 0; background: #F5F7FA; z-index: 40; display: flex; flex-direction: column; transform: translateX(100%); visibility: hidden; transition: transform 0.25s, visibility 0.25s; }
+        .history-page.open { transform: none; visibility: visible; }
+        .hp-top { display: flex; align-items: center; padding: 52px 20px 14px; }
+        .hp-back { width: 32px; height: 32px; border: none; background: none; color: #0B1220; cursor: pointer; display: flex; align-items: center; justify-content: flex-start; padding: 0; }
+        .hp-title { flex: 1; text-align: center; font-size: 18px; font-weight: 800; color: #0B1220; margin-right: 32px; }
+        .hp-body { flex: 1; overflow-y: auto; padding: 8px 20px 110px; }
+        .hp-body::-webkit-scrollbar { display: none; }
+        .hp-sub { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+        .hp-sub span { font-size: 13px; color: #94A3B8; font-weight: 500; }
+        .hp-count { background: #FFF1DC; color: #E8820C; font-size: 11.5px; font-weight: 700; padding: 5px 12px; border-radius: 14px; }
+        .hp-group { margin-bottom: 20px; }
+        .hp-group-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; }
+        .hp-group-head h3 { font-size: 15px; font-weight: 800; color: #0B1220; }
+        .hp-group-head small { font-size: 11.5px; color: #94A3B8; font-weight: 500; }
+        .hp-list { display: flex; flex-direction: column; gap: 12px; }
+        .hp-tx { display: flex; align-items: center; gap: 14px; background: #FFF; border: 1px solid #EEF1F5; border-radius: 16px; padding: 16px; box-shadow: 0 2px 8px rgba(15,23,42,0.03); }
+        .hp-ico { width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .hp-ico.in { background: #E6F6EC; color: #16A34A; }
+        .hp-ico.out { background: #F1F3F5; color: #0B1220; }
+        .hp-info { flex: 1; min-width: 0; }
+        .hp-info strong { display: block; font-size: 14px; font-weight: 700; color: #0B1220; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .hp-info small { display: block; margin-top: 3px; font-size: 11.5px; color: #94A3B8; font-weight: 500; }
+        .hp-amt { font-size: 14px; font-weight: 800; flex-shrink: 0; }
+        .hp-amt.in { color: #16A34A; }
+        .hp-amt.out { color: #0B1220; }
+
+        /* ===== Empty state Transaction History ===== */
+        .hp-subtitle, .hp-empty { display: none; }
+        .history-page.empty .hp-sub { display: none; }
+        .history-page.empty .hp-back { color: #F5A623; }
+        .history-page.empty .hp-body { display: flex; flex-direction: column; padding-bottom: 100px; }
+        .history-page.empty .hp-subtitle { display: block; text-align: center; font-size: 12px; color: #94A3B8; font-weight: 500; margin: 2px 0 0; }
+        .history-page.empty .hp-empty { display: flex; flex: 1; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0 12px 20px; }
+        .hp-empty svg { margin-bottom: 26px; }
+        .hp-empty h3 { font-size: 21px; font-weight: 800; color: #0B1220; margin-bottom: 12px; }
+        .hp-empty p { font-size: 12.5px; line-height: 1.65; color: #94A3B8; font-weight: 500; margin-bottom: 28px; }
+        .btn-start { display: block; text-decoration: none; background: #F5A623; color: #FFF; font-size: 14.5px; font-weight: 800; padding: 15px 0; width: 78%; border-radius: 16px; box-shadow: 0 8px 18px rgba(245,166,35,0.3); text-align: center; transition: 0.2s; }
+        .btn-start:active { transform: scale(0.97); }
+
         .bottom-nav { background: #FFF; }
         .nav-item { padding: 10px 14px; color: #6B7280; }
         .nav-item svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
@@ -137,6 +179,38 @@
 
             <div class="tx-head" id="txHead"><h2>Transaction History</h2><button type="button" class="see-all" id="seeAll">See All</button></div>
             <div class="tx-list" id="txList"></div>
+        </div>
+
+        <!-- TRANSACTION HISTORY (full) -->
+        <div class="history-page" id="historyPage" aria-hidden="true">
+            <div class="hp-top">
+                <button type="button" class="hp-back" id="hpBack" aria-label="Kembali">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+                </button>
+                <h2 class="hp-title">Transaction History</h2>
+            </div>
+            <div class="hp-body" id="hpBody">
+                <div class="hp-subtitle">Detailed log of your future earnings and withdrawals.</div>
+                <div class="hp-empty" id="hpEmpty">
+                    <svg width="200" height="190" viewBox="0 0 200 190" fill="none" aria-hidden="true">
+                        <circle cx="100" cy="92" r="78" fill="#FFF6E3"/>
+                        <ellipse cx="100" cy="172" rx="62" ry="6" fill="#F3E7CF" opacity="0.7"/>
+                        <circle cx="20" cy="108" r="3" fill="#F5C26B"/><circle cx="168" cy="52" r="2" fill="#F5C26B"/>
+                        <path d="M178 76v12M172 82h12" stroke="#F5C26B" stroke-width="1.5" stroke-linecap="round"/>
+                        <rect x="68" y="36" width="76" height="52" rx="7" fill="#FFFDF8" stroke="#E8B968" stroke-width="1.6" transform="rotate(-4 106 62)"/>
+                        <path d="M76 52h42M76 62h26" stroke="#F0D9A8" stroke-width="2.4" stroke-linecap="round" transform="rotate(-4 106 62)"/>
+                        <rect x="50" y="70" width="108" height="78" rx="12" fill="#FFFBF2" stroke="#E8B968" stroke-width="1.8"/>
+                        <path d="M58 86h92" stroke="#F0D9A8" stroke-width="1.6"/>
+                        <rect x="134" y="98" width="30" height="26" rx="8" fill="#FFF3D6" stroke="#E8B968" stroke-width="1.8"/>
+                        <circle cx="146" cy="111" r="3.2" fill="#F5A623"/>
+                    </svg>
+                    <h3>No Transactions Yet!</h3>
+                    <p>Looks like you're a new courier! This page will show your earnings from completed orders and your withdrawals once you start. We're excited to have you on board!</p>
+                    <a href="home-kurir.html" class="btn-start">Start Delivering</a>
+                </div>
+                <div class="hp-sub"><span>Your wallet activity</span><span class="hp-count" id="hpCount">0 transactions</span></div>
+                <div id="hpGroups"></div>
+            </div>
         </div>
 
         <nav class="bottom-nav">
@@ -236,7 +310,6 @@
         }
 
         // ===== Tampilan wallet =====
-        let showAll = false;
         const arrowDown = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg>';
         const arrowUp = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg>';
 
@@ -259,10 +332,10 @@
             const max = Math.max(...w.week.days, 1), labels = ["M","T","W","T","F","S","S"];
             $("chart").innerHTML = w.week.days.map((v, i) => {
                 const h = v ? Math.max(10, Math.round(v / max * 76)) : 4;
-                return `<div class="bar-col ${i === w.week.todayIdx ? "today" : ""}"><div class="bar ${i === w.week.todayIdx ? "today" : ""}" style="height:${h}px" title="${rp(v)}"></div><span>${labels[i]}</span></div>`;
+                return `<div class="bar-col ${i === w.week.todayIdx ? "today" : ""}"><div class="bar ${i === w.week.todayIdx && v > 0 ? "today" : ""}" style="height:${h}px" title="${rp(v)}"></div><span>${labels[i]}</span></div>`;
             }).join("");
 
-            const list = showAll ? w.tx : w.tx.slice(0, 3);
+            const list = w.tx.slice(0, 3);
             $("txList").innerHTML = list.length ? list.map(t => {
                 const inn = t.amount >= 0;
                 return `<div class="tx">
@@ -273,17 +346,68 @@
             }).join("") : '<div class="tx-empty">Belum ada transaksi.</div>';
             const btn = $("seeAll");
             btn.style.display = w.tx.length > 3 ? "" : "none";
-            btn.textContent = showAll ? "Show Less" : "See All";
+            btn.textContent = "See All";
         }
-        $("seeAll").addEventListener("click", () => { showAll = !showAll; renderWallet(); });
-        $("btnHist").addEventListener("click", () => {
-            showAll = true; renderWallet();
-            $("txHead").scrollIntoView({ behavior: "smooth", block: "start" });
-        });
+
+        // ===== Halaman Transaction History (semua transaksi, dikelompokkan per hari) =====
+        const MONTHS_LONG = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+        const DAYS_LONG = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+        const dayKey = (ts) => { const d = new Date(ts); return d.getFullYear() + "-" + d.getMonth() + "-" + d.getDate(); };
+        function dayLabel(ts) {
+            const d = new Date(ts), now = new Date();
+            const y = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+            if (d.toDateString() === now.toDateString()) return "Today";
+            if (d.toDateString() === y.toDateString()) return "Yesterday";
+            return DAYS_LONG[d.getDay()];
+        }
+        const dayFull = (ts) => { const d = new Date(ts); return `${MONTHS[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`; };
+        function hpTime(ts) {
+            if (!ts) return "-";
+            const d = new Date(ts), time = p2(d.getHours()) + ":" + p2(d.getMinutes()), l = dayLabel(ts);
+            return (l === "Today" || l === "Yesterday") ? l + ", " + time : `${d.getDate()} ${MONTHS[d.getMonth()]}, ${time}`;
+        }
+        const arrowOut = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M8 7h9v9"/></svg>';
+        const arrowIn = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg>';
+
+        function renderHistory() {
+            const tx = CourierStore.wallet().tx;
+            histPage.classList.toggle("empty", !tx.length);
+            $("hpCount").textContent = tx.length + (tx.length === 1 ? " transaction" : " transactions");
+            if (!tx.length) { $("hpGroups").innerHTML = ""; return; }
+            const groups = [], idx = {};
+            tx.forEach(t => {
+                const k = t.at ? dayKey(t.at) : "unknown";
+                if (!(k in idx)) { idx[k] = groups.length; groups.push({ at: t.at, items: [] }); }
+                groups[idx[k]].items.push(t);
+            });
+            $("hpGroups").innerHTML = groups.map(g => `
+                <div class="hp-group">
+                    <div class="hp-group-head"><h3>${g.at ? dayLabel(g.at) : "Earlier"}</h3><small>${g.at ? dayFull(g.at) : ""}</small></div>
+                    <div class="hp-list">${g.items.map(t => {
+                        const inn = t.amount >= 0;
+                        return `<div class="hp-tx">
+                            <div class="hp-ico ${inn ? "in" : "out"}">${inn ? arrowIn : arrowOut}</div>
+                            <div class="hp-info"><strong>${esc(t.title)}</strong><small>${hpTime(t.at)}</small></div>
+                            <div class="hp-amt ${inn ? "in" : "out"}">${inn ? "+" : "-"}${rp(t.amount)}</div>
+                        </div>`;
+                    }).join("")}</div>
+                </div>`).join("");
+        }
+        const histPage = $("historyPage");
+        function openHistory() {
+            renderHistory();
+            $("hpBody").scrollTop = 0;
+            histPage.classList.add("open");
+            histPage.setAttribute("aria-hidden", "false");
+        }
+        function closeHistory() { histPage.classList.remove("open"); histPage.setAttribute("aria-hidden", "true"); }
+        $("btnHist").addEventListener("click", openHistory);
+        $("seeAll").addEventListener("click", openHistory);
+        $("hpBack").addEventListener("click", closeHistory);
 
         // ===== Withdraw sheet =====
         const overlay = $("sheetOverlay"), amtInput = $("amtInput");
-        let accountId = "default";
+        let accountId = null;
 
         const parseAmt = () => Number(amtInput.value.replace(/\D/g, "")) || 0;
         function syncAmount() {
@@ -302,7 +426,13 @@
             $("btnConfirm").disabled = !(n > 0 && n <= bal);
         }
         function renderAccounts() {
-            $("accList").innerHTML = CourierStore.accounts().map(a => `
+            const accs = CourierStore.accounts();
+            if (!accs.some(a => a.id === accountId)) accountId = accs.length ? accs[0].id : null;
+            if (!accs.length) {
+                $("accList").innerHTML = '<div class="tx-empty" style="padding:12px 0">Belum ada rekening / e-wallet. Tambahkan dulu untuk menarik saldo.</div>';
+                return;
+            }
+            $("accList").innerHTML = accs.map(a => `
                 <button type="button" class="acc ${a.id === accountId ? "sel" : ""}" data-id="${esc(a.id)}">
                     <div class="acc-logo">${esc(a.short)}</div>
                     <div class="acc-info"><strong>${esc(a.type)} - ${esc(a.number)}</strong><small>a.n. ${esc(a.name)}</small></div>
@@ -311,6 +441,7 @@
         }
         function openSheet() {
             const bal = CourierStore.wallet().balance;
+            if (bal <= 0) { showToast("Saldo masih Rp 0. Selesaikan pesanan dulu untuk mendapat penghasilan."); return; }
             $("sheetBalance").textContent = rp(bal);
             $("accForm").classList.remove("open");
             $("btnAddAcc").style.display = "";
@@ -325,7 +456,7 @@
         $("btnWithdraw").addEventListener("click", openSheet);
         $("sheetClose").addEventListener("click", closeSheet);
         overlay.addEventListener("click", (e) => { if (e.target === overlay) closeSheet(); });
-        document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeSheet(); });
+        document.addEventListener("keydown", (e) => { if (e.key === "Escape") { closeSheet(); closeHistory(); } });
         amtInput.addEventListener("input", syncAmount);
         $("chips").addEventListener("click", (e) => {
             const c = e.target.closest(".chip");
@@ -360,7 +491,6 @@
             const r = CourierStore.withdraw(n, accountId);
             if (!r.ok) { $("amtErr").textContent = r.error; $("amtBox").classList.add("err"); return; }
             closeSheet();
-            showAll = false;
             renderWallet();
             showToast(`Penarikan ${rp(n)} ke ${r.account.type} diproses`);
         });

@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BBite Courier - Two-Factor Authentication</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="security.js" data-guard></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        .app-container.dashboard { background: #FFF; }
+        .page-content { flex: 1; overflow-y: auto; padding: 0 18px 120px; }
+        .page-content::-webkit-scrollbar { display: none; }
+        .head { position: relative; padding: 56px 0 6px; }
+        .btn-back { width: 34px; height: 34px; border: none; background: none; color: #F5A623; cursor: pointer; display: flex; align-items: center; text-decoration: none; margin-left: -4px; }
+        .btn-back:active { transform: scale(0.9); }
+        h1.title { font-size: 28px; line-height: 1.2; font-weight: 800; color: #0B1220; text-align: center; margin: 10px 20px 12px; }
+        p.lead { font-size: 12.5px; line-height: 1.6; color: #94A3B8; font-weight: 500; text-align: center; margin: 0 14px 24px; }
+
+        .sec { font-size: 10px; font-weight: 700; color: #64748B; letter-spacing: 0.7px; margin: 0 2px 10px; }
+        .method { display: flex; align-items: center; gap: 14px; width: 100%; text-align: left; background: #FFF; border: 1.5px solid #E7ECF1; border-radius: 16px; padding: 16px; margin-bottom: 12px; cursor: pointer; font-family: inherit; box-shadow: 0 2px 8px rgba(15,23,42,0.04); transition: 0.15s; }
+        .method.sel { border-color: #BFE5CD; background: #F5FBF7; }
+        .m-ico { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .m-ico.wa { background: #DDF3E5; color: #16A34A; }
+        .m-ico.app { background: #E3ECFB; color: #4B6FD8; }
+        .m-txt { flex: 1; min-width: 0; }
+        .m-txt strong { display: block; font-size: 14px; font-weight: 800; color: #0B1220; }
+        .m-txt small { display: block; margin-top: 4px; font-size: 11.5px; color: #64748B; font-weight: 500; line-height: 1.45; }
+        .rec { display: inline-block; background: #DDF3E5; color: #15803D; font-size: 9.5px; font-weight: 700; padding: 3px 9px; border-radius: 8px; margin-top: 6px; }
+        .radio { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid #CBD5E1; background: #FFF; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: transparent; }
+        .method.sel .radio { background: #16A34A; border-color: #16A34A; color: #FFF; }
+
+        .verify { background: #F6F8FB; border: 1px solid #E7ECF1; border-radius: 16px; padding: 20px 16px 18px; margin-top: 18px; }
+        .verify h3 { font-size: 13px; font-weight: 700; color: #0B1220; line-height: 1.45; margin-bottom: 16px; }
+        .demo { display: none; background: #FFF6DB; border: 1px dashed #E8B968; color: #8A5A00; font-size: 11px; font-weight: 600; line-height: 1.5; padding: 9px 12px; border-radius: 10px; margin-bottom: 14px; }
+        .demo.show { display: block; }
+        .demo b { letter-spacing: 2px; font-size: 13px; }
+        .otp { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 14px; }
+        .otp input { width: 100%; min-width: 0; height: 48px; text-align: center; font-size: 20px; font-weight: 800; color: #0B1220; font-family: inherit; background: #FFF; border: 1.5px solid #D5DCE4; border-radius: 10px; outline: none; transition: 0.15s; padding: 0; }
+        .otp input:focus { border-color: #F5A623; box-shadow: 0 0 0 3px rgba(245,166,35,0.15); }
+        .otp.bad input { border-color: #EF4444; background: #FFF5F5; }
+        .err { display: none; text-align: center; font-size: 11.5px; color: #EF4444; font-weight: 600; margin-bottom: 10px; }
+        .err.show { display: block; }
+        .resend { text-align: center; font-size: 11.5px; color: #94A3B8; font-weight: 500; }
+        .resend button { border: none; background: none; color: #E8820C; font-weight: 800; font-size: 11.5px; cursor: pointer; font-family: inherit; padding: 0; }
+
+        .app-setup { display: none; }
+        .app-setup .step { font-size: 12px; line-height: 1.55; color: #475569; font-weight: 500; margin-bottom: 12px; }
+        .app-setup .step b { color: #0B1220; }
+        .qr { width: 160px; height: 160px; background: #FFF; border: 1px solid #E7ECF1; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; padding: 8px; text-align: center; font-size: 11px; color: #94A3B8; }
+        .qr img, .qr canvas { max-width: 100%; max-height: 100%; }
+        .keyrow { display: flex; align-items: center; gap: 8px; background: #FFF; border: 1px solid #E7ECF1; border-radius: 10px; padding: 10px 12px; margin-bottom: 16px; }
+        .keyrow code { flex: 1; font-size: 13px; font-weight: 800; letter-spacing: 1.5px; color: #0B1220; word-break: break-all; font-family: ui-monospace, Menlo, monospace; }
+        .keyrow button { border: none; background: #FFF1DC; color: #C98A00; font-size: 11px; font-weight: 800; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-family: inherit; }
+        .mode-wa .app-setup { display: none; }
+        .mode-app .app-setup { display: block; }
+        .mode-app .wa-only { display: none; }
+
+        .btn-main { width: 100%; margin-top: 26px; border: none; border-radius: 16px; padding: 16px; font-size: 14.5px; font-weight: 800; font-family: inherit; background: #F5A623; color: #FFF; cursor: pointer; box-shadow: 0 8px 18px rgba(245,166,35,0.3); transition: 0.2s; }
+        .btn-main:active { transform: scale(0.98); }
+        .btn-main.off { background: #F9D9A0; box-shadow: none; }
+        .btn-main.busy { pointer-events: none; opacity: 0.8; }
+
+        .toast { position: absolute; left: 16px; right: 16px; bottom: 100px; background: #0B1220; color: #FFF; font-size: 13px; font-weight: 600; padding: 12px 16px; border-radius: 12px; z-index: 200; opacity: 0; transform: translateY(10px); pointer-events: none; transition: 0.25s; text-align: center; }
+        .toast.show { opacity: 1; transform: none; }
+
+        .bottom-nav { background: #FFF; }
+        .nav-item { padding: 10px 14px; color: #6B7280; }
+        .nav-item svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+        .nav-item.active { background: #FFF6DB; color: #C98A00; flex-direction: row; gap: 8px; padding: 10px 18px; }
+        .nav-item.active span { font-weight: 800; }
+    </style>
+</head>
+<body>
+    <div class="app-container dashboard">
+        <div class="page-content mode-wa" id="pc">
+            <div class="head">
+                <a href="privacy-kurir.html" class="btn-back" aria-label="Kembali">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+                </a>
+            </div>
+            <h1 class="title">Two-Factor Authentication</h1>
+            <p class="lead">Add an extra layer of security to protect your courier account and earnings.</p>
+
+            <div class="sec">SELECT AUTHENTICATION METHOD</div>
+
+            <button type="button" class="method sel" id="mWa" role="radio" aria-checked="true">
+                <span class="m-ico wa"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V6z"/><path d="M9 12l2.2 2.2L15.5 10"/></svg></span>
+                <span class="m-txt"><strong>WhatsApp / SMS OTP</strong><span class="rec">Recommended</span><small id="waDesc">Receive a 6-digit verification code to your registered number</small></span>
+                <span class="radio"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></span>
+            </button>
+
+            <button type="button" class="method" id="mApp" role="radio" aria-checked="false">
+                <span class="m-ico app"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M16 7l3 3M14 9l2 2"/></svg></span>
+                <span class="m-txt"><strong>Authenticator App</strong><small>Use apps like Google Authenticator or Authy</small></span>
+                <span class="radio"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></span>
+            </button>
+
+            <div class="verify">
+                <div class="app-setup">
+                    <div class="step"><b>1.</b> Open Google Authenticator or Authy, then scan this QR code.</div>
+                    <div class="qr" id="qrBox">Loading QR...</div>
+                    <div class="step">Can't scan? Enter this key manually:</div>
+                    <div class="keyrow"><code id="secretKey">-</code><button type="button" id="btnCopyKey">Copy</button></div>
+                    <div class="step"><b>2.</b> Enter the 6-digit code shown in the app.</div>
+                </div>
+                <h3 class="wa-only">Enter 6-digit Verification Code sent to your phone</h3>
+                <div class="demo" id="demoBox">Mode demo (belum ada pengirim WhatsApp): kode OTP kamu <b id="demoCode">------</b></div>
+                <div class="otp" id="otp">
+                    <input type="text" inputmode="numeric" maxlength="1" autocomplete="one-time-code" aria-label="Digit 1">
+                    <input type="text" inputmode="numeric" maxlength="1" aria-label="Digit 2">
+                    <input type="text" inputmode="numeric" maxlength="1" aria-label="Digit 3">
+                    <input type="text" inputmode="numeric" maxlength="1" aria-label="Digit 4">
+                    <input type="text" inputmode="numeric" maxlength="1" aria-label="Digit 5">
+                    <input type="text" inputmode="numeric" maxlength="1" aria-label="Digit 6">
+                </div>
+                <div class="err" id="errMsg"></div>
+                <div class="resend wa-only" id="resendRow">Resend Code in 0:45</div>
+            </div>
+
+            <button type="button" class="btn-main off" id="btnVerify">Verify &amp; Enable 2FA</button>
+        </div>
+
+        <nav class="bottom-nav">
+            <a href="home-kurir.html" class="nav-item">
+                <svg viewBox="0 0 24 24" width="22" height="22"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>
+                <span>Home</span>
+            </a>
+            <a href="orders-kurir.html" class="nav-item">
+                <svg viewBox="0 0 24 24" width="22" height="22"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>
+                <span>Orders</span>
+            </a>
+            <a href="wallet-kurir.html" class="nav-item">
+                <svg viewBox="0 0 24 24" width="22" height="22"><path d="M20 7H5a2 2 0 0 1 0-4h13v4"/><path d="M3 5v14a2 2 0 0 0 2 2h15V7"/><circle cx="16.5" cy="14" r="1.2"/></svg>
+                <span>Wallet</span>
+            </a>
+            <a href="profile-kurir.html" class="nav-item active">
+                <svg viewBox="0 0 24 24" width="22" height="22"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+                <span>Profile</span>
+            </a>
+        </nav>
+
+        <div class="toast" id="toast"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyCd_v_YnSXpiVAA_eDxk_MaCCdqo4H5CFE", authDomain: "bbite-ac7e4.firebaseapp.com", projectId: "bbite-ac7e4" };
+        const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+        const auth = getAuth(app), db = getFirestore(app);
+
+        const $ = (id) => document.getElementById(id);
+        let toastTimer;
+        function showToast(msg) {
+            const t = $("toast");
+            t.textContent = msg; t.classList.add("show");
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => t.classList.remove("show"), 2600);
+        }
+
+        // Pengiriman OTP WhatsApp & mode demo diatur di security.js (BBSec.DEMO_OTP, BBSec.sendWhatsAppOtp)
+        const DEMO_MODE = BBSec.DEMO_OTP;
+        const OTP_TTL_MS = 5 * 60 * 1000, RESEND_SEC = 45, MAX_TRIES = 5;
+
+        // ===== Nomor WhatsApp yang didaftarkan saat membuat akun =====
+        let phone = "", email = "", method = "wa";
+        const maskPhone = BBSec.maskPhone;
+        function paintPhone() {
+            const m = maskPhone(phone);
+            $("waDesc").innerHTML = m ? "Receive a 6-digit verification code to<br>" + m : "Receive a 6-digit verification code to your registered number";
+        }
+
+        // ===== Kotak 6 digit =====
+        const boxes = [...document.querySelectorAll("#otp input")];
+        const getCode = () => boxes.map(b => b.value).join("");
+        function clearBoxes(focus) { boxes.forEach(b => b.value = ""); $("otp").classList.remove("bad"); setErr(""); syncBtn(); if (focus) boxes[0].focus(); }
+        function setErr(m) { const e = $("errMsg"); e.textContent = m; e.classList.toggle("show", !!m); }
+        function syncBtn() { $("btnVerify").classList.toggle("off", getCode().length < 6); }
+        boxes.forEach((b, i) => {
+            b.addEventListener("input", () => {
+                b.value = b.value.replace(/\D/g, "").slice(-1);
+                $("otp").classList.remove("bad"); setErr("");
+                if (b.value && i < 5) boxes[i + 1].focus();
+                syncBtn();
+            });
+            b.addEventListener("keydown", (e) => {
+                if (e.key === "Backspace" && !b.value && i > 0) { boxes[i - 1].value = ""; boxes[i - 1].focus(); syncBtn(); }
+                if (e.key === "Enter") verify();
+                if (e.key === "ArrowLeft" && i > 0) boxes[i - 1].focus();
+                if (e.key === "ArrowRight" && i < 5) boxes[i + 1].focus();
+            });
+            b.addEventListener("paste", (e) => {
+                const t = (e.clipboardData || window.clipboardData).getData("text").replace(/\D/g, "").slice(0, 6);
+                if (!t) return;
+                e.preventDefault();
+                t.split("").forEach((c, k) => { boxes[k].value = c; });
+                boxes[Math.min(t.length, 5)].focus(); syncBtn();
+            });
+            b.addEventListener("focus", () => b.select());
+        });
+
+        // ===== OTP WhatsApp =====
+        let otpCode = "", otpAt = 0, tries = 0, cd = null;
+        function startCountdown(sec) {
+            clearInterval(cd);
+            let left = sec;
+            const row = $("resendRow");
+            const paint = () => { row.textContent = "Resend Code in 0:" + String(left).padStart(2, "0"); };
+            paint();
+            cd = setInterval(() => {
+                left--;
+                if (left <= 0) { clearInterval(cd); row.innerHTML = '<button type="button" id="btnResend">Resend Code</button>'; $("btnResend").addEventListener("click", sendOtp); }
+                else paint();
+            }, 1000);
+        }
+        async function sendOtp() {
+            otpCode = BBSec.newOtp();
+            otpAt = Date.now(); tries = 0;
+            clearBoxes(true);
+            try { await BBSec.sendWhatsAppOtp(phone, otpCode); }
+            catch (e) { showToast("Gagal mengirim kode. Coba lagi."); return; }
+            if (DEMO_MODE) { $("demoCode").textContent = otpCode; $("demoBox").classList.add("show"); }
+            else showToast("Kode dikirim ke WhatsApp kamu");
+            startCountdown(RESEND_SEC);
+        }
+
+        // ===== Authenticator App (TOTP, RFC 6238) =====
+        const secret = BBSec.newSecret();
+        const checkTotp = (code) => BBSec.checkTotp(secret, code);
+        let qrDone = false;
+        function setupApp() {
+            $("secretKey").textContent = secret.match(/.{1,4}/g).join(" ");
+            if (qrDone) return;
+            const label = encodeURIComponent("BBite Campus:" + (email || "courier"));
+            const uri = "otpauth://totp/" + label + "?secret=" + secret + "&issuer=BBite%20Campus&digits=6&period=30";
+            const box = $("qrBox");
+            if (typeof QRCode === "undefined") { box.textContent = "QR tidak dapat dimuat. Gunakan kunci manual di bawah."; return; }
+            box.innerHTML = ""; new QRCode(box, { text: uri, width: 140, height: 140, correctLevel: QRCode.CorrectLevel.M });
+            qrDone = true;
+        }
+        $("btnCopyKey").addEventListener("click", async () => {
+            try { await navigator.clipboard.writeText(secret); showToast("Kunci disalin"); } catch (e) { showToast("Salin manual kunci di atas"); }
+        });
+
+        // ===== Pilih metode =====
+        function selectMethod(m) {
+            method = m;
+            const wa = m === "wa";
+            $("mWa").classList.toggle("sel", wa); $("mWa").setAttribute("aria-checked", wa);
+            $("mApp").classList.toggle("sel", !wa); $("mApp").setAttribute("aria-checked", !wa);
+            $("pc").classList.toggle("mode-wa", wa); $("pc").classList.toggle("mode-app", !wa);
+            clearBoxes(false);
+            if (wa) {
+                if (!otpCode || Date.now() - otpAt > OTP_TTL_MS) sendOtp();
+                else { if (DEMO_MODE) $("demoBox").classList.add("show"); boxes[0].focus(); }
+            } else { $("demoBox").classList.remove("show"); setupApp(); }
+        }
+        $("mWa").addEventListener("click", () => method !== "wa" && selectMethod("wa"));
+        $("mApp").addEventListener("click", () => method !== "app" && selectMethod("app"));
+
+        // ===== Verifikasi =====
+        let busy = false;
+        function fail(msg) { $("otp").classList.add("bad"); setErr(msg); }
+        async function verify() {
+            const code = getCode();
+            if (busy) return;
+            if (code.length < 6) { fail("Masukkan 6 digit kode verifikasi."); return; }
+            busy = true; $("btnVerify").classList.add("busy"); $("btnVerify").textContent = "Verifying...";
+            let ok = false;
+            if (method === "wa") {
+                if (Date.now() - otpAt > OTP_TTL_MS) { fail("Kode kedaluwarsa. Kirim ulang kode."); }
+                else if (tries >= MAX_TRIES) { fail("Terlalu banyak percobaan. Kirim ulang kode."); }
+                else { tries++; ok = code === otpCode; if (!ok) fail("Kode salah. Coba lagi (" + (MAX_TRIES - tries) + " percobaan tersisa)."); }
+            } else {
+                ok = await checkTotp(code);
+                if (!ok) fail("Kode salah atau sudah berganti. Masukkan kode terbaru dari aplikasi.");
+            }
+            busy = false; $("btnVerify").classList.remove("busy");
+            if (!ok) { $("btnVerify").textContent = "Verify & Enable 2FA"; return; }
+            if (uid) {
+                BBSec.save(uid, { twofa: true, method, secret: method === "app" ? secret : "" });
+                BBSec.setCurUid(uid); BBSec.unlock(uid);
+                BBSec.pushRemote({ db, doc, setDoc }, uid, { twoFa: true, twoFaMethod: method, totpSecret: method === "app" ? secret : "" });
+            }
+            $("btnVerify").textContent = "2FA Enabled \u2713";
+            showToast("Two-Factor Authentication aktif");
+            setTimeout(() => { window.location.href = "privacy-kurir.html"; }, 1200);
+        }
+        $("btnVerify").addEventListener("click", verify);
+
+        // ===== Mulai: ambil nomor WhatsApp akun lalu kirim OTP otomatis =====
+        let started = false, uid = "";
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) { window.location.href = "index.html"; return; }
+            email = user.email || ""; uid = user.uid;
+            try {
+                const snap = await getDoc(doc(db, "users", user.uid));
+                if (!snap.exists() || snap.data().courierStatus !== "active") { window.location.href = "home-mahasiswa.html"; return; }
+                phone = snap.data().whatsapp || "";
+            } catch (e) { console.log("Gagal memuat profil:", e); }
+            paintPhone();
+            if (started) return; started = true;
+            if (!phone) showToast("Nomor WhatsApp belum terdaftar di akun ini");
+            sendOtp();
+        });
+    </script>
+</body>
+</html>

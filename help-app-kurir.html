@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BBite Courier - App &amp; Technical Support Help</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="security.js" data-guard></script>
+    <style>
+        .app-container.dashboard { background: #F5F7FA; }
+        .page-content { flex: 1; overflow-y: auto; padding: 0 20px 110px; }
+        .page-content::-webkit-scrollbar { display: none; }
+        .head { position: relative; text-align: center; padding: 56px 0 18px; }
+        .btn-back { position: absolute; left: -4px; top: 52px; width: 34px; height: 34px; border: none; background: none; color: #F5A623; cursor: pointer; display: flex; align-items: center; text-decoration: none; }
+        .btn-back:active { transform: scale(0.9); }
+        .head h1 { font-size: 20px; font-weight: 800; color: #0B1220; margin: 0 30px 8px; }
+        .head p { font-size: 12px; line-height: 1.5; color: #94A3B8; font-weight: 500; padding: 0 14px; }
+
+        .search { display: flex; align-items: center; gap: 10px; background: #EEF1F5; border: 1.5px solid transparent; border-radius: 14px; padding: 0 14px; margin-bottom: 22px; transition: 0.2s; }
+        .search:focus-within { border-color: #F5A623; background: #FFF; }
+        .search svg { flex-shrink: 0; color: #64748B; }
+        .search input { flex: 1; border: none; background: none; outline: none; padding: 14px 0; font-size: 13px; font-family: inherit; color: #0B1220; }
+        .search input::placeholder { color: #94A3B8; }
+        .search .clear { display: none; border: none; background: #CBD5E1; color: #FFF; width: 18px; height: 18px; border-radius: 50%; font-size: 10px; cursor: pointer; line-height: 18px; padding: 0; }
+        .search.has-text .clear { display: block; }
+
+        .sec-title { font-size: 11px; font-weight: 700; color: #64748B; letter-spacing: 0.6px; margin: 0 2px 12px; }
+        .list { display: flex; flex-direction: column; gap: 14px; }
+        .q { display: flex; align-items: center; gap: 14px; width: 100%; text-align: left; background: #FFF; border: 1px solid #EEF1F5; border-radius: 16px; padding: 16px; box-shadow: 0 2px 8px rgba(15,23,42,0.04); cursor: pointer; font-family: inherit; transition: 0.15s; }
+        .q:active { transform: scale(0.98); background: #F8FAFC; }
+        .ico { width: 46px; height: 46px; border-radius: 50%; background: #E3F0FD; color: #1E88E5; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .qt { flex: 1; font-size: 13.5px; font-weight: 800; color: #0B1220; line-height: 1.4; }
+        .go { flex-shrink: 0; }
+        .no-result { display: none; text-align: center; color: #94A3B8; font-size: 13px; font-weight: 500; padding: 34px 10px; line-height: 1.5; }
+        .no-result strong { display: block; color: #0B1220; font-size: 14px; margin-bottom: 4px; }
+        .no-result a { color: #DC9808; font-weight: 700; text-decoration: none; }
+
+        .toast { position: absolute; left: 16px; right: 16px; bottom: 100px; background: #0B1220; color: #FFF; font-size: 13px; font-weight: 600; padding: 12px 16px; border-radius: 12px; z-index: 200; opacity: 0; transform: translateY(10px); pointer-events: none; transition: 0.25s; text-align: center; }
+        .toast.show { opacity: 1; transform: none; }
+
+        .bottom-nav { background: #FFF; }
+        .nav-item { padding: 10px 14px; color: #6B7280; }
+        .nav-item svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+        .nav-item.active { background: #FFF6DB; color: #C98A00; flex-direction: row; gap: 8px; padding: 10px 18px; }
+        .nav-item.active span { font-weight: 800; }
+    </style>
+</head>
+<body>
+    <div class="app-container dashboard">
+        <div class="page-content">
+            <div class="head">
+                <a href="help-center-kurir.html" class="btn-back" aria-label="Kembali">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+                </a>
+                <h1>App &amp; Technical Support</h1>
+                <p>Troubleshoot technical issues, report bugs, check GPS connection, and manage app settings.</p>
+            </div>
+
+            <label class="search" id="searchBox">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+                <input type="text" id="searchInput" placeholder="Search..." autocomplete="off">
+                <button type="button" class="clear" id="searchClear" aria-label="Hapus">&#10005;</button>
+            </label>
+
+            <div class="sec-title" id="secTitle">TECHNICAL TOPICS</div>
+            <div class="list" id="qList">
+            <button type="button" class="q" data-kw="fix gps location tracking navigation issues map">
+                <span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></span>
+                <span class="qt">How to fix GPS location tracking or navigation issues?</span>
+                <svg class="go" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1E88E5" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+            <button type="button" class="q" data-kw="not receiving new order push notifications alert sound">
+                <span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M18 16V11a6 6 0 0 0-9.5-4.9M6 11v5l-2 2h14M10 21a2 2 0 0 0 4 0M3 3l18 18"/></svg></span>
+                <span class="qt">I&#39;m not receiving new order push notifications. What should I do?</span>
+                <svg class="go" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1E88E5" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+            <button type="button" class="q" data-kw="app crashes freezes active order bug hang resolve">
+                <span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 9V7a3 3 0 0 1 6 0v2M7 9h10v6a5 5 0 0 1-10 0zM3 12h4M17 12h4M4 19l3-2M20 19l-3-2M4 6l3 2M20 6l-3 2"/></svg></span>
+                <span class="qt">The app crashes or freezes during an active order. How to resolve?</span>
+                <svg class="go" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1E88E5" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+            <button type="button" class="q" data-kw="clear app cache update bbite latest version">
+                <span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3 1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8 1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></span>
+                <span class="qt">How to clear app cache and update BBite to the latest version?</span>
+                <svg class="go" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1E88E5" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+            <button type="button" class="q" data-kw="logged out automatically connection errors network internet offline">
+                <span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8.8a15 15 0 0 1 4-2.4M22 8.8a15 15 0 0 0-8-3.7M5 12.5a10 10 0 0 1 3-1.9M19 12.5a10 10 0 0 0-4-2.3M8.5 16a5 5 0 0 1 7 0M12 20h.01M3 3l18 18"/></svg></span>
+                <span class="qt">Why am I logged out automatically or facing connection errors?</span>
+                <svg class="go" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1E88E5" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+            <button type="button" class="q" data-kw="test device compatibility camera permissions phone">
+                <span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg></span>
+                <span class="qt">How to test my device compatibility and camera permissions?</span>
+                <svg class="go" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1E88E5" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+            </div>
+            <div class="no-result" id="noResult"><strong>Tidak ditemukan</strong>Coba kata kunci lain, atau <a href="help-center-kurir.html">hubungi tim support</a>.</div>
+        </div>
+
+        <nav class="bottom-nav">
+            <a href="home-kurir.html" class="nav-item">
+                <svg viewBox="0 0 24 24" width="22" height="22"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>
+                <span>Home</span>
+            </a>
+            <a href="orders-kurir.html" class="nav-item">
+                <svg viewBox="0 0 24 24" width="22" height="22"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>
+                <span>Orders</span>
+            </a>
+            <a href="wallet-kurir.html" class="nav-item">
+                <svg viewBox="0 0 24 24" width="22" height="22"><path d="M20 7H5a2 2 0 0 1 0-4h13v4"/><path d="M3 5v14a2 2 0 0 0 2 2h15V7"/><circle cx="16.5" cy="14" r="1.2"/></svg>
+                <span>Wallet</span>
+            </a>
+            <a href="profile-kurir.html" class="nav-item active">
+                <svg viewBox="0 0 24 24" width="22" height="22"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+                <span>Profile</span>
+            </a>
+        </nav>
+
+        <div class="toast" id="toast"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyCd_v_YnSXpiVAA_eDxk_MaCCdqo4H5CFE", authDomain: "bbite-ac7e4.firebaseapp.com", projectId: "bbite-ac7e4" };
+        const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+        onAuthStateChanged(getAuth(app), (user) => { if (!user) window.location.href = "index.html"; });
+
+        const $ = (id) => document.getElementById(id);
+        let toastTimer;
+        function showToast(msg) {
+            const t = $("toast");
+            t.textContent = msg; t.classList.add("show");
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => t.classList.remove("show"), 2600);
+        }
+
+        // ===== Search: filter pertanyaan =====
+        const qs = [...document.querySelectorAll(".q")], input = $("searchInput");
+        function applySearch() {
+            const q = input.value.trim().toLowerCase();
+            $("searchBox").classList.toggle("has-text", !!q);
+            let shown = 0;
+            qs.forEach(c => {
+                const hit = !q || (c.dataset.kw + " " + c.textContent).toLowerCase().includes(q);
+                c.style.display = hit ? "" : "none";
+                if (hit) shown++;
+            });
+            $("secTitle").style.display = shown ? "" : "none";
+            $("noResult").style.display = shown ? "none" : "block";
+        }
+        input.addEventListener("input", applySearch);
+        $("searchClear").addEventListener("click", () => { input.value = ""; applySearch(); input.focus(); });
+
+        // Jawaban tiap pertanyaan belum dibuat
+        qs.forEach(c => c.addEventListener("click", () => showToast("Jawaban sedang dikembangkan")));
+    </script>
+</body>
+</html>

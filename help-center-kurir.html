@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BBite Courier - Help Center &amp; Support</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="security.js" data-guard></script>
+    <style>
+        .app-container.dashboard { background: #F5F7FA; }
+        .page-content { flex: 1; overflow-y: auto; padding: 0 20px 110px; }
+        .page-content::-webkit-scrollbar { display: none; }
+        .topbar { position: relative; display: flex; align-items: center; justify-content: center; padding: 52px 0 10px; }
+        .btn-back { position: absolute; left: -4px; bottom: 6px; width: 34px; height: 34px; border: none; background: none; color: #F5A623; cursor: pointer; display: flex; align-items: center; }
+        .btn-back:active { transform: scale(0.9); }
+        .topbar span { font-size: 13px; font-weight: 700; color: #0B1220; }
+        .hero { text-align: center; padding: 8px 0 18px; }
+        .hero h1 { font-size: 22px; font-weight: 800; color: #0B1220; margin-bottom: 6px; }
+        .hero p { font-size: 12.5px; color: #94A3B8; font-weight: 500; }
+
+        .search { display: flex; align-items: center; gap: 10px; background: #EAEEF3; border: 1.5px solid transparent; border-radius: 14px; padding: 0 14px; margin-bottom: 18px; transition: 0.2s; }
+        .search:focus-within { border-color: #F5A623; background: #FFF; }
+        .search svg { flex-shrink: 0; color: #F5A623; }
+        .search input { flex: 1; border: none; background: none; outline: none; padding: 15px 0; font-size: 14px; font-family: inherit; color: #0B1220; }
+        .search input::placeholder { color: #94A3B8; }
+        .search .clear { display: none; border: none; background: #CBD5E1; color: #FFF; width: 18px; height: 18px; border-radius: 50%; font-size: 10px; cursor: pointer; line-height: 18px; padding: 0; }
+        .search.has-text .clear { display: block; }
+
+        .list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 22px; }
+        .card { display: flex; align-items: center; gap: 14px; width: 100%; text-align: left; background: #FFF; border: 1px solid #EEF1F5; border-radius: 16px; padding: 18px 16px; box-shadow: 0 2px 8px rgba(15,23,42,0.04); cursor: pointer; font-family: inherit; transition: 0.15s; }
+        .card:active { transform: scale(0.98); background: #F8FAFC; }
+        .ico { width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .txt { flex: 1; min-width: 0; }
+        .txt strong { display: block; font-size: 14px; font-weight: 800; color: #0B1220; margin-bottom: 3px; }
+        .txt small { display: block; font-size: 11.5px; color: #94A3B8; font-weight: 500; line-height: 1.4; }
+        .go { flex-shrink: 0; }
+        .sec-title { font-size: 12px; font-weight: 700; color: #0B1220; margin: 0 2px 12px; }
+        .no-result { display: none; text-align: center; color: #94A3B8; font-size: 13px; font-weight: 500; padding: 30px 10px; }
+        .no-result strong { display: block; color: #0B1220; font-size: 14px; margin-bottom: 4px; }
+
+
+        /* ===== Pop up Call Support Hotline ===== */
+        .call-ov { position: absolute; inset: 0; z-index: 120; background: rgba(11,18,32,0.45); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); display: flex; align-items: center; justify-content: center; padding: 24px; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+        .call-ov.open { opacity: 1; pointer-events: auto; }
+        .call-box { width: 100%; background: #FFF; border-radius: 26px; padding: 26px 22px 22px; text-align: center; box-shadow: 0 18px 40px rgba(0,0,0,0.22); transform: scale(0.94); transition: transform 0.2s; }
+        .call-ov.open .call-box { transform: none; }
+        .call-ic { width: 62px; height: 62px; border-radius: 50%; background: #E3F0FD; color: #1E88E5; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
+        .call-box h3 { font-size: 21px; font-weight: 800; color: #0B1220; margin-bottom: 8px; }
+        .call-box .sub { font-size: 12px; color: #475569; font-weight: 600; margin-bottom: 12px; }
+        .op-pill { display: inline-flex; align-items: center; gap: 6px; background: #E6F6EC; color: #15803D; font-size: 10.5px; font-weight: 700; padding: 5px 12px; border-radius: 12px; margin-bottom: 20px; }
+        .op-pill i { width: 6px; height: 6px; border-radius: 50%; background: #16A34A; }
+        .op-pill.closed { background: #EEF1F5; color: #64748B; }
+        .op-pill.closed i { background: #94A3B8; }
+        .call-num { background: #EEF1F5; border-radius: 16px; padding: 18px 10px; font-size: 24px; font-weight: 800; color: #0B1220; letter-spacing: 0.3px; margin-bottom: 16px; }
+        .call-note { font-size: 11px; line-height: 1.6; color: #94A3B8; font-weight: 500; margin-bottom: 20px; padding: 0 6px; }
+        .btn-callnow { width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; border: none; border-radius: 14px; padding: 15px; background: #F5A623; color: #FFF; font-size: 14.5px; font-weight: 800; font-family: inherit; cursor: pointer; box-shadow: 0 8px 18px rgba(245,166,35,0.3); margin-bottom: 10px; }
+        .btn-callnow:active { transform: scale(0.98); }
+        .btn-cancel { width: 100%; border: none; border-radius: 14px; padding: 14px; background: #EEF1F5; color: #475569; font-size: 13.5px; font-weight: 700; font-family: inherit; cursor: pointer; }
+        .btn-cancel:active { background: #E2E8F0; }
+
+        .toast { position: absolute; left: 16px; right: 16px; bottom: 100px; background: #0B1220; color: #FFF; font-size: 13px; font-weight: 600; padding: 12px 16px; border-radius: 12px; z-index: 200; opacity: 0; transform: translateY(10px); pointer-events: none; transition: 0.25s; text-align: center; }
+        .toast.show { opacity: 1; transform: none; }
+
+        .bottom-nav { background: #FFF; }
+        .nav-item { padding: 10px 14px; color: #6B7280; }
+        .nav-item svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+        .nav-item.active { background: #FFF6DB; color: #C98A00; flex-direction: row; gap: 8px; padding: 10px 18px; }
+        .nav-item.active span { font-weight: 800; }
+    </style>
+</head>
+<body>
+    <div class="app-container dashboard">
+        <div class="page-content" id="pageContent">
+            <div class="topbar">
+                <a href="profile-kurir.html" class="btn-back" aria-label="Kembali">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+                </a>
+            </div>
+
+            <div class="hero">
+                <h1>Help Center &amp; Support</h1>
+                <p id="greet">How can we help you today?</p>
+            </div>
+
+            <label class="search" id="searchBox">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+                <input type="text" id="searchInput" placeholder="Search" autocomplete="off">
+                <button type="button" class="clear" id="searchClear" aria-label="Hapus">&#10005;</button>
+            </label>
+
+            <div class="list" id="mainList">
+            <button type="button" class="card" data-key="orders" data-kw="orders deliveries track delivery order status">
+                <span class="ico" style="background:#E3F0FD;color:#1E88E5"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg></span>
+                <span class="txt"><strong>Orders &amp; Deliveries</strong><small>Track a delivery, order status issues.</small></span>
+                <svg class="go" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1E88E5" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+            <button type="button" class="card" data-key="payments" data-kw="payments earnings withdrawal bonus wallet">
+                <span class="ico" style="background:#E3F0FD;color:#1E88E5"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7H5a2 2 0 0 1 0-4h13v4"/><path d="M3 5v14a2 2 0 0 0 2 2h15V7"/><circle cx="16.5" cy="14" r="1.2"/></svg></span>
+                <span class="txt"><strong>Payments &amp; Earnings</strong><small>Withdrawal process, bonus inquiries.</small></span>
+                <svg class="go" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1E88E5" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+            <button type="button" class="card" data-key="account" data-kw="account profile issues personal info visibility">
+                <span class="ico" style="background:#E3F0FD;color:#1E88E5"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V6z"/><circle cx="12" cy="10" r="2.2"/><path d="M8.5 16c.8-1.6 2-2.3 3.5-2.3s2.7.7 3.5 2.3"/></svg></span>
+                <span class="txt"><strong>Account &amp; Profile Issues</strong><small>Edit personal info, profile visibility.</small></span>
+                <svg class="go" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1E88E5" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+            <button type="button" class="card" data-key="app" data-kw="app technical support bug report performance">
+                <span class="ico" style="background:#E3F0FD;color:#1E88E5"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h0a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5h0a1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v0a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></span>
+                <span class="txt"><strong>App &amp; Technical Support</strong><small>Report a bug, application performance.</small></span>
+                <svg class="go" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1E88E5" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+            </div>
+
+            <div id="urgentWrap">
+                <div class="sec-title">Need Urgent Support?</div>
+                <div class="list" id="urgentList">
+            <button type="button" class="card" data-key="live" data-kw="live chat support agent">
+                <span class="ico" style="background:#E3F0FD;color:#1E88E5"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.6A8 8 0 1 1 21 12z"/></svg></span>
+                <span class="txt"><strong>Live Chat Support</strong><small>Chat with a live agent (~5 min response time).</small></span>
+                <svg class="go" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1E88E5" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+            <button type="button" class="card" data-key="email" data-kw="email support team inquiries">
+                <span class="ico" style="background:#E3F0FD;color:#1E88E5"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></span>
+                <span class="txt"><strong>Email Support Team</strong><small>Detailed inquiries, response in 24 hours.</small></span>
+                <svg class="go" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1E88E5" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+            <button type="button" class="card" data-key="call" data-kw="call support hotline emergency phone">
+                <span class="ico" style="background:#E3F0FD;color:#1E88E5"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg></span>
+                <span class="txt"><strong>Call Support Hotline</strong><small>Emergency issues, 8 AM - 8 PM daily.</small></span>
+                <svg class="go" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1E88E5" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+                </div>
+            </div>
+
+            <div class="no-result" id="noResult"><strong>Tidak ditemukan</strong>Coba kata kunci lain, atau hubungi tim support di bawah.</div>
+        </div>
+
+        <nav class="bottom-nav">
+            <a href="home-kurir.html" class="nav-item">
+                <svg viewBox="0 0 24 24" width="22" height="22"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>
+                <span>Home</span>
+            </a>
+            <a href="orders-kurir.html" class="nav-item">
+                <svg viewBox="0 0 24 24" width="22" height="22"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>
+                <span>Orders</span>
+            </a>
+            <a href="wallet-kurir.html" class="nav-item">
+                <svg viewBox="0 0 24 24" width="22" height="22"><path d="M20 7H5a2 2 0 0 1 0-4h13v4"/><path d="M3 5v14a2 2 0 0 0 2 2h15V7"/><circle cx="16.5" cy="14" r="1.2"/></svg>
+                <span>Wallet</span>
+            </a>
+            <a href="profile-kurir.html" class="nav-item active">
+                <svg viewBox="0 0 24 24" width="22" height="22"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+                <span>Profile</span>
+            </a>
+        </nav>
+
+        <!-- Pop up Call Support Hotline -->
+        <div class="call-ov" id="callOv" aria-hidden="true">
+            <div class="call-box" role="dialog" aria-modal="true" aria-labelledby="callTitle">
+                <div class="call-ic"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg></div>
+                <h3 id="callTitle">Call Support Hotline</h3>
+                <div class="sub">Emergency Issues &amp; Immediate Order Help</div>
+                <span class="op-pill" id="opPill"><i></i><span id="opText">Operational: 8 AM - 8 PM daily</span></span>
+                <div class="call-num">(021) 5369-0900</div>
+                <p class="call-note">Standard rates may apply. Press Call Now to chat with our team via WhatsApp.</p>
+                <button type="button" class="btn-callnow" id="btnCallNow">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>
+                    Call Now
+                </button>
+                <button type="button" class="btn-cancel" id="btnCancel">Cancel</button>
+            </div>
+        </div>
+
+        <div class="toast" id="toast"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyCd_v_YnSXpiVAA_eDxk_MaCCdqo4H5CFE", authDomain: "bbite-ac7e4.firebaseapp.com", projectId: "bbite-ac7e4" };
+        const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+        const auth = getAuth(app), db = getFirestore(app);
+        const $ = (id) => document.getElementById(id);
+
+        let toastTimer;
+        function showToast(msg) {
+            const t = $("toast");
+            t.textContent = msg; t.classList.add("show");
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => t.classList.remove("show"), 2600);
+        }
+
+        // ===== Sapaan: "How can we help you today, <nama depan>?" =====
+        const firstName = (n) => String(n || "").trim().split(/\s+/)[0];
+        function setGreeting(name) {
+            const f = firstName(name);
+            $("greet").textContent = f ? "How can we help you today, " + f + "?" : "How can we help you today?";
+        }
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) { window.location.href = "index.html"; return; }
+            setGreeting(user.displayName || (user.email || "").split("@")[0]);
+            try {
+                const snap = await getDoc(doc(db, "users", user.uid));
+                if (!snap.exists() || snap.data().courierStatus !== "active") { window.location.href = "home-mahasiswa.html"; return; }
+                if (snap.data().name) setGreeting(snap.data().name);
+            } catch (e) { console.log("Gagal memuat profil:", e); }
+        });
+
+        // ===== Search: filter kartu secara langsung =====
+        const cards = [...document.querySelectorAll(".card")];
+        const input = $("searchInput");
+        function applySearch() {
+            const q = input.value.trim().toLowerCase();
+            $("searchBox").classList.toggle("has-text", !!q);
+            let shown = 0;
+            cards.forEach(c => {
+                const hit = !q || (c.dataset.kw + " " + c.textContent).toLowerCase().includes(q);
+                c.style.display = hit ? "" : "none";
+                if (hit) shown++;
+            });
+            $("mainList").style.display = [...$("mainList").children].some(c => c.style.display !== "none") ? "" : "none";
+            $("urgentWrap").style.display = [...$("urgentList").children].some(c => c.style.display !== "none") ? "" : "none";
+            $("noResult").style.display = shown ? "none" : "block";
+        }
+        input.addEventListener("input", applySearch);
+        $("searchClear").addEventListener("click", () => { input.value = ""; applySearch(); input.focus(); });
+
+
+        // ===== Pop up Call Support Hotline -> lanjut ke WhatsApp =====
+        // GANTI nomor WhatsApp support di bawah (format internasional tanpa + dan tanpa spasi, contoh Indonesia: 6281234567890)
+        const WA_NUMBER = "6281234567890";
+        const WA_TEXT = "Halo BBite Support, saya kurir BBite Campus dan butuh bantuan darurat.";
+        const callOv = $("callOv");
+        function isOperational() {
+            // Jam operasional 08.00 - 20.00 WIB
+            const h = parseInt(new Intl.DateTimeFormat("en-GB", { hour: "2-digit", hour12: false, timeZone: "Asia/Jakarta" }).format(new Date()), 10);
+            return h >= 8 && h < 20;
+        }
+        function openCall() {
+            const open = isOperational();
+            $("opPill").classList.toggle("closed", !open);
+            $("opText").textContent = open ? "Operational: 8 AM - 8 PM daily" : "Closed now \u2022 opens 8 AM daily";
+            callOv.classList.add("open"); callOv.setAttribute("aria-hidden", "false");
+        }
+        function closeCall() { callOv.classList.remove("open"); callOv.setAttribute("aria-hidden", "true"); }
+        $("btnCancel").addEventListener("click", closeCall);
+        callOv.addEventListener("click", (e) => { if (e.target === callOv) closeCall(); });
+        document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeCall(); });
+        $("btnCallNow").addEventListener("click", () => {
+            window.open("https://wa.me/" + WA_NUMBER + "?text=" + encodeURIComponent(WA_TEXT), "_blank", "noopener");
+            closeCall();
+        });
+
+        // ===== Klik kartu: halaman tujuan belum dibuat -> toast dulu =====
+        const LABEL = { live: "Live Chat Support", email: "Email Support Team", call: "Call Support Hotline" };
+        const PAGES = { orders: "help-orders-kurir.html", payments: "help-payments-kurir.html", account: "help-account-kurir.html", app: "help-app-kurir.html", live: "help-livechat-kurir.html", email: "help-email-kurir.html" };
+        cards.forEach(c => c.addEventListener("click", () => {
+            if (c.dataset.key === "call") { openCall(); return; }
+            if (PAGES[c.dataset.key]) { window.location.href = PAGES[c.dataset.key]; return; }
+            const name = c.querySelector("strong").innerHTML.replace(/&amp;/g, "&");
+            showToast(name + " sedang dikembangkan");
+        }));
+    </script>
+</body>
+</html>

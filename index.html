@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Log in</title>
     <link rel="stylesheet" href="style.css">
+    <script src="security.js"></script>
     <style>
         /* Desain Custom Alert Modal */
         .custom-alert-overlay {
@@ -52,11 +53,43 @@
 
         .auth-footer { text-align: center; font-size: 12px; color: #666; padding-bottom: 10px; }
         .auth-footer a { color: #DC9808; font-weight: 700; text-decoration: none; }
+
+        /* ==== Login Fingerprint & verifikasi 2FA ==== */
+        .view { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+        .lock-center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding-bottom: 20px; }
+        .lock-fp { position: relative; width: 112px; height: 112px; border-radius: 50%; border: none; background: #FFF6DB; color: #DC9808; display: flex; align-items: center; justify-content: center; cursor: pointer; margin: 8px 0 22px; transition: 0.2s; }
+        .lock-fp::before { content: ""; position: absolute; inset: -9px; border-radius: 50%; border: 2px solid #DC9808; opacity: 0; }
+        .lock-fp:active { transform: scale(0.94); }
+        .lock-fp.wait::before { animation: lockPulse 1.4s ease-out infinite; }
+        @keyframes lockPulse { 0% { transform: scale(0.88); opacity: 0.55; } 100% { transform: scale(1.22); opacity: 0; } }
+        .lock-fp .ico-ok { display: none; }
+        .lock-fp.ok { background: #16A34A; color: #FFF; }
+        .lock-fp.ok .ico-fp { display: none; }
+        .lock-fp.ok .ico-ok { display: block; }
+        .lock-fp.bad { background: #FDEEEC; color: #D9392B; }
+        .lock-status { font-size: 13px; font-weight: 600; color: #666; line-height: 1.5; min-height: 20px; padding: 0 10px; }
+        .lock-status.ok { color: #15803D; }
+        .lock-status.bad { color: #D9392B; }
+        .lock-link { background: none; border: none; color: #DC9808; font-size: 13px; font-weight: 700; cursor: pointer; padding: 12px; margin-bottom: 14px; font-family: inherit; }
+
+        .tfa-demo { display: none; background: #FFF6DB; border: 1px dashed #E8B968; color: #8A5A00; font-size: 11px; font-weight: 600; line-height: 1.5; padding: 9px 12px; border-radius: 10px; margin-bottom: 14px; }
+        .tfa-demo.show { display: block; }
+        .tfa-demo b { letter-spacing: 2px; font-size: 13px; }
+        .tfa-otp { display: flex; gap: 8px; margin-bottom: 12px; }
+        .tfa-otp input { width: 100%; min-width: 0; height: 52px; text-align: center; font-size: 22px; font-weight: 800; color: #000; background: #F5F5F5; border: 1.5px solid transparent; border-radius: 12px; outline: none; transition: 0.15s; padding: 0; }
+        .tfa-otp input:focus { background: #FFF; border-color: #DC9808; box-shadow: 0 0 0 3px rgba(220,152,8,0.15); }
+        .tfa-otp.bad input { border-color: #D32F2F; background: #FFF5F5; }
+        .tfa-err { display: none; text-align: center; font-size: 12px; color: #D32F2F; font-weight: 600; margin-bottom: 10px; }
+        .tfa-err.show { display: block; }
+        .tfa-resend { text-align: center; font-size: 12px; color: #999; font-weight: 500; }
+        .tfa-resend button { border: none; background: none; color: #DC9808; font-weight: 700; font-size: 12px; cursor: pointer; font-family: inherit; padding: 0; }
     </style>
 </head>
 <body>
     <div class="app-container">
 
+        <!-- VIEW 1: Login email & password -->
+        <div class="view" id="viewLogin">
         <div class="auth-brand">
             <img src="logo.jpg" alt="BBite" class="auth-brand-icon">
             <span class="auth-brand-name">BBite</span>
@@ -97,6 +130,48 @@
         <p class="auth-footer">
             Don't have an account? <a href="signup.html">Sign Up</a>
         </p>
+        </div>
+
+        <!-- VIEW 2: Login fingerprint (muncul saat Biometric Login aktif) -->
+        <div class="view d-none" id="viewLock">
+            <div class="auth-brand">
+                <img src="logo.jpg" alt="BBite" class="auth-brand-icon">
+                <span class="auth-brand-name">BBite</span>
+            </div>
+            <div class="lock-center">
+                <h1 class="auth-heading">Welcome back<span id="lockName"></span>!</h1>
+                <p class="auth-subtext">Use your fingerprint to log in. No email or password needed.</p>
+                <button type="button" class="lock-fp" id="lockBtn" aria-label="Scan fingerprint">
+                    <svg class="ico-fp" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4"/><path d="M14 13.12c0 2.38 0 6.38-1 8.88"/><path d="M17.29 21.02c.12-.6.43-2.3.5-3.02"/><path d="M2 12a10 10 0 0 1 18-6"/><path d="M2 16h.01"/><path d="M21.8 16c.2-2 .131-5.354 0-6"/><path d="M5 19.5C5.5 18 6 15 6 12a6 6 0 0 1 .34-2"/><path d="M8.65 22c.21-.66.45-1.32.57-2"/><path d="M9 6.8a6 6 0 0 1 9 5.2v2"/></svg>
+                    <svg class="ico-ok" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>
+                </button>
+                <div class="lock-status" id="lockStatus" role="status"></div>
+            </div>
+            <button type="button" class="lock-link" id="lockUsePw">Use email &amp; password instead</button>
+        </div>
+
+        <!-- VIEW 3: Verifikasi 2FA (setelah email & password benar) -->
+        <div class="view d-none" id="viewTfa">
+            <div class="auth-brand">
+                <img src="logo.jpg" alt="BBite" class="auth-brand-icon">
+                <span class="auth-brand-name">BBite</span>
+            </div>
+            <h1 class="auth-heading">Two-Step Verification</h1>
+            <p class="auth-subtext" id="tfaDesc"></p>
+            <div class="tfa-demo" id="tfaDemo">Mode demo (belum ada pengirim WhatsApp): kode OTP kamu <b id="tfaDemoCode">------</b></div>
+            <div class="tfa-otp" id="tfaOtp">
+                <input type="text" inputmode="numeric" maxlength="1" autocomplete="one-time-code" aria-label="Digit 1">
+                <input type="text" inputmode="numeric" maxlength="1" aria-label="Digit 2">
+                <input type="text" inputmode="numeric" maxlength="1" aria-label="Digit 3">
+                <input type="text" inputmode="numeric" maxlength="1" aria-label="Digit 4">
+                <input type="text" inputmode="numeric" maxlength="1" aria-label="Digit 5">
+                <input type="text" inputmode="numeric" maxlength="1" aria-label="Digit 6">
+            </div>
+            <div class="tfa-err" id="tfaErr"></div>
+            <div class="tfa-resend" id="tfaResend"></div>
+            <button type="button" class="auth-submit" id="btnTfa">Verify &amp; Sign In</button>
+            <button type="button" class="lock-link" id="tfaBack" style="margin-top:-8px">Back to login</button>
+        </div>
 
         <!-- CUSTOM ALERT MODAL -->
         <div class="custom-alert-overlay" id="customAlertOverlay">
@@ -112,6 +187,21 @@
 
     <!-- SCRIPT UI -->
     <script>
+        // Pilih tampilan awal secara sinkron: jika akun terakhir memakai Biometric Login, langsung tampilkan layar fingerprint
+        function showView(id) {
+            ["viewLogin", "viewLock", "viewTfa"].forEach(v => document.getElementById(v).classList.toggle("d-none", v !== id));
+        }
+        var lockUid = "";
+        (function () {
+            var uid = BBSec.curUid(), s = BBSec.get(uid);
+            if (uid && s.bio && s.credId) {
+                lockUid = uid;
+                var first = (s.name || (s.email || "").split("@")[0] || "").trim().split(/\s+/)[0];
+                document.getElementById("lockName").textContent = first ? ", " + first : "";
+                showView("viewLock");
+            }
+        })();
+
         const togglePasswordIcons = document.querySelectorAll('.toggle-password');
         togglePasswordIcons.forEach(icon => {
             icon.addEventListener('click', function() {
@@ -154,7 +244,7 @@
     <!-- SCRIPT FIREBASE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
         import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -166,66 +256,249 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+        const $ = (id) => document.getElementById(id);
+        const resetLoginBtn = () => { $("btnLogin").innerText = "Sign In"; };
 
-        document.getElementById("loginForm").addEventListener("submit", function(event){
+        // Cek status akun (pending / suspended). Return true jika boleh masuk.
+        function accountAllowed(data) {
+            if (data.status === "pending") {
+                showCustomAlert("Menunggu Persetujuan", "Akun Merchant Anda sedang dalam proses peninjauan oleh Admin. Harap bersabar.", "⏳", false);
+                return false;
+            }
+            if (data.status === "suspended") {
+                showCustomAlert("Akun Ditangguhkan", "Mohon maaf, akun Anda saat ini ditangguhkan oleh Admin karena alasan tertentu.", "🚫", true);
+                return false;
+            }
+            return true;
+        }
+        // Smart Routing
+        function goHome(data) {
+            window.location.href = data && data.role === "Merchant" ? "home-merchant.html" : "home-mahasiswa.html";
+        }
+        // Login berhasil sepenuhnya (password [+ 2FA] atau fingerprint): buka kunci aplikasi lalu arahkan
+        function finishLogin(uid, data, dest) {
+            BBSec.setCurUid(uid);
+            BBSec.unlock(uid);
+            if (dest) window.location.href = dest; else goHome(data);
+        }
+
+        // =====================================================================
+        // LOGIN EMAIL & PASSWORD  (+ 2FA jika aktif di akun tersebut)
+        // =====================================================================
+        $("loginForm").addEventListener("submit", function(event){
             event.preventDefault();
-            document.getElementById("btnLogin").innerText = "Checking...";
-            
-            const email = document.getElementById("loginEmail").value;
-            const password = document.getElementById("loginPassword").value;
+            $("btnLogin").innerText = "Checking...";
+
+            const email = $("loginEmail").value;
+            const password = $("loginPassword").value;
 
             // Admin Shortcut
             if (email === "adminBBite@ac.id" && password === "admin123") {
                 localStorage.setItem("bbite_admin_session", "active");
                 window.location.href = "admin.html";
-                return; 
+                return;
             }
 
             signInWithEmailAndPassword(auth, email, password)
                 .then(async (userCredential) => {
-                    const uid = userCredential.user.uid;
-                    
+                    const user = userCredential.user, uid = user.uid;
+
                     // Cek role di Firestore
                     const docSnap = await getDoc(doc(db, "users", uid));
                     if (docSnap.exists()) {
                         const data = docSnap.data();
-                        
-                        if (data.status === "pending") {
-                            showCustomAlert(
-                                "Menunggu Persetujuan", 
-                                "Akun Merchant Anda sedang dalam proses peninjauan oleh Admin. Harap bersabar.", 
-                                "⏳", false
-                            );
+                        if (!accountAllowed(data)) {
                             signOut(auth);
-                            document.getElementById("btnLogin").innerText = "Sign In";
-                        } else if (data.status === "suspended") {
-                            showCustomAlert(
-                                "Akun Ditangguhkan", 
-                                "Mohon maaf, akun Anda saat ini ditangguhkan oleh Admin karena alasan tertentu.", 
-                                "🚫", true
-                            );
-                            signOut(auth);
-                            document.getElementById("btnLogin").innerText = "Sign In";
-                        } else {
-                            // Smart Routing
-                            if (data.role === "Merchant") {
-                                window.location.href = "home-merchant.html";
-                            } else {
-                                window.location.href = "home-mahasiswa.html";
-                            }
+                            resetLoginBtn();
+                            return;
                         }
+                        // Samakan status 2FA dengan data akun (jika login dari perangkat lain)
+                        BBSec.mergeRemote(uid, data.security);
+                        BBSec.setCurUid(uid);
+                        // Email + password benar. Jika 2FA aktif, WAJIB verifikasi kode dulu sebelum masuk.
+                        if (BBSec.get(uid).twofa) startTfa(user, data);
+                        else finishLogin(uid, data);
                     } else {
-                        window.location.href = "home-mahasiswa.html"; // Fallback
+                        finishLogin(uid, null, "home-mahasiswa.html"); // Fallback
                     }
                 })
                 .catch((error) => {
                     showCustomAlert(
-                        "Gagal Masuk", 
-                        "Email atau kata sandi yang Anda masukkan salah. Silakan coba lagi.", 
+                        "Gagal Masuk",
+                        "Email atau kata sandi yang Anda masukkan salah. Silakan coba lagi.",
                         "⚠️", true
                     );
-                    document.getElementById("btnLogin").innerText = "Sign In";
+                    resetLoginBtn();
                 });
+        });
+
+        // =====================================================================
+        // VERIFIKASI 2FA SAAT LOGIN (WhatsApp/SMS OTP atau Authenticator App)
+        // =====================================================================
+        const OTP_TTL_MS = 5 * 60 * 1000, RESEND_SEC = 45, MAX_TRIES = 5;
+        const boxes = [...document.querySelectorAll("#tfaOtp input")];
+        let tfa = null;   // { user, data, method, secret, phone, otp, at, tries, cd }
+
+        const getCode = () => boxes.map(b => b.value).join("");
+        function setErr(m) { const e = $("tfaErr"); e.textContent = m; e.classList.toggle("show", !!m); }
+        function clearBoxes(focus) { boxes.forEach(b => b.value = ""); $("tfaOtp").classList.remove("bad"); setErr(""); if (focus) boxes[0].focus(); }
+        function failBoxes(msg) { $("tfaOtp").classList.add("bad"); setErr(msg); }
+
+        boxes.forEach((b, i) => {
+            b.addEventListener("input", () => {
+                b.value = b.value.replace(/\D/g, "").slice(-1);
+                $("tfaOtp").classList.remove("bad"); setErr("");
+                if (b.value && i < 5) boxes[i + 1].focus();
+                if (getCode().length === 6) verifyTfa();
+            });
+            b.addEventListener("keydown", (e) => {
+                if (e.key === "Backspace" && !b.value && i > 0) { boxes[i - 1].value = ""; boxes[i - 1].focus(); }
+                if (e.key === "Enter") verifyTfa();
+                if (e.key === "ArrowLeft" && i > 0) boxes[i - 1].focus();
+                if (e.key === "ArrowRight" && i < 5) boxes[i + 1].focus();
+            });
+            b.addEventListener("paste", (e) => {
+                const t = (e.clipboardData || window.clipboardData).getData("text").replace(/\D/g, "").slice(0, 6);
+                if (!t) return;
+                e.preventDefault();
+                t.split("").forEach((c, k) => { boxes[k].value = c; });
+                boxes[Math.min(t.length, 5)].focus();
+                if (t.length === 6) verifyTfa();
+            });
+            b.addEventListener("focus", () => b.select());
+        });
+
+        function startCountdown(sec) {
+            clearInterval(tfa.cd);
+            let left = sec;
+            const row = $("tfaResend");
+            row.textContent = "Resend Code in 0:" + String(left).padStart(2, "0");
+            tfa.cd = setInterval(() => {
+                left--;
+                if (left <= 0) {
+                    clearInterval(tfa.cd);
+                    row.innerHTML = '<button type="button" id="btnTfaResend">Resend Code</button>';
+                    $("btnTfaResend").addEventListener("click", sendTfaOtp);
+                } else row.textContent = "Resend Code in 0:" + String(left).padStart(2, "0");
+            }, 1000);
+        }
+        async function sendTfaOtp() {
+            tfa.otp = BBSec.newOtp(); tfa.at = Date.now(); tfa.tries = 0;
+            clearBoxes(true);
+            try { await BBSec.sendWhatsAppOtp(tfa.phone, tfa.otp); }
+            catch (e) { setErr("Gagal mengirim kode. Coba lagi."); return; }
+            if (BBSec.DEMO_OTP) { $("tfaDemoCode").textContent = tfa.otp; $("tfaDemo").classList.add("show"); }
+            startCountdown(RESEND_SEC);
+        }
+
+        function startTfa(user, data) {
+            const s = BBSec.get(user.uid);
+            let method = s.method === "app" && s.secret ? "app" : "wa";   // tanpa rahasia authenticator di perangkat ini -> pakai OTP WhatsApp
+            tfa = { user, data, method, secret: s.secret || "", phone: data.whatsapp || "", otp: "", at: 0, tries: 0, cd: null };
+            $("tfaDemo").classList.remove("show");
+            $("tfaResend").textContent = "";
+            clearBoxes(false);
+            if (method === "app") {
+                $("tfaDesc").textContent = "Open your authenticator app and enter the 6-digit code for BBite Campus.";
+            } else {
+                const m = BBSec.maskPhone(tfa.phone);
+                $("tfaDesc").textContent = "Enter the 6-digit verification code sent to " + (m || "your registered number") + " to finish signing in.";
+            }
+            showView("viewTfa");
+            if (method === "wa") sendTfaOtp(); else boxes[0].focus();
+        }
+
+        let tfaBusy = false;
+        async function verifyTfa() {
+            if (!tfa || tfaBusy) return;
+            const code = getCode();
+            if (code.length < 6) { failBoxes("Masukkan 6 digit kode verifikasi."); return; }
+            tfaBusy = true; $("btnTfa").textContent = "Verifying...";
+            let ok = false;
+            if (tfa.method === "wa") {
+                if (Date.now() - tfa.at > OTP_TTL_MS) failBoxes("Kode kedaluwarsa. Kirim ulang kode.");
+                else if (tfa.tries >= MAX_TRIES) failBoxes("Terlalu banyak percobaan. Kirim ulang kode.");
+                else { tfa.tries++; ok = code === tfa.otp; if (!ok) failBoxes("Kode salah. Coba lagi (" + (MAX_TRIES - tfa.tries) + " percobaan tersisa)."); }
+            } else {
+                ok = await BBSec.checkTotp(tfa.secret, code);
+                if (!ok) failBoxes("Kode salah atau sudah berganti. Masukkan kode terbaru dari aplikasi.");
+            }
+            tfaBusy = false; $("btnTfa").textContent = "Verify & Sign In";
+            if (!ok) return;
+            clearInterval(tfa.cd);
+            const { user, data } = tfa;
+            tfa = null;
+            finishLogin(user.uid, data);
+        }
+        $("btnTfa").addEventListener("click", verifyTfa);
+        $("tfaBack").addEventListener("click", async () => {
+            if (tfa) clearInterval(tfa.cd);
+            tfa = null;
+            try { await signOut(auth); } catch (e) {}   // batalkan login: sesi dari email+password dihapus
+            BBSec.lock();
+            resetLoginBtn();
+            showView("viewLogin");
+        });
+
+        // =====================================================================
+        // LOGIN FINGERPRINT (tanpa email & password)
+        // =====================================================================
+        const lockBtn = $("lockBtn"), lockStatus = $("lockStatus");
+        let lockBusy = false;
+        function setLock(state, msg) {
+            lockBtn.className = "lock-fp" + (state ? " " + state : "");
+            lockStatus.className = "lock-status" + (state === "ok" || state === "bad" ? " " + state : "");
+            lockStatus.textContent = msg;
+        }
+        const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+        async function tryFingerprint(auto) {
+            if (lockBusy || !lockUid) return;
+            lockBusy = true;
+            const s = BBSec.get(lockUid);
+            setLock("wait", "Waiting for sensor input...");
+            try {
+                if (s.credId === "demo") {
+                    // Fingerprint didaftarkan lewat mode demo (perangkat tanpa sensor): ketuk ikon untuk simulasi
+                    if (auto) { setLock("", "Demo mode: tap the fingerprint icon to scan."); lockBusy = false; return; }
+                    await sleep(1100);
+                } else {
+                    await BBSec.verifyFingerprint(s.credId);
+                }
+                setLock("ok", "Fingerprint verified. Signing you in...");
+                let data = {};
+                try { const snap = await getDoc(doc(db, "users", lockUid)); if (snap.exists()) data = snap.data(); } catch (e) {}
+                if (!accountAllowed(data)) {
+                    try { await signOut(auth); } catch (e) {}
+                    lockUid = ""; setLock("", ""); showView("viewLogin");
+                    return;
+                }
+                // Biometric adalah fitur akun kurir: kurir aktif langsung ke dashboard kurir
+                finishLogin(lockUid, data, data.courierStatus === "active" ? "home-kurir.html" : null);
+            } catch (e) {
+                const quiet = auto && e && e.name === "NotAllowedError";   // prompt otomatis ditolak/dibatalkan: ajak ketuk manual (tanpa warna error)
+                if (quiet) setLock("", "Tap the fingerprint icon to scan.");
+                else setLock("bad", BBSec.fingerprintError(e));
+            } finally { lockBusy = false; }
+        }
+        lockBtn.addEventListener("click", () => tryFingerprint(false));
+        $("lockUsePw").addEventListener("click", () => {
+            lockUid = ""; setLock("", "");
+            showView("viewLogin");
+        });
+
+        // Saat aplikasi dibuka dengan Biometric aktif: pastikan sesi akun masih ada, lalu minta fingerprint otomatis
+        let lockStarted = false;
+        onAuthStateChanged(auth, (user) => {
+            if (!lockUid || lockStarted) return;
+            lockStarted = true;
+            if (!user || user.uid !== lockUid) {
+                // Sesi login sudah berakhir (mis. sudah logout penuh): fingerprint tidak bisa dipakai, minta email & password
+                lockUid = ""; showView("viewLogin");
+                showCustomAlert("Sesi Berakhir", "Silakan masuk dengan email dan kata sandi. Setelah itu fingerprint bisa dipakai lagi.", "🔒", false);
+                return;
+            }
+            tryFingerprint(true);
         });
     </script>
 </body>

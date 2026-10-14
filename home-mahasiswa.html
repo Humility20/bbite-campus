@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home - Mahasiswa</title>
     <link rel="stylesheet" href="style.css">
+    <script src="security.js" data-guard></script>
     <style>
         /* Role switcher (Customer / Courier) - hanya tampil untuk pendaftar kurir */
         .role-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin: -8px 0 20px; }
@@ -56,7 +57,7 @@
 
         .section-head { margin-bottom: 12px; }
         .section-head h2 { font-size: 18px; font-weight: 800; color: #0B1220; }
-        .section-head a { background: none; padding: 4px 0; font-size: 12.5px; font-weight: 700; color: #6B4EFF; }
+        .section-head a { background: none; padding: 4px 0; font-size: 12.5px; font-weight: 700; color: #C98A00; }
 
         .canteen-grid { grid-template-columns: repeat(4, 1fr); gap: 8px; }
         .canteen-item { gap: 6px; background: #FFF; border: 1px solid #E5E7EB; border-radius: 12px; padding: 12px 4px 10px; justify-content: center; min-height: 84px; }
@@ -79,7 +80,74 @@
         .bottom-nav { background: #FFF; border-top: 1px solid #E5E7EB; box-shadow: none; }
         .nav-item { color: #6B7280; }
         .nav-item svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-        .nav-item.active { background: #F0ECFF; color: #6B4EFF; }
+        .nav-item.active { background: #FFF6DB; color: #C98A00; flex-direction: row; gap: 8px; padding: 10px 18px; }
+        .nav-item.active span { font-weight: 800; }
+
+        /* ===== ALL CANTEENS (See all) ===== */
+        #allCanteensView { padding: 0 18px 120px; background: #FFF; }
+        .ac-head { position: relative; text-align: center; padding: 52px 0 16px; }
+        .ac-back { position: absolute; left: -2px; top: 48px; width: 34px; height: 34px; border: none; background: none; color: #DC9808; cursor: pointer; display: flex; align-items: center; text-decoration: none; }
+        .ac-back:active { transform: scale(0.9); }
+        .ac-head h1 { font-size: 20px; font-weight: 800; color: #0B1220; margin: 0 34px 8px; }
+        .ac-head p { font-size: 12px; line-height: 1.5; color: #94A3B8; font-weight: 500; margin: 0; padding: 0 10px; }
+        .ac-search { margin-bottom: 14px; }
+        .ac-chips { display: flex; gap: 8px; overflow-x: auto; margin: 0 -18px 18px; padding: 2px 18px; scrollbar-width: none; }
+        .ac-chips::-webkit-scrollbar { display: none; }
+        .ac-chip { flex: 0 0 auto; border: 1px solid #E5E7EB; background: #FFF; color: #374151; font-family: inherit; font-size: 12.5px; font-weight: 600; padding: 8px 16px; border-radius: 20px; cursor: pointer; white-space: nowrap; transition: 0.15s; }
+        .ac-chip:active { transform: scale(0.96); }
+        .ac-chip.active { background: #FFF6DB; border-color: #DC9808; color: #C98A00; font-weight: 800; }
+        .ac-bar { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; }
+        .ac-bar h2 { font-size: 15px; font-weight: 800; color: #0B1220; margin: 0; }
+        .ac-count { font-size: 11.5px; font-weight: 500; color: #94A3B8; }
+        .ac-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+        .ac-card { display: flex; flex-direction: column; background: #FFF; border: 1px solid #E5E7EB; border-radius: 16px; padding: 8px 8px 12px; text-decoration: none; box-shadow: 0 2px 8px rgba(15,23,42,0.04); transition: transform 0.15s; min-width: 0; }
+        .ac-card:active { transform: scale(0.97); }
+        .ac-photo { position: relative; width: 100%; aspect-ratio: 4 / 3; border-radius: 12px; overflow: hidden; background: #FFF9EA; margin-bottom: 10px; }
+        .ac-photo img { width: 100%; height: 100%; display: block; }
+        .ac-photo img.cover { object-fit: cover; }
+        .ac-photo img.logo { object-fit: contain; padding: 12px; }
+        .ac-ph { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #FFF6DB; color: #DC9808; font-size: 26px; font-weight: 800; letter-spacing: 1px; }
+        .ac-badge { position: absolute; top: 8px; left: 8px; display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 10px; background: #FFF; box-shadow: 0 1px 4px rgba(15,23,42,0.12); }
+        .ac-badge i { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+        .ac-badge.open { color: #15803D; }
+        .ac-badge.busy { color: #C2710C; }
+        .ac-badge.closed { color: #6B7280; }
+        .ac-name { font-size: 14.5px; font-weight: 800; color: #0B1220; padding: 0 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .ac-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 6px; margin-top: 6px; padding: 0 4px; font-size: 11.5px; font-weight: 600; color: #0B1220; }
+        .ac-meta .star { color: #DC9808; font-size: 13px; line-height: 1; }
+        .ac-meta .new { font-size: 10px; font-weight: 800; color: #C98A00; background: #FFF6DB; padding: 2px 7px; border-radius: 8px; }
+        .ac-meta .eta { display: inline-flex; align-items: center; gap: 4px; color: #6B7280; font-weight: 500; }
+        .ac-loc { display: flex; align-items: center; gap: 4px; margin-top: 6px; padding: 0 4px; font-size: 11px; color: #6B7280; font-weight: 500; min-width: 0; }
+        .ac-loc svg { flex-shrink: 0; }
+        .ac-loc span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .ac-skel { height: 214px; border-radius: 16px; background: linear-gradient(90deg, #F3F4F6 25%, #FAFAFA 50%, #F3F4F6 75%); background-size: 200% 100%; animation: acShim 1.2s linear infinite; }
+        @keyframes acShim { to { background-position: -200% 0; } }
+        .ac-empty { grid-column: 1 / -1; text-align: center; padding: 40px 10px; font-size: 12.5px; color: #94A3B8; font-weight: 500; line-height: 1.6; }
+        .ac-empty b { color: #0B1220; font-weight: 700; }
+        /* ===== POPULAR PICKS (See all) ===== */
+        #popularPicksView { padding: 0 18px 120px; background: #FFF; }
+        .pp-bar { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; }
+        .pp-bar h2 { font-size: 16px; font-weight: 800; color: #0B1220; margin: 0; }
+        .pp-count { font-size: 11.5px; font-weight: 500; color: #94A3B8; }
+        .pp-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+        .pp-card { position: relative; display: flex; flex-direction: column; background: #FFF; border: 1px solid #E5E7EB; border-radius: 16px; overflow: hidden; text-decoration: none; box-shadow: 0 2px 8px rgba(15,23,42,0.04); transition: transform 0.15s; min-width: 0; }
+        .pp-card:active { transform: scale(0.97); }
+        .pp-photo { width: 100%; aspect-ratio: 4 / 3; background: #FFF9EA; overflow: hidden; }
+        .pp-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .pp-ph { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #FFF6DB; color: #DC9808; font-size: 26px; font-weight: 800; letter-spacing: 1px; }
+        .pp-body { padding: 10px 12px 12px; display: flex; flex-direction: column; flex: 1; min-width: 0; }
+        .pp-tag { align-self: flex-start; max-width: 100%; font-size: 10px; font-weight: 700; color: #C98A00; background: #FFF6DB; padding: 3px 8px; border-radius: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .pp-name { margin: 8px 0 0; font-size: 13.5px; font-weight: 800; line-height: 1.3; color: #0B1220; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 35px; }
+        .pp-rate { display: flex; align-items: center; gap: 4px; margin-top: 6px; font-size: 11px; color: #6B7280; font-weight: 500; }
+        .pp-rate .star { color: #DC9808; font-size: 12px; }
+        .pp-rate b { color: #0B1220; font-weight: 800; }
+        .pp-foot { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 10px; }
+        .pp-price { font-size: 14px; font-weight: 800; color: #C98A00; }
+        .pp-add { width: 32px; height: 32px; border-radius: 50%; border: none; background: #DC9808; color: #FFF; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; box-shadow: 0 2px 6px rgba(220,152,8,0.35); transition: transform 0.15s; padding: 0; }
+        .pp-add:active { transform: scale(0.88); }
+        .pp-empty { grid-column: 1 / -1; text-align: center; padding: 40px 10px; font-size: 12.5px; color: #94A3B8; font-weight: 500; line-height: 1.6; }
+        .pp-empty b { color: #0B1220; font-weight: 700; }
+        .pp-skel { height: 262px; border-radius: 16px; background: linear-gradient(90deg, #F3F4F6 25%, #FAFAFA 50%, #F3F4F6 75%); background-size: 200% 100%; animation: acShim 1.2s linear infinite; }
     </style>
 </head>
 <body>
@@ -167,7 +235,7 @@
                 <section class="dash-section">
                     <div class="section-head">
                         <h2>Popular Picks</h2>
-                        <a href="#" onclick="window.toggleAllCanteens(true); return false;">See all</a>
+                        <a href="#" onclick="window.togglePopularPicks(true); return false;">See all</a>
                     </div>
                     
                     <div class="picks-scroll" id="popularScroll">
@@ -193,20 +261,63 @@
         </div>
 
         <div id="allCanteensView" class="dashboard-content d-none">
-            <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px; margin-top: 10px;">
-                <a href="#" class="back-button" onclick="window.toggleAllCanteens(false); return false;" style="margin-bottom: 0;">&#8592;</a>
-                <h1 style="font-size: 20px; margin-bottom: 0;">Semua Kantin</h1>
+            <div class="ac-head">
+                <a href="#" class="ac-back" aria-label="Kembali" onclick="window.toggleAllCanteens(false); return false;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+                </a>
+                <h1>All Canteens</h1>
+                <p>Explore all food merchants available across campus</p>
             </div>
-            
-            <div class="dash-section" style="margin-bottom: 24px;">
+
+            <div class="search-card ac-search">
                 <div class="input-wrapper search-wrapper">
                     <span class="search-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span>
-                    <input type="text" id="searchAllInput" placeholder="Cari kantin favoritmu...">
+                    <input type="text" id="searchAllInput" placeholder="Search canteen name or dish...">
                 </div>
             </div>
 
-            <div class="canteen-grid" id="allCanteenGrid" style="grid-template-columns: repeat(3, 1fr); gap: 20px 12px;">
-                <p style="grid-column: span 3; text-align: center; font-size: 11px; color: #888;">Memuat seluruh kantin...</p>
+            <div class="ac-chips" id="acChips"><button type="button" class="ac-chip active" data-cat="All">All</button></div>
+
+            <div class="ac-bar">
+                <h2>Find your next bite</h2>
+                <span class="ac-count" id="acCount"></span>
+            </div>
+
+            <div class="ac-grid" id="allCanteenGrid">
+                <div class="ac-skel"></div><div class="ac-skel"></div><div class="ac-skel"></div><div class="ac-skel"></div>
+            </div>
+        </div>
+
+        <div id="popularPicksView" class="dashboard-content d-none">
+            <div class="ac-head">
+                <a href="#" class="ac-back" aria-label="Kembali" onclick="window.togglePopularPicks(false); return false;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+                </a>
+                <h1>Popular Picks</h1>
+                <p>Most loved and top-rated dishes across all campus canteens</p>
+            </div>
+
+            <div class="search-card ac-search">
+                <div class="input-wrapper search-wrapper">
+                    <span class="search-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span>
+                    <input type="text" id="searchPicksInput" placeholder="Search popular dish or canteen...">
+                </div>
+            </div>
+
+            <div class="ac-chips" id="ppChips">
+                <button type="button" class="ac-chip active" data-f="all">All Picks</button>
+                <button type="button" class="ac-chip" data-f="top">Top Rated &#11088;</button>
+                <button type="button" class="ac-chip" data-f="under25">Under Rp 25k</button>
+                <button type="button" class="ac-chip" data-f="best">Best Sellers</button>
+            </div>
+
+            <div class="pp-bar">
+                <h2>Campus favourites</h2>
+                <span class="pp-count" id="ppCount"></span>
+            </div>
+
+            <div class="pp-grid" id="popularPicksGrid">
+                <div class="pp-skel"></div><div class="pp-skel"></div><div class="pp-skel"></div><div class="pp-skel"></div>
             </div>
         </div>
 
@@ -301,18 +412,26 @@
         document.getElementById("optCustomer").addEventListener("click", () => roleMenu.classList.remove("open"));
         document.addEventListener("click", () => roleMenu.classList.remove("open"));
 
-        window.toggleAllCanteens = function(show) {
-            const mainView = document.getElementById('mainDashboardView');
-            const allView = document.getElementById('allCanteensView');
-            if(show) {
-                mainView.classList.add('d-none');
-                allView.classList.remove('d-none');
-                document.querySelector('.app-container').scrollTo(0, 0);
+        // ===== NAVIGASI ANTAR VIEW (Dashboard / All Canteens / Popular Picks) =====
+        const VIEWS = { allCanteens: 'allCanteensView', popularPicks: 'popularPicksView' };
+        function showView(name) {
+            document.getElementById('mainDashboardView').classList.toggle('d-none', !!name);
+            Object.keys(VIEWS).forEach(k => document.getElementById(VIEWS[k]).classList.toggle('d-none', k !== name));
+            window.scrollTo(0, 0);
+        }
+        function openView(name, show, fromPop) {
+            if (show) {
+                showView(name);
+                if (!fromPop) history.pushState({ view: name }, "");
             } else {
-                allView.classList.add('d-none');
-                mainView.classList.remove('d-none');
+                // Tombol back HP / browser ikut menutup halaman ini
+                if (!fromPop && history.state && history.state.view === name) { history.back(); return; }
+                showView(null);
             }
-        };
+        }
+        window.toggleAllCanteens = (show, fromPop) => openView('allCanteens', show, fromPop);
+        window.togglePopularPicks = (show, fromPop) => openView('popularPicks', show, fromPop);
+        window.addEventListener('popstate', () => showView((history.state && history.state.view) || null));
 
         const slider = document.getElementById('popularScroll');
         let isDown = false; let startX; let scrollLeft; let dragged = false;
@@ -324,13 +443,13 @@
         slider.addEventListener('click', (e) => { if (dragged) { e.preventDefault(); dragged = false; } }, true);
 
         const defaultCanteens = [
-            { name: 'Hokben', img: 'https://www.centralparkjakarta.com/upload/tenant/00hokben.jpg', param: 'Hokben' },
+            { name: 'Hokben', category: 'Fast Food', img: 'https://www.centralparkjakarta.com/upload/tenant/00hokben.jpg', param: 'Hokben' },
             { name: 'Cerita Cinta', bgColor: '#F4F1FF', color: '#6B4EFF', param: 'Cerita Cinta' },
-            { name: 'A&W', img: 'https://images.seeklogo.com/logo-png/18/2/aw-restaurants-logo-png_seeklogo-188287.png', param: 'A&W' },
-            { name: 'Bakmi Efata', bgColor: '#FFF6DB', color: '#DC9808', param: 'Bakmi Efata' },
-            { name: 'Warteg GB', bgColor: '#F8F8F8', color: '#333', param: 'Warteg GB' },
-            { name: 'Starbucks', img: 'https://thumb.wikimedia.org/wikipedia/sco/thumb/d/d3/Starbucks_Corporation_Logo_2011.svg/1280px-Starbucks_Corporation_Logo_2011.svg.png', param: 'Starbucks' },
-            { name: 'Yoshinoya', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-9GbZMi2MaedJrC8zpNqoYPN61jhNbWnRN2egk1RbLT8WmUp5B1Z-A-Zz&s=10', param: 'Yoshinoya' },
+            { name: 'A&W', category: 'Fast Food', img: 'https://images.seeklogo.com/logo-png/18/2/aw-restaurants-logo-png_seeklogo-188287.png', param: 'A&W' },
+            { name: 'Bakmi Efata', category: 'Indonesian', bgColor: '#FFF6DB', color: '#DC9808', param: 'Bakmi Efata' },
+            { name: 'Warteg GB', category: 'Indonesian', bgColor: '#F8F8F8', color: '#333', param: 'Warteg GB' },
+            { name: 'Starbucks', category: 'Beverages & Cafe', img: 'https://thumb.wikimedia.org/wikipedia/sco/thumb/d/d3/Starbucks_Corporation_Logo_2011.svg/1280px-Starbucks_Corporation_Logo_2011.svg.png', param: 'Starbucks' },
+            { name: 'Yoshinoya', category: 'Fast Food', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-9GbZMi2MaedJrC8zpNqoYPN61jhNbWnRN2egk1RbLT8WmUp5B1Z-A-Zz&s=10', param: 'Yoshinoya' },
             { name: 'Rasela', bgColor: '#E8F5E9', color: '#2E7D32', param: 'Rasela' }
         ];
 
@@ -373,6 +492,7 @@
                     if (existingIdx >= 0) {
                         mergedCanteens[existingIdx].uid = doc.id;
                         if (data.photoBase64) mergedCanteens[existingIdx].img = data.photoBase64;
+                        ['category', 'location', 'storeStatus', 'prepTime'].forEach(k => { if (data[k]) mergedCanteens[existingIdx][k] = data[k]; });
                         mergedCanteens[existingIdx].customMenus = customMenus;
                         mergedCanteens[existingIdx].deletedMenus = deletedMenus;
                     } else {
@@ -382,6 +502,8 @@
                             param: bName,
                             img: data.photoBase64 || null,
                             bgColor: '#F5F5F5', color: '#333',
+                            category: data.category || '', location: data.location || '',
+                            storeStatus: data.storeStatus || '', prepTime: data.prepTime || '',
                             customMenus: customMenus,
                             deletedMenus: deletedMenus
                         });
@@ -397,6 +519,8 @@
                 
                 let finalBase = baseM.filter(m => !dMenus.includes(m.id));
                 c.allMenus = [...cMenus, ...finalBase];
+                if (jsonKey && baseMenusData[jsonKey] && baseMenusData[jsonKey].rating) c.rating = baseMenusData[jsonKey].rating;
+                if (jsonKey && baseMenusData[jsonKey] && baseMenusData[jsonKey].reviewCount) c.reviewCount = baseMenusData[jsonKey].reviewCount;
             });
 
             allCanteensWithMenus = mergedCanteens;
@@ -410,8 +534,134 @@
             };
 
             document.getElementById("mainCanteenGrid").innerHTML = mergedCanteens.slice(0, 8).map(renderCanteenItem).join('');
-            document.getElementById("allCanteenGrid").innerHTML = mergedCanteens.map(renderCanteenItem).join('');
+            renderChips();
+            renderAll();
+            buildPicks();
+            renderPicks();
         }
+
+        // ===== ALL CANTEENS: chip kategori, pencarian (nama kantin / menu), kartu =====
+        const esc = (t) => String(t == null ? '' : t).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+        const CAT_ORDER = ['Fast Food', 'Indonesian', 'Beverages & Cafe'];
+        let acCat = 'All', acQuery = '';
+        const PIN_SVG = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6-5.2-6-10a6 6 0 0 1 12 0c0 4.8-6 10-6 10z"/><circle cx="12" cy="11" r="2.2"/></svg>';
+        const CLOCK_SVG = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
+
+        function renderChips() {
+            const found = [...new Set(allCanteensWithMenus.map(c => c.category).filter(Boolean))];
+            const cats = [...CAT_ORDER.filter(c => found.includes(c)), ...found.filter(c => !CAT_ORDER.includes(c)).sort()];
+            if (acCat !== 'All' && !cats.includes(acCat)) acCat = 'All';
+            document.getElementById('acChips').innerHTML = ['All', ...cats].map(c =>
+                `<button type="button" class="ac-chip${c === acCat ? ' active' : ''}" data-cat="${esc(c)}">${esc(c)}</button>`).join('');
+        }
+        function acInitials(name) {
+            const w = String(name || '?').trim().split(/\s+/);
+            return (w[0].charAt(0) + (w[1] ? w[1].charAt(0) : '')).toUpperCase();
+        }
+        function acCard(c) {
+            const url = `menu-kantin.html?resto=${encodeURIComponent(c.param)}${c.uid ? '&uid=' + c.uid : ''}`;
+            const ph = `<div class="ac-ph">${esc(acInitials(c.name))}</div>`;
+            let photo = ph;
+            if (c.img) {
+                const kind = String(c.img).startsWith('data:') ? 'cover' : 'logo';   // foto upload merchant = cover, logo brand = contain
+                photo = `<img class="${kind}" src="${esc(c.img)}" alt="${esc(c.name)}" loading="lazy" draggable="false" onerror="this.outerHTML=this.parentNode.dataset.ph">`;
+            }
+            const st = String(c.storeStatus || '').toLowerCase();
+            const badge = { open: 'Open', busy: 'Busy', closed: 'Closed' }[st];
+            const rating = c.rating ? `<span class="star">&#9733;</span><span>${Number(c.rating).toFixed(1)}</span>` : `<span class="new">New</span>`;
+            const eta = c.prepTime ? `<span class="eta">${CLOCK_SVG}${esc(c.prepTime)}</span>` : '';
+            return `<a href="${url}" class="ac-card">
+                <div class="ac-photo" data-ph="${esc(ph)}">${photo}${badge ? `<span class="ac-badge ${st}"><i></i>${badge}</span>` : ''}</div>
+                <div class="ac-name">${esc(c.name)}</div>
+                <div class="ac-meta">${rating}${eta}</div>
+                <div class="ac-loc">${PIN_SVG}<span>${esc(c.location || 'Kampus Anggrek')}</span></div>
+            </a>`;
+        }
+        function renderAll() {
+            const q = acQuery.toLowerCase().trim();
+            const list = allCanteensWithMenus.filter(c => {
+                if (acCat !== 'All' && c.category !== acCat) return false;
+                if (!q) return true;
+                return c.name.toLowerCase().includes(q) || (c.allMenus || []).some(m => String(m.name || '').toLowerCase().includes(q));
+            });
+            document.getElementById('acCount').textContent = list.length + (list.length === 1 ? ' merchant' : ' merchants');
+            document.getElementById('allCanteenGrid').innerHTML = list.length
+                ? list.map(acCard).join('')
+                : `<div class="ac-empty">${q ? `No canteen or dish matches <b>"${esc(acQuery.trim())}"</b>.` : 'No canteens in this category yet.'}</div>`;
+        }
+        document.getElementById('acChips').addEventListener('click', (e) => {
+            const b = e.target.closest('.ac-chip');
+            if (!b) return;
+            acCat = b.dataset.cat;
+            document.querySelectorAll('#acChips .ac-chip').forEach(x => x.classList.toggle('active', x === b));
+            renderAll();
+        });
+
+        // ===== POPULAR PICKS: daftar menu populer dari semua kantin =====
+        const PP_PER_CANTEEN = 30;       // maks menu per kantin agar daftar tetap beragam
+        let ppAll = [], ppFilter = 'all', ppQuery = '';
+        const rupiah = (n) => 'Rp ' + Number(n).toLocaleString('id-ID');
+        const parseCount = (t) => { const m = String(t || '').match(/([\d.,]+)\s*(k)?/i); if (!m) return 0; const v = parseFloat(m[1].replace(',', '.')); return m[2] ? v * 1000 : v; };
+        const PLUS_SVG = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>';
+
+        function buildPicks() {
+            // Hanya menu yang punya foto & harga valid; ambil bergiliran per kantin (round-robin)
+            const lists = allCanteensWithMenus.map(c => ({
+                c,
+                items: (c.allMenus || []).filter(m => m && m.img && Number(m.price) > 0).slice(0, PP_PER_CANTEEN)
+            })).filter(x => x.items.length);
+            const out = [];
+            for (let i = 0; i < PP_PER_CANTEEN; i++) {
+                lists.forEach(({ c, items }) => { if (items[i]) out.push({ m: items[i], c }); });
+            }
+            ppAll = out;
+        }
+
+        function ppCard({ m, c }) {
+            const base = `menu-kantin.html?resto=${encodeURIComponent(c.param)}${c.uid ? '&uid=' + c.uid : ''}`;
+            const ph = `<div class="pp-ph">${esc(acInitials(m.name))}</div>`;
+            const rating = c.rating
+                ? `<span class="star">&#9733;</span><b>${Number(c.rating).toFixed(1)}</b>${c.reviewCount ? `<span>(${esc(c.reviewCount)})</span>` : ''}`
+                : `<span class="new" style="font-size:10px;font-weight:800;color:#C98A00;background:#FFF6DB;padding:2px 7px;border-radius:8px;">New</span>`;
+            return `<a href="${base}" class="pp-card">
+                <div class="pp-photo" data-ph="${esc(ph)}"><img src="${esc(m.img)}" alt="${esc(m.name)}" loading="lazy" draggable="false" onerror="this.parentNode.innerHTML=this.parentNode.dataset.ph"></div>
+                <div class="pp-body">
+                    <span class="pp-tag">${esc(c.name)}</span>
+                    <h3 class="pp-name">${esc(m.name)}</h3>
+                    <div class="pp-rate">${rating}</div>
+                    <div class="pp-foot">
+                        <span class="pp-price">${rupiah(m.price)}</span>
+                        <button type="button" class="pp-add" aria-label="Tambah ${esc(m.name)}" onclick="event.preventDefault(); event.stopPropagation(); window.location.href='${base}&add=${encodeURIComponent(m.id)}';">${PLUS_SVG}</button>
+                    </div>
+                </div>
+            </a>`;
+        }
+
+        function renderPicks() {
+            const q = ppQuery.toLowerCase().trim();
+            let list = ppAll.filter(({ m, c }) => {
+                if (ppFilter === 'top' && !(Number(c.rating) >= 4.8)) return false;
+                if (ppFilter === 'under25' && !(Number(m.price) < 25000)) return false;
+                if (ppFilter === 'best' && !(parseCount(c.reviewCount) >= 1500)) return false;
+                if (!q) return true;
+                return String(m.name || '').toLowerCase().includes(q) || c.name.toLowerCase().includes(q);
+            });
+            if (ppFilter === 'top') list = [...list].sort((a, b) => Number(b.c.rating) - Number(a.c.rating));
+            if (ppFilter === 'best') list = [...list].sort((a, b) => parseCount(b.c.reviewCount) - parseCount(a.c.reviewCount));
+            const canteens = new Set(list.map(x => x.c.name)).size;
+            document.getElementById('ppCount').textContent = `${list.length} ${list.length === 1 ? 'dish' : 'dishes'} \u00B7 ${canteens} ${canteens === 1 ? 'canteen' : 'canteens'}`;
+            document.getElementById('popularPicksGrid').innerHTML = list.length
+                ? list.map(ppCard).join('')
+                : `<div class="pp-empty">${q ? `No dish or canteen matches <b>"${esc(ppQuery.trim())}"</b>.` : 'No dishes match this filter yet.'}</div>`;
+        }
+        document.getElementById('ppChips').addEventListener('click', (e) => {
+            const b = e.target.closest('.ac-chip');
+            if (!b) return;
+            ppFilter = b.dataset.f;
+            document.querySelectorAll('#ppChips .ac-chip').forEach(x => x.classList.toggle('active', x === b));
+            renderPicks();
+        });
+        document.getElementById('searchPicksInput').addEventListener('input', (e) => { ppQuery = e.target.value; renderPicks(); });
 
         document.getElementById('searchInput').addEventListener('input', (e) => {
             const query = e.target.value.toLowerCase().trim();
@@ -483,19 +733,7 @@
             }
         });
 
-        document.getElementById('searchAllInput').addEventListener('input', (e) => {
-            const query = e.target.value.toLowerCase().trim();
-            const items = document.querySelectorAll('#allCanteenGrid .canteen-item');
-            
-            items.forEach(item => {
-                const name = item.querySelector('span').innerText.toLowerCase();
-                if (name.includes(query)) {
-                    item.style.display = 'flex';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-        });
+        document.getElementById('searchAllInput').addEventListener('input', (e) => { acQuery = e.target.value; renderAll(); });
 
         loadCanteensAndMenus();
     </script>

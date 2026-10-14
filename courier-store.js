@@ -1,21 +1,30 @@
 /* Penyimpanan bersama untuk halaman kurir (home-kurir.html & orders-kurir.html).
-   Sementara memakai localStorage sebagai placeholder sampai order dihubungkan ke Firestore. */
+   Sementara memakai localStorage sebagai placeholder sampai order dihubungkan ke Firestore.
+   Kurir baru mulai dari nol: tidak ada order dan statistik 0 sampai ada order masuk. */
 (function () {
-    var KEY = "bbite_courier_v1";
-    var BASE = { deliveries: 5, earnings: 25000 };
+    // Versi kunci dinaikkan ke v2 supaya sisa data uji coba lama di browser tidak ikut muncul
+    try { localStorage.removeItem("bbite_courier_v1"); localStorage.removeItem("bbite_courier_chat_v1"); localStorage.removeItem("bbite_courier_orders_v1"); } catch (e) {}
+    // Data dipisah per akun (uid Firebase) supaya kurir baru tidak melihat data kurir lain di browser yang sama.
+    // Firebase Auth menyimpan sesi login di localStorage, jadi uid bisa dibaca secara sinkron.
+    function currentUid() {
+        try {
+            for (var i = 0; i < localStorage.length; i++) {
+                var k = localStorage.key(i);
+                if (k && k.indexOf("firebase:authUser:") === 0) {
+                    var u = JSON.parse(localStorage.getItem(k));
+                    if (u && u.uid) return u.uid;
+                }
+            }
+        } catch (e) {}
+        return "guest";
+    }
+    var UID = currentUid();
+    var KEY = "bbite_courier_v2_" + UID;
+    var BASE = { deliveries: 0, earnings: 0 };
     var mem = null;
 
-    // Data contoh order masuk (placeholder)
-    var ORDERS = [
-        { id: 1042, time: "Just now", pickup: "Hokben Kantin B1", dropoff: "Lobby Gedung Utama", fee: 5000,
-          customer: "Budi S.", phone: "0812-3456-7890", note: "Tunggu di dekat pos satpam lobi ya.",
-          payment: "Cashless (OVO)", paid: true,
-          items: [ { qty: 1, name: "Beef teriyaki bowl", price: 34000 }, { qty: 1, name: "Chicken yakiniku bento", price: 42000 } ] },
-        { id: 1041, time: "2 mins ago", pickup: "Starbucks", dropoff: "Library 2nd Floor", fee: 5000,
-          customer: "Siska", phone: "0813-2222-3333", note: "",
-          payment: "Cashless (GoPay)", paid: true,
-          items: [ { qty: 1, name: "Iced Caramel Macchiato", price: 55000 }, { qty: 1, name: "Butter Croissant", price: 35000 } ] }
-    ];
+    // Order masuk. Kosong sampai ada customer yang memesan (lihat addOrder di bawah).
+    var ORDERS = [];
 
     function load() {
         var s = null;
@@ -36,7 +45,7 @@
         try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {}
     }
     // Chat disimpan terpisah dari state order (gambar bisa besar)
-    var CHAT_KEY = "bbite_courier_chat_v1";
+    var CHAT_KEY = "bbite_courier_chat_v2_" + UID;
     var chatMem = null;
     function loadChats() {
         var c = null;
@@ -48,9 +57,9 @@
         try { localStorage.setItem(CHAT_KEY, JSON.stringify(c)); } catch (e) {}
     }
     // ===== Wallet (placeholder sampai terhubung ke backend) =====
-    var BALANCE_BASE = 145000;
-    var WEEK_BASE = [ { e: 38000, n: 7 }, { e: 22000, n: 4 }, { e: 65000, n: 12 }, { e: 31000, n: 6 }, { e: 52000, n: 10 }, { e: 0, n: 0 }, { e: 0, n: 0 } ]; // Sen..Min (hari sebelum hari ini)
-    var DEFAULT_ACCOUNT = { id: "default", type: "Bank BCA", short: "BCA", number: "1234567890", name: "Gihon" };
+    // Kurir baru: saldo 0, grafik mingguan 0, belum ada rekening. Semua angka dihitung dari order yang benar-benar selesai.
+    var BALANCE_BASE = 0;
+    var WEEK_BASE = [ { e: 0, n: 0 }, { e: 0, n: 0 }, { e: 0, n: 0 }, { e: 0, n: 0 }, { e: 0, n: 0 }, { e: 0, n: 0 }, { e: 0, n: 0 } ]; // Sen..Min
     function pad4(n) { return String(n).padStart(4, "0"); }
     function weekStartTs(d) {
         var x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
@@ -58,10 +67,8 @@
         return x.getTime();
     }
 
-    // ===== Order otomatis (mode uji coba) =====
-    // Setiap kali stok order di Home kurang dari MIN_AVAILABLE, order baru dibuat otomatis.
-    var MIN_AVAILABLE = 2;
-    var EXTRA_KEY = "bbite_courier_orders_v1";
+    // ===== Order masuk (disimpan di browser sampai terhubung ke Firestore) =====
+    var EXTRA_KEY = "bbite_courier_orders_v2_" + UID;
     var extraMem = null;
     function loadExtras() {
         var x = null;
@@ -86,7 +93,7 @@
     function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
     function digits(n) { var t = ""; for (var i = 0; i < n; i++) t += Math.floor(Math.random() * 10); return t; }
     function nextId(extras) {
-        var m = 0;
+        var m = 1000;
         ORDERS.concat(extras).forEach(function (o) { if (o.id > m) m = o.id; });
         var s = load();
         s.done.forEach(function (e) { if (e.id > m) m = e.id; });
@@ -119,16 +126,21 @@
         available: function () {
             var s = load();
             function free(o) { return !s.active[o.id] && !inDone(s, o.id); }
-            var extras = loadExtras();
-            var list = ORDERS.concat(extras).filter(free);
-            var added = false;
-            while (list.length < MIN_AVAILABLE) {
-                var o = makeOrder(extras);
-                extras.push(o); list.push(o); added = true;
-            }
-            if (added) saveExtras(extras);
+            var list = ORDERS.concat(loadExtras()).filter(free);
             return list.sort(function (a, b) { return b.id - a.id; });
         },
+        // Tambah order baru ke daftar Home kurir. Bentuk order:
+        // { id, createdAt, pickup, dropoff, fee, customer, phone, note, payment, paid, items: [{ qty, name, price }] }
+        // Nanti dipanggil saat customer memesan jasa delivery (atau diganti data dari Firestore).
+        addOrder: function (o) {
+            var extras = loadExtras();
+            o.id = Number(o.id) || nextId(extras);
+            o.createdAt = o.createdAt || Date.now();
+            extras.push(o); saveExtras(extras);
+            return o;
+        },
+        // Khusus uji coba: buat 1 order contoh. Console: CourierStore.addTestOrder(); lalu refresh halaman.
+        addTestOrder: function () { return this.addOrder(makeOrder(loadExtras())); },
         // label waktu: "Just now" / "N mins ago"
         ago: function (o) {
             if (!o.createdAt) return o.time || "";
@@ -178,7 +190,12 @@
             var s = load(); id = Number(id); var a = s.active[id];
             if (!a) return null;
             if (a.status === "picking") { a.status = "delivering"; }
-            else if (a.status === "delivering") { delete s.active[id]; s.done.push(entry(get(id), "completed")); }
+            else if (a.status === "delivering") {
+                var done = entry(get(id), "completed");
+                done.acceptedAt = a.at; // waktu order diterima -> dasar hitung Avg. Time
+                delete s.active[id];
+                s.done.push(done);
+            }
             save(s);
             return this.statusOf(id);
         },
@@ -202,7 +219,7 @@
             saveChats(c);
         },
         // ===== Wallet =====
-        accounts: function () { return [DEFAULT_ACCOUNT].concat(load().accounts); },
+        accounts: function () { return load().accounts.slice(); },
         addAccount: function (a) {
             var s = load();
             var acc = { id: "a" + Date.now(), type: a.type, short: a.short, number: a.number, name: a.name };
@@ -257,14 +274,50 @@
         cancel: function (id) {
             var s = load(); var o = get(id);
             if (!o || inDone(s, o.id)) return;
+            var wasActive = !!s.active[o.id];
+            var e = entry(o, "cancelled");
+            e.declined = !wasActive;                          // true = ditolak sebelum diterima
+            e.acceptedAt = wasActive ? s.active[o.id].at : null;
             delete s.active[o.id];
-            s.done.push(entry(o, "cancelled"));
+            s.done.push(e);
             save(s);
+        },
+        // Beri rating (1-5) untuk order yang sudah selesai. Dipanggil dari sisi customer
+        // (nanti diganti penyimpanan Firestore). Console: CourierStore.rateOrder(1001, 5)
+        rateOrder: function (id, stars) {
+            stars = Number(stars); id = Number(id);
+            if (!(stars >= 1 && stars <= 5)) return false;
+            var s = load(), found = false;
+            s.done.forEach(function (e) { if (e.id === id && e.result === "completed") { e.rating = Math.round(stars); found = true; } });
+            if (found) save(s);
+            return found;
+        },
+        // Statistik di halaman Profile. Nilai null = belum ada data (ditampilkan "-").
+        //  rating     : rata-rata bintang dari customer
+        //  avgMinutes : rata-rata menit dari order diterima sampai selesai
+        //  acceptance : % order yang diterima dari semua order yang ditawarkan (diterima / (diterima + ditolak))
+        profileStats: function () {
+            var s = load(), rated = [], times = [], completed = 0, cancelledAfter = 0, declined = 0;
+            s.done.forEach(function (e) {
+                if (e.demo) return;
+                if (e.result === "completed") {
+                    completed++;
+                    if (typeof e.rating === "number") rated.push(e.rating);
+                    if (e.acceptedAt && e.at && e.at >= e.acceptedAt) times.push((e.at - e.acceptedAt) / 60000);
+                } else if (e.declined) declined++;
+                else cancelledAfter++;
+            });
+            function avg(a) { return a.length ? a.reduce(function (x, y) { return x + y; }, 0) / a.length : null; }
+            var accepted = completed + cancelledAfter, offered = accepted + declined;
+            return { rating: avg(rated), ratingCount: rated.length, avgMinutes: avg(times),
+                     acceptance: offered ? Math.round(accepted / offered * 100) : null, completed: completed };
         },
         stats: function () {
             var s = load();
+            var d = new Date(), today = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
             var fees = 0, n = 0;
-            s.done.forEach(function (e) { if (e.result === "completed" && !e.demo) { n++; fees += e.fee; } });
+            // Hanya order selesai hari ini; angka kembali 0 saat ganti hari
+            s.done.forEach(function (e) { if (e.result === "completed" && !e.demo && e.at && e.at >= today) { n++; fees += e.fee; } });
             return { deliveries: BASE.deliveries + n, earnings: BASE.earnings + fees };
         },
         // Khusus demo: isi riwayat contoh (tidak dihitung ke statistik Home).

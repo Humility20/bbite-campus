@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BBite Courier - Email Support Team</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="security.js" data-guard></script>
+    <style>
+        .app-container.dashboard { background: #F5F7FA; }
+        .page-content { flex: 1; overflow-y: auto; padding: 0 18px 120px; }
+        .page-content::-webkit-scrollbar { display: none; }
+        .head { position: relative; text-align: center; padding: 56px 0 16px; }
+        .btn-back { position: absolute; left: -2px; top: 52px; width: 34px; height: 34px; border: none; background: none; color: #F5A623; cursor: pointer; display: flex; align-items: center; text-decoration: none; }
+        .btn-back:active { transform: scale(0.9); }
+        .head h1 { font-size: 19px; font-weight: 800; color: #0B1220; margin: 0 30px 6px; }
+        .head p { font-size: 11.5px; color: #94A3B8; font-weight: 500; }
+
+        .card { background: #FFF; border: 1px solid #EEF1F5; border-radius: 18px; box-shadow: 0 2px 8px rgba(15,23,42,0.04); margin-bottom: 14px; }
+
+        /* kartu email */
+        .mail { display: flex; align-items: center; gap: 12px; padding: 14px 16px; }
+        .mail .ico { width: 38px; height: 38px; border-radius: 50%; background: #E3F0FD; color: #1E88E5; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .mail .txt { flex: 1; min-width: 0; }
+        .mail small { display: block; font-size: 10.5px; color: #64748B; font-weight: 500; margin-bottom: 2px; }
+        .mail a { font-size: 12.5px; font-weight: 800; color: #0B1220; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; }
+        .mail a svg { color: #1E88E5; }
+        .btn-copy { border: none; background: #FFF1DC; color: #C98A00; font-size: 12px; font-weight: 800; padding: 8px 16px; border-radius: 10px; cursor: pointer; font-family: inherit; }
+        .btn-copy:active { transform: scale(0.95); }
+
+        /* form */
+        .form { padding: 18px 16px 12px; }
+        .form h2 { font-size: 16px; font-weight: 800; color: #0B1220; margin-bottom: 4px; }
+        .form .lead { font-size: 11.5px; color: #94A3B8; font-weight: 500; margin-bottom: 18px; }
+        .field { margin-bottom: 16px; position: relative; }
+        .field > label, .lbl { display: block; font-size: 12px; font-weight: 800; color: #0B1220; margin-bottom: 8px; }
+        .ctl { width: 100%; background: #EEF1F5; border: 1.5px solid transparent; border-radius: 12px; padding: 13px 14px; font-size: 13px; font-family: inherit; color: #0B1220; outline: none; transition: 0.15s; }
+        .ctl::placeholder { color: #A3AEBD; }
+        .ctl:focus { border-color: #F5A623; background: #FFF; }
+        textarea.ctl { height: 116px; resize: none; line-height: 1.5; display: block; }
+        .count { position: absolute; right: 12px; bottom: 8px; font-size: 10.5px; color: #94A3B8; font-weight: 500; }
+        .field.err .ctl, .field.err .dd-btn { border-color: #EF4444; background: #FFF; }
+        .err-msg { display: none; margin-top: 6px; font-size: 11px; color: #EF4444; font-weight: 500; }
+        .field.err .err-msg { display: block; }
+
+        /* dropdown */
+        .dd-btn { width: 100%; display: flex; align-items: center; justify-content: space-between; background: #EEF1F5; border: 1.5px solid transparent; border-radius: 12px; padding: 13px 14px; font-size: 13px; font-family: inherit; color: #A3AEBD; cursor: pointer; text-align: left; transition: 0.15s; }
+        .dd-btn.has { color: #0B1220; }
+        .dd-btn.open { border-color: #F5A623; background: #FFF; }
+        .dd-btn svg { color: #475569; transition: 0.2s; flex-shrink: 0; }
+        .dd-btn.open svg { transform: rotate(180deg); }
+        .dd-list { display: none; position: absolute; left: 0; right: 0; top: 100%; margin-top: 6px; background: #FFF; border: 1px solid #EEF1F5; border-radius: 14px; box-shadow: 0 10px 28px rgba(15,23,42,0.14); padding: 6px; z-index: 30; }
+        .dd-list.open { display: block; }
+        .dd-opt { display: flex; align-items: center; justify-content: space-between; width: 100%; border: none; background: none; padding: 12px 12px; border-radius: 10px; font-size: 12.5px; font-weight: 600; color: #0B1220; cursor: pointer; font-family: inherit; text-align: left; }
+        .dd-opt:active { background: #F8FAFC; }
+        .dd-opt.sel { background: #FFF1DC; font-weight: 800; }
+        .dd-opt.sel svg { color: #F5A623; }
+
+        /* lampiran */
+        .add-box { width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; border: 1.5px dashed #CBD5E1; background: #FAFBFC; border-radius: 14px; padding: 22px 10px; color: #475569; font-size: 12.5px; font-weight: 600; cursor: pointer; font-family: inherit; }
+        .add-box svg { color: #F5A623; }
+        .add-box:active { background: #F1F5F9; }
+        .add-box[disabled] { opacity: 0.5; cursor: default; }
+        .thumbs { display: flex; gap: 10px; margin-bottom: 10px; }
+        .thumbs:empty { display: none; }
+        .th { position: relative; width: 66px; height: 84px; border-radius: 10px; overflow: hidden; border: 1px solid #E2E8F0; background: #F1F5F9; }
+        .th img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .th .x { position: absolute; top: 4px; right: 4px; width: 18px; height: 18px; border-radius: 50%; border: none; background: rgba(11,18,32,0.82); color: #FFF; font-size: 9px; line-height: 18px; text-align: center; cursor: pointer; padding: 0; }
+        .att-note { margin-top: 8px; font-size: 10.5px; color: #94A3B8; font-weight: 500; }
+
+        /* tombol kirim */
+        .btn-send { width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; border: none; border-radius: 16px; padding: 16px; font-size: 14.5px; font-weight: 800; font-family: inherit; background: #F5A623; color: #FFF; cursor: pointer; box-shadow: 0 8px 18px rgba(245,166,35,0.3); transition: 0.2s; margin-bottom: 12px; }
+        .btn-send:active { transform: scale(0.98); }
+        .btn-send.off { background: #DDE3EA; color: #94A3B8; box-shadow: none; }
+        .btn-send.loading { pointer-events: none; }
+        .spin { width: 18px; height: 18px; border: 2.5px solid rgba(255,255,255,0.45); border-top-color: #FFF; border-radius: 50%; animation: sp 0.8s linear infinite; }
+        @keyframes sp { to { transform: rotate(360deg); } }
+        .reply-note { text-align: center; font-size: 11px; color: #94A3B8; font-weight: 500; margin-bottom: 8px; }
+
+        /* sukses */
+        .done { display: none; text-align: center; padding: 38px 22px 28px; margin-top: 8px; }
+        .done .halo { width: 112px; height: 112px; border-radius: 50%; background: #E6F6EC; display: flex; align-items: center; justify-content: center; margin: 0 auto 22px; }
+        .done .halo span { width: 66px; height: 66px; border-radius: 50%; background: #16A34A; color: #FFF; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 16px rgba(22,163,74,0.35); }
+        .done h2 { font-size: 22px; font-weight: 800; color: #0B1220; margin-bottom: 10px; }
+        .done p { font-size: 12.5px; line-height: 1.6; color: #64748B; font-weight: 500; margin-bottom: 26px; }
+        .done .btn-send { margin-bottom: 14px; }
+        .link-btn { border: none; background: none; color: #E8820C; font-size: 12.5px; font-weight: 800; cursor: pointer; font-family: inherit; }
+        .sent .formwrap { display: none; }
+        .sent .done { display: block; }
+
+        .toast { position: absolute; left: 16px; right: 16px; bottom: 100px; background: #0B1220; color: #FFF; font-size: 13px; font-weight: 600; padding: 12px 16px; border-radius: 12px; z-index: 200; opacity: 0; transform: translateY(10px); pointer-events: none; transition: 0.25s; text-align: center; }
+        .toast.show { opacity: 1; transform: none; }
+
+        .bottom-nav { background: #FFF; }
+        .nav-item { padding: 10px 14px; color: #6B7280; }
+        .nav-item svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+        .nav-item.active { background: #FFF6DB; color: #C98A00; flex-direction: row; gap: 8px; padding: 10px 18px; }
+        .nav-item.active span { font-weight: 800; }
+    </style>
+</head>
+<body>
+    <div class="app-container dashboard" id="appC">
+        <div class="page-content" id="pc">
+            <div class="head">
+                <a href="help-center-kurir.html" class="btn-back" aria-label="Kembali">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+                </a>
+                <h1>Email Support Team</h1>
+                <p>Detailed inquiries, response in 24 hours.</p>
+            </div>
+
+            <div class="card mail">
+                <span class="ico"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></span>
+                <span class="txt">
+                    <small>BBite Campus support</small>
+                    <a href="mailto:support@bbitecampus.id">support@bbitecampus.id <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M8 7h9v9"/></svg></a>
+                </span>
+                <button type="button" class="btn-copy" id="btnCopy">Copy</button>
+            </div>
+
+            <div class="formwrap">
+                <div class="card form">
+                    <h2>How can we help?</h2>
+                    <p class="lead">Share a few details so our team can help you.</p>
+
+                    <div class="field" id="fCat">
+                        <span class="lbl">Category</span>
+                        <button type="button" class="dd-btn" id="ddBtn" aria-haspopup="listbox" aria-expanded="false">
+                            <span id="ddText">Select a category</span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                        </button>
+                        <div class="dd-list" id="ddList" role="listbox"></div>
+                        <div class="err-msg">Please select a category.</div>
+                    </div>
+
+                    <div class="field">
+                        <label for="orderId">Order ID (optional)</label>
+                        <input type="text" class="ctl" id="orderId" placeholder="e.g. #1043" maxlength="20" autocomplete="off">
+                    </div>
+
+                    <div class="field" id="fSub">
+                        <label for="subject">Subject</label>
+                        <input type="text" class="ctl" id="subject" placeholder="Briefly describe your issue" maxlength="100" autocomplete="off">
+                        <div class="err-msg">Please enter a subject.</div>
+                    </div>
+
+                    <div class="field" id="fMsg">
+                        <label for="message">Message</label>
+                        <div style="position:relative">
+                            <textarea class="ctl" id="message" placeholder="Tell us what happened in detail..." maxlength="500"></textarea>
+                            <span class="count" id="count">0/500</span>
+                        </div>
+                        <div class="err-msg">Please enter a message.</div>
+                    </div>
+
+                    <div class="field">
+                        <span class="lbl">Attachments (optional)</span>
+                        <div class="thumbs" id="thumbs"></div>
+                        <button type="button" class="add-box" id="addBox">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5M4 17v2a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-2"/></svg>
+                            Add screenshot or photo
+                        </button>
+                        <input type="file" id="fileIn" accept="image/*" multiple hidden>
+                        <div class="att-note" id="attNote">Max 3 images</div>
+                    </div>
+                </div>
+
+                <button type="button" class="btn-send off" id="btnSend">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>
+                    <span id="sendLbl">Send Email</span>
+                </button>
+                <div class="reply-note">We'll reply to your registered email within 24 hours.</div>
+            </div>
+
+            <div class="card done" id="done">
+                <div class="halo"><span><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></span></div>
+                <h2>Email Sent!</h2>
+                <p>Your ticket <b id="ticketNo">#SUP-1024</b> has been submitted.<br>We'll reply within 24 hours.</p>
+                <a href="help-center-kurir.html" class="btn-send" style="text-decoration:none">Back to Help Center</a>
+                <button type="button" class="link-btn" id="btnTickets">View my tickets</button>
+            </div>
+        </div>
+
+        <nav class="bottom-nav">
+            <a href="home-kurir.html" class="nav-item">
+                <svg viewBox="0 0 24 24" width="22" height="22"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>
+                <span>Home</span>
+            </a>
+            <a href="orders-kurir.html" class="nav-item">
+                <svg viewBox="0 0 24 24" width="22" height="22"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>
+                <span>Orders</span>
+            </a>
+            <a href="wallet-kurir.html" class="nav-item">
+                <svg viewBox="0 0 24 24" width="22" height="22"><path d="M20 7H5a2 2 0 0 1 0-4h13v4"/><path d="M3 5v14a2 2 0 0 0 2 2h15V7"/><circle cx="16.5" cy="14" r="1.2"/></svg>
+                <span>Wallet</span>
+            </a>
+            <a href="profile-kurir.html" class="nav-item active">
+                <svg viewBox="0 0 24 24" width="22" height="22"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+                <span>Profile</span>
+            </a>
+        </nav>
+
+        <div class="toast" id="toast"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyCd_v_YnSXpiVAA_eDxk_MaCCdqo4H5CFE", authDomain: "bbite-ac7e4.firebaseapp.com", projectId: "bbite-ac7e4" };
+        const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+        onAuthStateChanged(getAuth(app), (user) => { if (!user) window.location.href = "index.html"; });
+
+        const $ = (id) => document.getElementById(id);
+        let toastTimer;
+        function showToast(msg) {
+            const t = $("toast");
+            t.textContent = msg; t.classList.add("show");
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => t.classList.remove("show"), 2600);
+        }
+
+        // ===== Copy email =====
+        $("btnCopy").addEventListener("click", async () => {
+            const mail = "support@bbitecampus.id";
+            try { await navigator.clipboard.writeText(mail); }
+            catch (e) {
+                const ta = document.createElement("textarea"); ta.value = mail; document.body.appendChild(ta); ta.select();
+                try { document.execCommand("copy"); } catch (_) {}
+                ta.remove();
+            }
+            showToast("Email disalin");
+        });
+
+        // ===== Dropdown kategori =====
+        const CATS = ["Orders & Deliveries", "Payments & Earnings", "Account & Profile Issues", "App & Technical Support", "Other"];
+        const CHECK = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>';
+        let category = "";
+        const ddBtn = $("ddBtn"), ddList = $("ddList");
+        function renderCats() {
+            ddList.innerHTML = CATS.map(c => `<button type="button" class="dd-opt${c === category ? " sel" : ""}" role="option" data-v="${c.replace(/&/g, "&amp;")}"><span>${c.replace(/&/g, "&amp;")}</span>${c === category ? CHECK : ""}</button>`).join("");
+            ddList.querySelectorAll(".dd-opt").forEach(b => b.addEventListener("click", () => {
+                category = b.dataset.v;
+                $("ddText").textContent = category;
+                ddBtn.classList.add("has");
+                closeDd(); renderCats(); touched.cat = true; validate(true);
+            }));
+        }
+        function openDd() { renderCats(); ddList.classList.add("open"); ddBtn.classList.add("open"); ddBtn.setAttribute("aria-expanded", "true"); }
+        function closeDd() { ddList.classList.remove("open"); ddBtn.classList.remove("open"); ddBtn.setAttribute("aria-expanded", "false"); }
+        ddBtn.addEventListener("click", (e) => { e.stopPropagation(); ddList.classList.contains("open") ? closeDd() : openDd(); });
+        document.addEventListener("click", (e) => { if (!e.target.closest("#fCat")) closeDd(); });
+        document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeDd(); });
+
+        // ===== Validasi =====
+        const touched = { cat: false, sub: false, msg: false };
+        const subject = $("subject"), message = $("message");
+        function validate(show) {
+            const ok = { cat: !!category, sub: !!subject.value.trim(), msg: !!message.value.trim() };
+            $("fCat").classList.toggle("err", (show || touched.cat) && !ok.cat);
+            $("fSub").classList.toggle("err", (show || touched.sub) && !ok.sub);
+            $("fMsg").classList.toggle("err", (show || touched.msg) && !ok.msg);
+            const all = ok.cat && ok.sub && ok.msg;
+            $("btnSend").classList.toggle("off", !all);
+            return all;
+        }
+        subject.addEventListener("input", () => validate(false));
+        message.addEventListener("input", () => { $("count").textContent = message.value.length + "/500"; validate(false); });
+        subject.addEventListener("blur", () => { touched.sub = true; validate(false); });
+        message.addEventListener("blur", () => { touched.msg = true; validate(false); });
+
+        // ===== Lampiran (maks 3 gambar) =====
+        const MAX_IMG = 3, MAX_MB = 5;
+        let images = [];
+        function renderImages() {
+            $("thumbs").innerHTML = images.map((src, i) => `<div class="th"><img src="${src}" alt="Lampiran ${i + 1}"><button type="button" class="x" data-i="${i}" aria-label="Hapus">&#10005;</button></div>`).join("");
+            $("thumbs").querySelectorAll(".x").forEach(b => b.addEventListener("click", () => { images.splice(+b.dataset.i, 1); renderImages(); }));
+            $("attNote").textContent = images.length ? images.length + "/" + MAX_IMG + " images attached \u00B7 Max " + MAX_IMG + " images" : "Max " + MAX_IMG + " images";
+            $("addBox").disabled = images.length >= MAX_IMG;
+        }
+        $("addBox").addEventListener("click", () => $("fileIn").click());
+        $("fileIn").addEventListener("change", (e) => {
+            const files = [...e.target.files];
+            e.target.value = "";
+            files.forEach(f => {
+                if (images.length >= MAX_IMG) { showToast("Maksimal " + MAX_IMG + " gambar"); return; }
+                if (!/^image\//.test(f.type)) { showToast("Hanya file gambar yang diperbolehkan"); return; }
+                if (f.size > MAX_MB * 1024 * 1024) { showToast("Ukuran gambar maksimal " + MAX_MB + " MB"); return; }
+                const r = new FileReader();
+                r.onload = () => { if (images.length < MAX_IMG) { images.push(r.result); renderImages(); } };
+                r.readAsDataURL(f);
+            });
+        });
+
+        // ===== Kirim (simulasi front end; belum ada backend) =====
+        let sending = false;
+        $("btnSend").addEventListener("click", () => {
+            if (sending) return;
+            touched.cat = touched.sub = touched.msg = true;
+            if (!validate(true)) {
+                const bad = document.querySelector(".field.err");
+                if (bad) bad.scrollIntoView({ behavior: "smooth", block: "center" });
+                return;
+            }
+            sending = true;
+            const b = $("btnSend");
+            b.classList.add("loading");
+            b.querySelector("svg").outerHTML = '<span class="spin"></span>';
+            $("sendLbl").textContent = "Sending...";
+            setTimeout(() => {
+                let n = 1023;
+                try { n = (parseInt(localStorage.getItem("bbite_ticket_no"), 10) || 1023) + 1; localStorage.setItem("bbite_ticket_no", n); } catch (e) { n = 1024; }
+                $("ticketNo").textContent = "#SUP-" + n;
+                $("appC").classList.add("sent");
+                $("pc").scrollTo({ top: 0 });
+            }, 1500);
+        });
+        $("btnTickets").addEventListener("click", () => showToast("Daftar tiket sedang dikembangkan"));
+
+        renderImages();
+        validate(false);
+    </script>
+</body>
+</html>
