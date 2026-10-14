@@ -459,7 +459,7 @@
                                 const order = docSnapOrder.data();
                                 const orderId = docSnapOrder.id;
 
-                                if(order.merchantId === restoKey || order.merchantId === user.uid) {
+                                if((order.merchantId === restoKey || order.merchantId === user.uid) && order.status !== 'awaiting_payment' && !String(order.status || '').startsWith('payment_')) {
                                     todayOrders++;
                                     if(order.status === 'preparing' || order.status === 'ready' || order.status === 'completed') {
                                         todayRevenue += order.totalPrice;

@@ -12,12 +12,14 @@ service cloud.firestore {
                     && request.resource.data.keys().hasOnly(['merchantId', 'date', 'time', 'count'])
                     && request.resource.data.count == 1;
 
-      // slot sudah ada: hanya boleh naik 1 dan tidak boleh lewat 25
+      // slot sudah ada: hanya boleh naik 1 (pesan) atau turun 1 (batal/kedaluwarsa), tetap di 0..25
       allow update: if request.auth != null
                     && request.resource.data.merchantId == resource.data.merchantId
                     && request.resource.data.date == resource.data.date
                     && request.resource.data.time == resource.data.time
-                    && request.resource.data.count == resource.data.count + 1
+                    && (request.resource.data.count == resource.data.count + 1
+                        || request.resource.data.count == resource.data.count - 1)
+                    && request.resource.data.count >= 0
                     && request.resource.data.count <= 25;
 
       allow delete: if false;
