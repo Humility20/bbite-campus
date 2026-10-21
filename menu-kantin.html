@@ -96,6 +96,9 @@
         .mi-minus { width: 30px; height: 30px; }
         .mi-add:active, .mi-minus:active { background: #DC9808; color: #FFF; transform: scale(0.9); }
         .mi-add:disabled { opacity: 0.4; cursor: not-allowed; }
+        .mi-card.soldout { opacity: 0.7; }
+        .mi-card.soldout .mi-photo img { filter: grayscale(1); }
+        .mi-sold { font-size: 10px; font-weight: 800; color: #6B7280; background: #EEF0F3; padding: 2px 8px; border-radius: 8px; }
 
         /* Bar keranjang: muncul hanya setelah minimal 1 menu dipilih */
         .cart-bar { position: absolute; bottom: 24px; left: 16px; right: 16px; background: #DC9808; border-radius: 20px; padding: 12px 12px 12px 18px; display: flex; justify-content: space-between; align-items: center; text-decoration: none; box-shadow: 0 8px 24px rgba(220,152,8,0.38); z-index: 60; cursor: pointer; transition: transform 0.15s ease; animation: cartUp 0.25s ease-out; }
@@ -459,7 +462,7 @@
 
                 // Bersihkan menu dasar yang sudah dihapus oleh merchant, lalu gabungkan
                 let finalBaseMenus = currentData.menus.filter(m => !fbDeletedMenus.includes(m.id));
-                currentData.menus = [...fbCustomMenus, ...finalBaseMenus];
+                currentData.menus = [...fbCustomMenus.filter(m => !m.draft), ...finalBaseMenus]; // draft belum tampil untuk mahasiswa
 
                 initUI();
 
@@ -467,7 +470,7 @@
                 const addId = urlParams.get('add');
                 if (addId) {
                     const picked = currentData.menus.find(m => String(m.id) === addId);
-                    if (picked && picked.price) window.addToCart(picked.id, picked.name, picked.price, picked.img || '');
+                    if (picked && picked.price && picked.available !== false) window.addToCart(picked.id, picked.name, picked.price, picked.img || '');
                     urlParams.delete('add');
                     const cleanQs = urlParams.toString();
                     history.replaceState(null, '', window.location.pathname + (cleanQs ? '?' + cleanQs : ''));
@@ -517,22 +520,23 @@
 
         function menuCardHtml(menu) {
             const priceNum = Number(menu.price) || 0;
+            const soldOut = menu.available === false; // ditandai Sold Out oleh merchant
             const ph = `<div class="mi-ph">${esc(initialsOf(menu.name))}</div>`;
             const photo = menu.img
                 ? `<img src="${esc(menu.img)}" alt="${esc(menu.name)}" loading="lazy" draggable="false" onerror="this.parentNode.innerHTML=this.parentNode.dataset.ph">`
                 : ph;
-            return `<div class="mi-card" data-id="${esc(menu.id)}">
+            return `<div class="mi-card${soldOut ? ' soldout' : ''}" data-id="${esc(menu.id)}">
                 <div class="mi-photo" data-ph="${esc(ph)}">${photo}</div>
                 <div class="mi-info">
                     <h3>${esc(menu.name)}</h3>
                     <p class="mi-price">${formatRupiah(priceNum)}</p>
-                    <div class="mi-meta"><span>${esc(menu.category || '')}</span><span class="mi-incart d-none"></span></div>
+                    <div class="mi-meta"><span>${esc(menu.category || '')}</span>${soldOut ? '<span class="mi-sold">Sold out</span>' : ''}<span class="mi-incart d-none"></span></div>
                 </div>
                 <div class="mi-actions">
                     <button type="button" class="mi-minus d-none" data-act="minus" aria-label="Kurangi">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M5 12h14"/></svg>
                     </button>
-                    <button type="button" class="mi-add" data-act="add" aria-label="Tambah" ${priceNum === 0 ? 'disabled' : ''}>
+                    <button type="button" class="mi-add" data-act="add" aria-label="Tambah" ${(priceNum === 0 || soldOut) ? 'disabled' : ''}>
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
                     </button>
                 </div>

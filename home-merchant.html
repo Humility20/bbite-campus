@@ -125,6 +125,124 @@
         .realtime-note { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #6B7280; line-height: 1.4; padding: 4px 4px 0; }
         .realtime-note svg { width: 15px; height: 15px; flex-shrink: 0; color: #DC9808; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
+        /* ===== Reports (Sales & Performance) ===== */
+        #viewReports { padding: 0 0 100px; }
+        .rp-wrap { padding: 50px 20px 0; }
+        .rp-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+        .rp-logo { display: flex; align-items: baseline; gap: 6px; }
+        .rp-logo .b { font-size: 24px; font-weight: 900; color: #1F2937; letter-spacing: -1px; }
+        .rp-logo .bite { font-size: 24px; font-weight: 900; color: #DC9808; letter-spacing: -1px; margin-left: -4px; }
+        .rp-logo small { font-size: 9px; font-weight: 700; color: #6B7280; letter-spacing: 0.6px; }
+        .rp-export { display: flex; align-items: center; gap: 8px; background: #DC9808; color: #FFF; border: none; border-radius: 12px; padding: 11px 14px; font-family: inherit; font-size: 13px; font-weight: 800; cursor: pointer; box-shadow: 0 6px 14px rgba(220,152,8,0.28); }
+        .rp-export:active { transform: scale(0.96); }
+        .rp-export svg, .rp-ico svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        .rp-title { font-size: 26px; font-weight: 800; color: #111827; margin: 0 0 6px; letter-spacing: -0.4px; }
+        .rp-store { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; color: #4B5563; margin-bottom: 18px; }
+        .rp-store svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; color: #6B7280; }
+
+        .rp-tabs { display: flex; background: #E9EBEF; border-radius: 22px; padding: 4px; gap: 2px; margin-bottom: 14px; }
+        .rp-tab { flex: 1; border: none; background: none; padding: 10px 4px; border-radius: 18px; font-family: inherit; font-size: 12.5px; font-weight: 600; color: #4B5563; cursor: pointer; transition: 0.2s; white-space: nowrap; }
+        .rp-tab.active { background: #DC9808; color: #FFF; font-weight: 800; box-shadow: 0 4px 10px rgba(220,152,8,0.3); }
+        .rp-tab:focus-visible, .rp-export:focus-visible, .rp-btn:focus-visible { outline: 2px solid #8A5A00; outline-offset: 2px; }
+
+        .rp-meta { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #4B5563; font-weight: 500; margin-bottom: 14px; }
+        .rp-upd { display: flex; align-items: center; gap: 6px; font-size: 10.5px; color: #6B7280; }
+        .rp-upd::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #DC9808; }
+
+        .rp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+        .rp-card { background: #FFF; border: 1px solid #E5E7EB; border-radius: 16px; padding: 14px 14px 12px; min-width: 0; }
+        .rp-card.hi { background: #FFF1D6; border-color: #F3D48E; }
+        .rp-card .lbl { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #4B5563; font-weight: 500; margin-bottom: 8px; }
+        .rp-ico { color: #6B7280; display: flex; }
+        .rp-card.hi .rp-ico { color: #DC9808; }
+        .rp-card .val { font-size: 22px; font-weight: 800; color: #111827; letter-spacing: -0.4px; margin-bottom: 6px; white-space: nowrap; }
+        .rp-card .sub { font-size: 11px; color: #6B7280; font-weight: 500; }
+        .rp-trend { display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; color: #8A5A00; }
+        .rp-trend svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+        .rp-trend.down { color: #C62828; }
+        .rp-trend.flat { color: #6B7280; font-weight: 600; }
+
+        .rp-panel { background: #FFF; border: 1px solid #E5E7EB; border-radius: 18px; padding: 16px; margin-bottom: 16px; }
+        .rp-panel h3 { font-size: 17px; font-weight: 800; color: #111827; margin: 0 0 4px; }
+        .rp-panel .psub { font-size: 11px; color: #6B7280; font-weight: 500; }
+        .rp-panel .phead { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
+        .rp-legend { display: flex; align-items: center; gap: 6px; font-size: 10.5px; color: #4B5563; }
+        .rp-legend::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #DC9808; }
+
+        .rp-chart { display: flex; gap: 8px; }
+        .rp-yax { width: 20px; height: 130px; position: relative; flex-shrink: 0; }
+        .rp-yax span { position: absolute; right: 0; font-size: 10px; color: #6B7280; transform: translateY(50%); }
+        .rp-plot { flex: 1; min-width: 0; }
+        .rp-area { position: relative; height: 130px; }
+        .rp-grid-line { position: absolute; left: 0; right: 0; height: 1px; background: #EEF0F3; }
+        .rp-bars { position: absolute; inset: 0; display: flex; gap: 3px; align-items: stretch; }
+        .rp-col { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; border-radius: 8px; position: relative; }
+        .rp-col.peak { background: #FFF1D6; }
+        .rp-bar { width: 78%; max-width: 20px; border-radius: 5px 5px 2px 2px; background: #FBDCA0; min-height: 3px; transition: height 0.4s; }
+        .rp-col.peak .rp-bar { background: #DC9808; }
+        .rp-cnt { font-size: 10.5px; font-weight: 800; color: #8A5A00; margin-bottom: 3px; }
+        .rp-xax { display: flex; gap: 3px; margin-top: 6px; }
+        .rp-xax span { flex: 1; min-width: 0; text-align: center; font-size: 9.5px; color: #6B7280; white-space: nowrap; overflow: visible; }
+        .rp-xax span.pk { color: #111827; font-weight: 800; }
+
+        .rp-peak { display: flex; justify-content: space-between; align-items: center; gap: 10px; background: #FFF1D6; border-radius: 12px; padding: 11px 12px; margin-top: 14px; }
+        .rp-peak .l { display: flex; gap: 10px; align-items: center; min-width: 0; }
+        .rp-peak .hat { color: #DC9808; display: flex; flex-shrink: 0; }
+        .rp-peak .hat svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+        .rp-peak b { display: block; font-size: 12.5px; font-weight: 800; color: #111827; }
+        .rp-peak small { font-size: 10.5px; color: #6B7280; line-height: 1.35; display: block; }
+        .rp-peak .t { font-size: 12.5px; font-weight: 800; color: #8A5A00; white-space: nowrap; align-self: flex-start; }
+
+        .rp-top-row { display: flex; align-items: center; gap: 12px; padding: 11px 0; }
+        .rp-rank { width: 30px; height: 30px; border-radius: 50%; background: #DC9808; color: #FFF; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .rp-rank.g { background: #E5E7EB; color: #4B5563; }
+        .rp-top-row .nm { flex: 1; min-width: 0; }
+        .rp-top-row .nm b { display: block; font-size: 13.5px; font-weight: 700; color: #111827; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .rp-top-row .nm small { font-size: 11px; color: #6B7280; }
+        .rp-top-row .amt { font-size: 13px; font-weight: 800; color: #111827; white-space: nowrap; }
+        .rp-none { font-size: 12px; color: #6B7280; text-align: center; padding: 18px 0 6px; }
+
+        /* Sheet (Export & Custom Date) */
+        .rp-overlay { position: absolute; inset: 0; background: rgba(17,24,39,0.5); z-index: 140; display: flex; align-items: flex-end; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+        .rp-overlay.open { opacity: 1; pointer-events: auto; }
+        .rp-sheet { width: 100%; max-height: 92%; overflow-y: auto; background: #FFF; border-radius: 28px 28px 0 0; padding: 10px 20px 28px; transform: translateY(100%); transition: transform 0.28s; }
+        .rp-overlay.open .rp-sheet { transform: none; }
+        .rp-handle { width: 40px; height: 4px; border-radius: 2px; background: #D1D5DB; margin: 0 auto 16px; }
+        .rp-shead { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+        .rp-shead h3 { font-size: 20px; font-weight: 800; color: #111827; margin: 0; }
+        .rp-x { width: 32px; height: 32px; border-radius: 50%; border: none; background: #F3F4F6; color: #4B5563; font-size: 13px; cursor: pointer; }
+        .rp-lbl { display: block; font-size: 12.5px; font-weight: 600; color: #4B5563; margin: 0 0 8px; }
+        .rp-sel { position: relative; display: flex; align-items: center; gap: 12px; background: #F8F9FB; border: 1px solid #E5E7EB; border-radius: 14px; padding: 14px; margin-bottom: 8px; }
+        .rp-sel > svg { width: 18px; height: 18px; fill: none; stroke: #DC9808; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+        .rp-sel span { flex: 1; font-size: 14px; font-weight: 500; color: #111827; }
+        .rp-sel .chev { color: #6B7280; }
+        .rp-sel select { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; font-size: 16px; }
+        .rp-dates { display: none; gap: 10px; margin-bottom: 8px; }
+        .rp-dates.show { display: flex; }
+        .rp-dates label { flex: 1; font-size: 11px; font-weight: 600; color: #6B7280; }
+        .rp-dates input, .rp-cinputs input { width: 100%; margin-top: 4px; border: 1px solid #E5E7EB; border-radius: 12px; padding: 11px 10px; font-family: inherit; font-size: 13.5px; color: #111827; background: #F8F9FB; outline: none; }
+        .rp-dates input:focus, .rp-cinputs input:focus { border-color: #DC9808; }
+        .rp-opt { display: flex; align-items: center; gap: 12px; border: 1.5px solid #E5E7EB; border-radius: 14px; padding: 14px; margin-bottom: 10px; cursor: pointer; background: #FFF; transition: 0.15s; }
+        .rp-opt.sel { border-color: #DC9808; background: #FFF4DE; }
+        .rp-opt input { display: none; }
+        .rp-opt .oi { width: 24px; height: 24px; flex-shrink: 0; color: #6B7280; display: flex; }
+        .rp-opt.sel .oi { color: #DC9808; }
+        .rp-opt .oi svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+        .rp-opt .ot { flex: 1; }
+        .rp-opt .ot b { display: block; font-size: 14px; font-weight: 700; color: #111827; }
+        .rp-opt .ot small { font-size: 11.5px; color: #6B7280; }
+        .rp-radio { width: 22px; height: 22px; border-radius: 50%; border: 2px solid #9CA3AF; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+        .rp-opt.sel .rp-radio { border-color: #DC9808; }
+        .rp-opt.sel .rp-radio::after { content: ""; width: 10px; height: 10px; border-radius: 50%; background: #DC9808; }
+        .rp-err { min-height: 16px; font-size: 11.5px; font-weight: 600; color: #C62828; margin: 2px 2px 8px; }
+        .rp-btn { width: 100%; padding: 16px; border: none; border-radius: 14px; background: #DC9808; color: #FFF; font-family: inherit; font-size: 15px; font-weight: 800; cursor: pointer; box-shadow: 0 8px 18px rgba(220,152,8,0.3); }
+        .rp-btn:active { transform: scale(0.98); }
+        .rp-btn:disabled { background: #E8CB85; box-shadow: none; cursor: not-allowed; }
+        .rp-btn.ghost { background: #FFF; color: #4B5563; border: 1px solid #D1D5DB; box-shadow: none; }
+        .rp-cinputs { display: flex; gap: 10px; margin-bottom: 8px; }
+        .rp-cinputs label { flex: 1; font-size: 11.5px; font-weight: 600; color: #6B7280; }
+        .rp-row2 { display: flex; gap: 10px; margin-top: 10px; }
+
         /* Bottom Nav (5 menu) */
         .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 390px; height: 78px; background-color: #FFFFFF; border-top: 1px solid #E5E5E5; display: flex; justify-content: space-around; align-items: center; padding: 0 10px 10px 10px; z-index: 50; border-radius: 0 0 40px 40px; }
         .nav-item { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; min-width: 54px; padding: 8px 6px; border-radius: 14px; text-decoration: none; color: #6B7280; font-size: 10px; font-weight: 600; transition: 0.2s ease; cursor: pointer; }
@@ -133,6 +251,176 @@
         .nav-item.active { background: #DC9808; color: #FFF; padding: 8px 14px; }
         .nav-item.active span { font-weight: 700; }
         .nav-badge { position: absolute; top: 1px; right: 4px; min-width: 15px; height: 15px; padding: 0 4px; border-radius: 8px; background: #E5484D; color: #FFF; font-size: 9px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+
+        /* ===== Halaman Orders (Active / History) ===== */
+        #viewActive { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+        .ord-header { padding: 50px 24px 14px; display: flex; justify-content: space-between; align-items: center; }
+        .ord-header h1 { font-size: 22px; font-weight: 800; color: #111827; margin: 0; letter-spacing: -0.2px; }
+        .ord-header p { font-size: 11px; color: #6B7280; margin: 2px 0 0; }
+        .ord-chef { width: 40px; height: 40px; border-radius: 12px; background: #FFF1D6; color: #DC9808; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+        .ord-chef svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+        .ord-tabs { display: flex; margin: 0 24px 14px; background: #FFF; border: 1px solid #E5E7EB; border-radius: 14px; padding: 4px; gap: 4px; }
+        .ord-tab { flex: 1; border: none; background: none; padding: 11px 0; border-radius: 11px; font-family: inherit; font-size: 13px; font-weight: 700; color: #6B7280; cursor: pointer; transition: 0.2s; }
+        .ord-tab.active { background: #DC9808; color: #FFF; box-shadow: 0 4px 10px rgba(220,152,8,0.25); }
+        .ord-tab:focus-visible, .ao-btn:focus-visible, .chat-act:focus-visible, .ord-chef:focus-visible, .toast button:focus-visible { outline: 2px solid #8A5A00; outline-offset: 2px; }
+        .ord-scroll { padding: 0 24px 100px; }
+
+        .ao-card { background: #FFF; border: 1.5px solid #F0C56A; border-radius: 18px; padding: 16px; margin-bottom: 14px; box-shadow: 0 4px 14px rgba(220,152,8,0.10); }
+        .ao-id { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .ao-id h3 { font-size: 20px; font-weight: 800; color: #111827; margin: 0; }
+        .st-pill { display: inline-flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 800; padding: 5px 10px; border-radius: 12px; letter-spacing: 0.3px; }
+        .st-pill::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+        .st-pill.prep { background: #DC9808; color: #FFF; }
+        .st-pill.ready { background: #E6F6EC; color: #15803D; }
+        .st-pill.route { background: #E3F2FD; color: #1E88E5; }
+        .ao-cust { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 12px; font-size: 12px; color: #6B7280; }
+        .ao-cust b { color: #111827; font-size: 15px; font-weight: 700; margin-left: 6px; }
+        .type-chip { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 800; padding: 4px 9px; border-radius: 8px; background: #FFF3D6; color: #B07400; flex-shrink: 0; }
+        .type-chip svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        .ao-where { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 12px; }
+        .ao-where svg { width: 16px; height: 16px; margin-top: 2px; flex-shrink: 0; color: #DC9808; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        .ao-where small { display: block; font-size: 11px; color: #6B7280; }
+        .ao-where b { font-size: 13px; font-weight: 700; color: #111827; word-break: break-word; }
+
+        .cr-box { display: flex; align-items: center; gap: 12px; background: #F3F4F6; border-radius: 14px; padding: 10px 12px; margin-bottom: 14px; }
+        .cr-av { width: 44px; height: 44px; border-radius: 50%; background: #FFF1D6; color: #B07400; font-weight: 800; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; box-shadow: 0 0 0 2px #FFF, 0 0 0 3px #F0C56A; }
+        .cr-av img { width: 100%; height: 100%; object-fit: cover; }
+        .cr-av.searching { background: #FFF; box-shadow: none; }
+        .cr-av.searching span { width: 22px; height: 22px; border-radius: 50%; border: 3px solid #F6E2A6; border-top-color: #DC9808; animation: crspin 0.9s linear infinite; }
+        @keyframes crspin { to { transform: rotate(360deg); } }
+        @media (prefers-reduced-motion: reduce) { .cr-av.searching span { animation: none; } }
+        .cr-txt b { display: block; font-size: 13px; font-weight: 700; color: #111827; }
+        .cr-txt small { font-size: 11px; color: #6B7280; }
+
+        .chat-row { display: flex; justify-content: space-around; margin-bottom: 14px; }
+        .chat-act { display: flex; flex-direction: column; align-items: center; gap: 6px; background: none; border: none; font-family: inherit; text-decoration: none; cursor: pointer; color: #374151; }
+        .chat-act i { width: 40px; height: 40px; border-radius: 50%; background: #DC9808; color: #FFF; display: flex; align-items: center; justify-content: center; }
+        .chat-act i svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        .chat-act span { font-size: 11px; font-weight: 600; }
+        .chat-act.off { cursor: not-allowed; opacity: 0.5; }
+        .chat-act.off i { background: #9CA3AF; }
+
+        .ao-sum { border-top: 1px solid #E5E7EB; padding-top: 12px; }
+        .ao-total { display: flex; justify-content: space-between; align-items: baseline; border-top: 1px solid #E5E7EB; margin-top: 8px; padding-top: 12px; margin-bottom: 14px; font-size: 13px; font-weight: 700; color: #111827; }
+        .ao-total b { font-size: 18px; font-weight: 800; }
+        .ao-btn { width: 100%; background: #DC9808; color: #FFF; border: none; font-family: inherit; font-weight: 700; font-size: 14px; padding: 14px; border-radius: 12px; cursor: pointer; transition: 0.2s; }
+        .ao-btn:active { transform: scale(0.97); }
+        .ao-btn.dark { background: #333; }
+        .ao-btn:disabled { background: #E5E7EB; color: #6B7280; cursor: not-allowed; transform: none; }
+
+        .hi-card { background: #FFF; border: 1px solid #E5E7EB; border-radius: 16px; padding: 14px; margin-bottom: 12px; }
+        .hi-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+        .hi-top h3 { font-size: 15px; font-weight: 800; color: #111827; margin: 0; }
+        .hi-pill { font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 12px; }
+        .hi-pill.done { background: #E6F6EC; color: #15803D; }
+        .hi-pill.rej { background: #FDECEC; color: #C62828; }
+        .hi-meta { font-size: 11.5px; color: #6B7280; margin-bottom: 8px; }
+        .hi-items { font-size: 12px; color: #374151; line-height: 1.5; margin-bottom: 10px; }
+        .hi-foot { display: flex; justify-content: space-between; align-items: baseline; border-top: 1px solid #F0F1F3; padding-top: 10px; font-size: 12px; color: #6B7280; }
+        .hi-foot b { color: #111827; font-size: 14px; font-weight: 800; }
+        .hi-card.rej .hi-foot b { color: #9CA3AF; text-decoration: line-through; }
+
+        .ord-empty { display: flex; flex-direction: column; align-items: center; text-align: center; padding-top: 26px; }
+        .ord-empty .ill { width: 176px; height: 156px; margin-bottom: 16px; }
+        .ord-empty h4 { font-size: 17px; font-weight: 800; color: #111827; margin-bottom: 8px; }
+        .ord-empty p { font-size: 12.5px; color: #6B7280; line-height: 1.55; max-width: 270px; }
+        .ord-tip { display: flex; gap: 8px; align-items: flex-start; background: #FFF3D6; border-radius: 12px; padding: 12px 14px; margin-top: 24px; text-align: left; font-size: 11.5px; color: #8A5A00; line-height: 1.5; }
+        .ord-tip svg { width: 15px; height: 15px; flex-shrink: 0; margin-top: 1px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+        .toast { position: absolute; left: 16px; right: 16px; bottom: 92px; background: #1F2937; color: #FFF; border-radius: 12px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; font-size: 12.5px; line-height: 1.4; z-index: 120; box-shadow: 0 8px 24px rgba(0,0,0,0.25); }
+        .toast button { margin-left: auto; background: none; border: none; color: #F5C04A; font-family: inherit; font-weight: 800; font-size: 12.5px; cursor: pointer; padding: 4px 2px; flex-shrink: 0; }
+
+        /* ===== Menu Management ===== */
+        .mg-head { padding: 50px 24px 0; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+        .mg-head h1 { font-size: 24px; font-weight: 800; color: #111827; margin: 0; letter-spacing: -0.3px; }
+        .mg-head p { font-size: 12px; color: #6B7280; margin: 4px 0 0; }
+        .btn-add-item { background: #DC9808; color: #FFF; border: none; border-radius: 20px; padding: 11px 18px; font-family: inherit; font-weight: 700; font-size: 13px; cursor: pointer; flex-shrink: 0; box-shadow: 0 4px 10px rgba(220,152,8,0.3); transition: 0.2s; }
+        .btn-add-item:active { transform: scale(0.96); }
+        .mg-search { position: relative; margin: 16px 24px 12px; }
+        .mg-search input { width: 100%; padding: 13px 14px 13px 42px; border: 1px solid #E5E7EB; border-radius: 14px; background: #FFF; font-family: inherit; font-size: 13px; outline: none; }
+        .mg-search input:focus { border-color: #DC9808; box-shadow: 0 0 0 3px rgba(220,152,8,0.12); }
+        .mg-search svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; stroke: #6B7280; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        .mg-chips { display: flex; gap: 8px; padding: 0 24px; overflow-x: auto; margin-bottom: 14px; scrollbar-width: none; }
+        .mg-chips::-webkit-scrollbar { display: none; }
+        .mg-chip { flex-shrink: 0; border: 1px solid #E5E7EB; background: #FFF; color: #374151; border-radius: 20px; padding: 8px 16px; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .mg-chip.active { background: #DC9808; border-color: #DC9808; color: #FFF; }
+        .mg-label { display: flex; justify-content: space-between; align-items: baseline; padding: 0 24px; margin-bottom: 10px; font-size: 12.5px; font-weight: 600; color: #374151; }
+        .mg-label span { font-weight: 500; color: #9AA0AA; font-size: 11.5px; }
+        .mg-list { padding: 0 24px; }
+        .mg-card { background: #FFF; border: 1px solid #E5E7EB; border-radius: 16px; padding: 12px; margin-bottom: 12px; }
+        .mg-row { display: flex; gap: 14px; align-items: center; }
+        .mg-photo { width: 76px; height: 76px; border-radius: 12px; background: #FFF1D6; color: #B07400; font-weight: 800; font-size: 18px; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; }
+        .mg-photo img { width: 100%; height: 100%; object-fit: cover; }
+        .mg-info { min-width: 0; }
+        .mg-info h4 { font-size: 15px; font-weight: 500; color: #111827; margin: 0 0 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .mg-info p { font-size: 14px; font-weight: 800; color: #111827; margin: 0; }
+        .mg-foot { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #F0F1F3; margin-top: 12px; padding-top: 10px; }
+        .mg-tg { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #374151; }
+        .mg-icons { display: flex; gap: 4px; }
+        .icon-btn { width: 36px; height: 36px; border: none; background: none; border-radius: 10px; color: #4B5563; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .icon-btn:hover { background: #F3F4F6; }
+        .icon-btn.del:hover { background: #FDECEC; color: #C62828; }
+        .icon-btn:focus-visible { outline: 2px solid #8A5A00; outline-offset: 1px; }
+        .icon-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+        .mg-card.off .mg-info h4 { color: #9CA3AF; }
+        .mg-card.off .mg-info p { color: #6B7280; }
+        .mg-card.off .mg-photo img { filter: grayscale(1); opacity: 0.85; }
+        .mg-card.off .mg-tg { color: #6B7280; }
+        .mg-empty { text-align: center; font-size: 12.5px; color: #6B7280; line-height: 1.5; padding: 34px 20px; }
+
+        .sw-toggle { position: relative; display: inline-block; width: 44px; height: 26px; flex-shrink: 0; }
+        .sw-toggle input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; z-index: 1; }
+        .sw-toggle .knob { position: absolute; inset: 0; border-radius: 13px; background: #D1D5DB; transition: 0.2s; }
+        .sw-toggle .knob::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #FFF; box-shadow: 0 1px 3px rgba(0,0,0,0.25); transition: 0.2s; }
+        .sw-toggle input:checked + .knob { background: #DC9808; }
+        .sw-toggle input:checked + .knob::after { transform: translateX(18px); }
+        .sw-toggle input:focus-visible + .knob { outline: 2px solid #8A5A00; outline-offset: 2px; }
+        .sw-toggle input:disabled { cursor: not-allowed; }
+        .sw-toggle input:disabled + .knob { opacity: 0.55; }
+        .sw-toggle.lg { width: 52px; height: 30px; }
+        .sw-toggle.lg .knob { border-radius: 15px; }
+        .sw-toggle.lg .knob::after { width: 24px; height: 24px; }
+        .sw-toggle.lg input:checked + .knob::after { transform: translateX(22px); }
+
+        /* Form Add / Edit Item (layar penuh di atas aplikasi) */
+        .mf-screen { position: absolute; inset: 0; background: #F6F7F9; z-index: 90; display: none; flex-direction: column; }
+        .mf-top { display: flex; align-items: center; justify-content: space-between; padding: 50px 16px 12px 12px; }
+        .mf-top h2 { font-size: 17px; font-weight: 800; color: #111827; margin: 0; }
+        .mf-back { width: 40px; height: 40px; border: none; background: none; border-radius: 12px; color: #111827; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .mf-back svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+        .mf-draft { border: none; background: none; color: #DC9808; font-weight: 700; font-size: 13px; font-family: inherit; cursor: pointer; padding: 8px 4px; min-width: 40px; text-align: right; }
+        .mf-draft:disabled { opacity: 0.5; cursor: not-allowed; }
+        .mf-back:focus-visible, .mf-draft:focus-visible, .mf-choose:focus-within, .mf-save:focus-visible { outline: 2px solid #8A5A00; outline-offset: 2px; }
+        .mf-body { flex: 1; overflow-y: auto; padding: 6px 20px 24px; scrollbar-width: none; }
+        .mf-body::-webkit-scrollbar { display: none; }
+        .mf-photo { position: relative; overflow: hidden; border: 2px dashed #F0C56A; background: #FFFBF1; border-radius: 18px; height: 176px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; margin-bottom: 20px; }
+        .mf-photo .cam { width: 44px; height: 44px; border-radius: 50%; background: #FFF1D6; color: #DC9808; display: flex; align-items: center; justify-content: center; }
+        .mf-photo .cam svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        .mf-photo .ttl { font-size: 13px; font-weight: 700; color: #111827; margin-top: -4px; }
+        .mf-photo .preview { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: none; }
+        .mf-photo.has-img { border-style: solid; }
+        .mf-photo.has-img .preview { display: block; }
+        .mf-photo.has-img .cam, .mf-photo.has-img .ttl { display: none; }
+        .mf-photo.has-img .mf-choose { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); z-index: 1; }
+        .mf-choose { position: relative; border: 1.5px solid #DC9808; color: #B07400; background: #FFF; border-radius: 20px; padding: 8px 22px; font-weight: 700; font-size: 13px; cursor: pointer; white-space: nowrap; }
+        .mf-choose input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+        .mf-field { margin-bottom: 18px; }
+        .mf-field > label { display: block; font-size: 13px; font-weight: 700; color: #111827; margin-bottom: 8px; }
+        .mf-input { width: 100%; padding: 14px; border: 1px solid #E5E7EB; border-radius: 12px; background: #FFF; font-family: inherit; font-size: 14px; color: #111827; outline: none; transition: 0.2s; }
+        .mf-input:focus, .mf-price:focus-within { border-color: #DC9808; box-shadow: 0 0 0 3px rgba(220,152,8,0.12); }
+        .mf-input::placeholder { color: #A0A6B0; }
+        select.mf-input { appearance: none; -webkit-appearance: none; padding-right: 40px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; }
+        textarea.mf-input { height: 100px; resize: none; line-height: 1.5; }
+        .mf-price { display: flex; align-items: center; border: 1px solid #E5E7EB; border-radius: 12px; background: #FFF; overflow: hidden; transition: 0.2s; }
+        .mf-price span { padding-left: 14px; color: #6B7280; font-size: 14px; }
+        .mf-price input { flex: 1; min-width: 0; border: none; outline: none; padding: 14px 14px 14px 10px; font-family: inherit; font-size: 14px; color: #111827; background: transparent; }
+        .mf-avail { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
+        .mf-avail label { font-size: 13px; font-weight: 700; color: #111827; }
+        .mf-error { display: none; color: #C62828; font-size: 12px; font-weight: 600; margin-top: 14px; }
+        .mf-foot { padding: 14px 20px 30px; background: #FFF; border-top: 1px solid #E5E7EB; }
+        .mf-save { width: 100%; background: #DC9808; color: #FFF; border: none; border-radius: 14px; padding: 16px; font-family: inherit; font-weight: 700; font-size: 15px; cursor: pointer; transition: 0.2s; }
+        .mf-save:active { transform: scale(0.98); }
+        .mf-save:disabled { opacity: 0.6; cursor: wait; }
 
         .d-none { display: none !important; }
     </style>
@@ -188,16 +476,43 @@
             </div>
         </div>
 
-        <div id="viewMenu" class="dashboard-content d-none" style="padding-top: 0; padding-bottom: 90px;">
-            <div class="section-title">
-                Katalog Menu
-                <!-- PERBAIKAN CSS TOMBOL AGAR TIDAK TABRAKAN -->
-                <button class="btn-accept" style="flex: none; padding: 8px 16px; width: auto; font-size: 12px; border-radius: 20px; box-shadow: 0 4px 10px rgba(220,152,8,0.3);" onclick="openMenuModal()">+ Tambah Menu</button>
+        <!-- ORDERS: pesanan yang sudah di-accept kantin (Active) + riwayat (History) -->
+        <div id="viewActive" class="d-none">
+            <div class="ord-header">
+                <div>
+                    <h1 id="ordTitle">Active Orders</h1>
+                    <p id="ordSub">Toko Saya</p>
+                </div>
+                <button type="button" class="ord-chef" aria-label="Buka profil toko" onclick="switchTab('viewProfile', document.getElementById('navProfile'))">
+                    <svg viewBox="0 0 24 24"><path d="M7 14a4 4 0 1 1 1.4-7.7A4 4 0 0 1 15.6 6.3 4 4 0 1 1 17 14v5H7z"/><path d="M7 17h10"/></svg>
+                </button>
             </div>
-            
-            <div class="menu-list-merchant" id="merchantMenuList">
-                <p style="text-align:center; font-size:12px; color:#888;">Memuat menu restoran...</p>
+            <div class="ord-tabs" role="tablist">
+                <button type="button" class="ord-tab active" id="tabActiveBtn" role="tab" aria-selected="true" onclick="setOrdersTab('active')">Active (0)</button>
+                <button type="button" class="ord-tab" id="tabHistoryBtn" role="tab" aria-selected="false" onclick="setOrdersTab('history')">History</button>
             </div>
+            <div class="dashboard-content ord-scroll" id="ordScroll">
+                <div id="activeOrdersList"></div>
+                <div id="historyOrdersList" class="d-none"></div>
+            </div>
+        </div>
+
+        <!-- MENU MANAGEMENT -->
+        <div id="viewMenu" class="dashboard-content d-none" style="padding: 0 0 100px;">
+            <div class="mg-head">
+                <div>
+                    <h1>Menu Management</h1>
+                    <p id="menuSub">Toko Saya &bull; 0 Items</p>
+                </div>
+                <button type="button" class="btn-add-item" onclick="openMenuForm()">+ Add Item</button>
+            </div>
+            <div class="mg-search">
+                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+                <input type="search" id="menuSearch" placeholder="Search menu..." aria-label="Search menu" autocomplete="off">
+            </div>
+            <div class="mg-chips" id="menuChips"></div>
+            <div class="mg-label">Your menu <span id="menuShown">0 items shown</span></div>
+            <div class="mg-list" id="merchantMenuList"></div>
         </div>
 
         <div id="viewProfile" class="dashboard-content d-none" style="padding-top: 50px; padding-bottom: 90px;">
@@ -239,42 +554,169 @@
             </div>
         </div>
 
-        <!-- MODAL TAMBAH MENU -->
-        <div class="custom-modal-overlay" id="addMenuModal">
-            <div class="custom-modal">
-                <h3>Tambah Menu Baru</h3>
-                
-                <label for="menuImageInput" class="upload-area" id="uploadAreaBox">
-                    <span>📸 Upload Foto Menu</span>
-                    <img id="previewMenuImg" src="">
-                </label>
-                <input type="file" id="menuImageInput" accept="image/*" style="display: none;">
+        <!-- REPORTS: Sales & Performance -->
+        <div id="viewReports" class="dashboard-content d-none">
+            <div class="rp-wrap">
+                <div class="rp-top">
+                    <div class="rp-logo"><span class="b">B</span><span class="bite">Bite</span><small>MERCHANT</small></div>
+                    <button type="button" class="rp-export" id="rpExportBtn" aria-haspopup="dialog">
+                        <svg viewBox="0 0 24 24"><path d="M12 4v11M7 11l5 5 5-5M5 20h14"/></svg>
+                        Export / Download
+                    </button>
+                </div>
 
-                <input type="text" id="inputMenuName" class="form-input" placeholder="Nama Menu (cth: Ayam Bakar)">
-                
-                <select id="inputMenuCategory" class="form-input">
-                    <option value="" disabled selected>Pilih Kategori</option>
-                    <option value="Makanan">Makanan</option>
-                    <option value="Minuman">Minuman</option>
-                    <option value="Snacks">Snacks</option>
-                    <option value="Paket Hemat">Paket Hemat</option>
-                </select>
+                <h1 class="rp-title">Sales &amp; Performance</h1>
+                <div class="rp-store">
+                    <svg viewBox="0 0 24 24"><path d="M4 9l1.5-5h13L20 9"/><path d="M4 9a2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0 5 0"/><path d="M5 12v8h14v-8"/></svg>
+                    <span id="rpStore">Toko Saya</span>
+                </div>
 
-                <input type="number" id="inputMenuPrice" class="form-input" placeholder="Harga (cth: 15000)">
+                <div class="rp-tabs" role="tablist" id="rpTabs">
+                    <button type="button" class="rp-tab" data-range="today" role="tab" aria-selected="false">Today</button>
+                    <button type="button" class="rp-tab active" data-range="week" role="tab" aria-selected="true">This Week</button>
+                    <button type="button" class="rp-tab" data-range="month" role="tab" aria-selected="false">This Month</button>
+                    <button type="button" class="rp-tab" data-range="custom" role="tab" aria-selected="false">Custom Date</button>
+                </div>
 
-                <div class="modal-buttons">
-                    <button class="btn-cancel" onclick="closeMenuModal()">Batal</button>
-                    <button class="btn-save" id="btnSaveNewMenu">Simpan Menu</button>
+                <div class="rp-meta"><span id="rpDateRange">-</span><span class="rp-upd" id="rpUpdated">Updated just now</span></div>
+
+                <div class="rp-grid">
+                    <div class="rp-card hi">
+                        <div class="lbl"><span>Total Revenue</span><span class="rp-ico"><svg viewBox="0 0 24 24"><path d="M20 7H5a2 2 0 0 1 0-4h13v4"/><path d="M3 5v14a2 2 0 0 0 2 2h15V7"/><circle cx="16.5" cy="14" r="1.2"/></svg></span></div>
+                        <div class="val" id="rpRevenue">Rp 0</div>
+                        <div class="rp-trend flat" id="rpTrend"></div>
+                    </div>
+                    <div class="rp-card">
+                        <div class="lbl"><span>Completed Orders</span><span class="rp-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/></svg></span></div>
+                        <div class="val" id="rpDone">0 Orders</div>
+                        <div class="sub">Successfully fulfilled</div>
+                    </div>
+                    <div class="rp-card">
+                        <div class="lbl"><span>Avg. Order Value</span><span class="rp-ico"><svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg></span></div>
+                        <div class="val" id="rpAvg">Rp 0</div>
+                        <div class="sub">Per completed order</div>
+                    </div>
+                    <div class="rp-card">
+                        <div class="lbl"><span>Cancelled Orders</span><span class="rp-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></svg></span></div>
+                        <div class="val" id="rpCancel">0 Orders</div>
+                        <div class="sub" id="rpCancelPct">0% of all orders</div>
+                    </div>
+                </div>
+
+                <div class="rp-panel">
+                    <div class="phead">
+                        <div><h3>Peak Order Hours</h3><div class="psub" id="rpPeakSub">Order volume by hour</div></div>
+                        <span class="rp-legend">Orders</span>
+                    </div>
+                    <div class="rp-chart">
+                        <div class="rp-yax" id="rpYax"></div>
+                        <div class="rp-plot">
+                            <div class="rp-area"><div id="rpLines"></div><div class="rp-bars" id="rpBars"></div></div>
+                            <div class="rp-xax" id="rpXax"></div>
+                        </div>
+                    </div>
+                    <div class="rp-peak" id="rpPeak"></div>
+                </div>
+
+                <div class="rp-panel">
+                    <h3>Top Selling Items</h3>
+                    <div class="psub" id="rpTopSub">Ranked by units sold</div>
+                    <div id="rpTop"></div>
                 </div>
             </div>
         </div>
 
+        <!-- SHEET: Download Sales Report -->
+        <div class="rp-overlay" id="rpExportOv" aria-hidden="true">
+            <div class="rp-sheet" role="dialog" aria-modal="true" aria-labelledby="rpExTitle">
+                <div class="rp-handle"></div>
+                <div class="rp-shead"><h3 id="rpExTitle">Download Sales Report</h3><button type="button" class="rp-x" id="rpExClose" aria-label="Tutup">&#10005;</button></div>
+
+                <span class="rp-lbl">Date Range</span>
+                <div class="rp-sel">
+                    <svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>
+                    <span id="rpExRangeTxt">This Week</span>
+                    <svg class="chev" viewBox="0 0 24 24" style="stroke:#6B7280"><path d="M6 9l6 6 6-6"/></svg>
+                    <select id="rpExRange" aria-label="Date range"></select>
+                </div>
+                <div class="rp-dates" id="rpExDates">
+                    <label>From<input type="date" id="rpExFrom"></label>
+                    <label>To<input type="date" id="rpExTo"></label>
+                </div>
+
+                <span class="rp-lbl" style="margin-top:14px">Format</span>
+                <label class="rp-opt sel" id="rpOptPdf">
+                    <input type="radio" name="rpFmt" value="pdf" checked>
+                    <span class="oi"><svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg></span>
+                    <span class="ot"><b>PDF Summary Report</b><small>A ready-to-share sales overview</small></span>
+                    <span class="rp-radio"></span>
+                </label>
+                <label class="rp-opt" id="rpOptCsv">
+                    <input type="radio" name="rpFmt" value="csv">
+                    <span class="oi"><svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h1M13 13h2M9 17h1M13 17h2"/></svg></span>
+                    <span class="ot"><b>CSV / Excel Data Sheet</b><small>Detailed data for your spreadsheets</small></span>
+                    <span class="rp-radio"></span>
+                </label>
+                <div class="rp-err" id="rpExErr" role="alert"></div>
+                <button type="button" class="rp-btn" id="rpExGo">Download Report</button>
+            </div>
+        </div>
+
+        <!-- SHEET: Custom Date -->
+        <div class="rp-overlay" id="rpCustomOv" aria-hidden="true">
+            <div class="rp-sheet" role="dialog" aria-modal="true" aria-labelledby="rpCuTitle">
+                <div class="rp-handle"></div>
+                <div class="rp-shead"><h3 id="rpCuTitle">Custom Date</h3><button type="button" class="rp-x" id="rpCuClose" aria-label="Tutup">&#10005;</button></div>
+                <div class="rp-cinputs">
+                    <label>From<input type="date" id="rpCuFrom"></label>
+                    <label>To<input type="date" id="rpCuTo"></label>
+                </div>
+                <div class="rp-err" id="rpCuErr" role="alert"></div>
+                <div class="rp-row2">
+                    <button type="button" class="rp-btn ghost" id="rpCuCancel">Cancel</button>
+                    <button type="button" class="rp-btn" id="rpCuApply">Apply</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="toast d-none" id="toast" role="status" aria-live="polite"><span id="toastMsg"></span><button type="button" id="toastAction" class="d-none"></button></div>
+
+        <!-- FORM ADD / EDIT ITEM -->
+        <div class="mf-screen" id="menuFormScreen" role="dialog" aria-modal="true" aria-labelledby="mfTitle">
+            <div class="mf-top">
+                <button type="button" class="mf-back" aria-label="Kembali" onclick="closeMenuForm()"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
+                <h2 id="mfTitle">Add New Item</h2>
+                <button type="button" class="mf-draft" id="mfDraftBtn">Save Draft</button>
+            </div>
+            <div class="mf-body" id="mfBody">
+                <div class="mf-photo" id="mfPhotoBox">
+                    <img class="preview" id="mfPreview" alt="Preview foto menu">
+                    <div class="cam"><svg viewBox="0 0 24 24"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg></div>
+                    <div class="ttl">Upload Food Photo</div>
+                    <label class="mf-choose"><span id="mfChooseLbl">Choose Photo</span><input type="file" id="mfPhotoInput" accept="image/*"></label>
+                </div>
+                <div class="mf-field"><label for="mfName">Item Name *</label>
+                    <input type="text" id="mfName" class="mf-input" placeholder="e.g., Nasi Paket Ayam Geprek" maxlength="60" autocomplete="off"></div>
+                <div class="mf-field"><label for="mfCategory">Category *</label>
+                    <select id="mfCategory" class="mf-input"></select></div>
+                <div class="mf-field"><label for="mfPrice">Price (IDR) *</label>
+                    <div class="mf-price"><span>Rp</span><input type="text" id="mfPrice" inputmode="numeric" placeholder="0" autocomplete="off"></div></div>
+                <div class="mf-field"><label for="mfDesc">Description</label>
+                    <textarea id="mfDesc" class="mf-input" placeholder="Crispy chicken with sambal..." maxlength="200"></textarea></div>
+                <div class="mf-avail"><label for="mfAvail">Available for Order</label>
+                    <span class="sw-toggle lg"><input type="checkbox" id="mfAvail" checked><span class="knob"></span></span></div>
+                <div class="mf-error" id="mfError" role="alert"></div>
+            </div>
+            <div class="mf-foot"><button type="button" class="mf-save" id="mfSaveBtn">Save &amp; Publish Menu</button></div>
+        </div>
+
         <nav class="bottom-nav">
-            <a href="#" class="nav-item active" onclick="switchTab('viewOrders', this); return false;">
+            <a href="#" class="nav-item active" id="navHome" onclick="switchTab('viewOrders', this); return false;">
                 <svg viewBox="0 0 24 24"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>
                 <span>Home</span>
+                <b class="nav-badge d-none" id="navHomeBadge">0</b>
             </a>
-            <a href="#" class="nav-item" onclick="alert('Halaman Orders sedang dikembangkan'); return false;">
+            <a href="#" class="nav-item" id="navOrders" onclick="switchTab('viewActive', this); return false;">
                 <svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>
                 <span>Orders</span>
                 <b class="nav-badge d-none" id="navOrdersBadge">0</b>
@@ -283,11 +725,11 @@
                 <svg viewBox="0 0 24 24"><path d="M12 6.5C10.5 5 8 4.2 4 4.2v14c4 0 6.5.8 8 2.3 1.5-1.5 4-2.3 8-2.3v-14c-4 0-6.5.8-8 2.3zM12 6.5v14"/></svg>
                 <span>Menu</span>
             </a>
-            <a href="#" class="nav-item" onclick="alert('Fitur Laporan sedang dikembangkan'); return false;">
+            <a href="#" class="nav-item" id="navReports" onclick="switchTab('viewReports', this); return false;">
                 <svg viewBox="0 0 24 24"><path d="M5 20v-7M12 20V5M19 20V10"/></svg>
                 <span>Reports</span>
             </a>
-            <a href="#" class="nav-item" onclick="switchTab('viewProfile', this); return false;">
+            <a href="#" class="nav-item" id="navProfile" onclick="switchTab('viewProfile', this); return false;">
                 <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
                 <span>Profile</span>
             </a>
@@ -295,58 +737,19 @@
     </div>
 
     <script>
-        window.tempBase64Image = "";
-
         function switchTab(tabId, element) {
-            ['viewOrders', 'viewMenu', 'viewProfile'].forEach(id => document.getElementById(id).classList.add('d-none'));
+            ['viewOrders', 'viewActive', 'viewMenu', 'viewReports', 'viewProfile'].forEach(id => document.getElementById(id).classList.add('d-none'));
             document.getElementById(tabId).classList.remove('d-none');
 
-            document.getElementById('globalMerchantHeader').style.display = (tabId === 'viewProfile') ? 'none' : 'block';
+            // Halaman Orders, Menu, dan Profile punya header sendiri
+            document.getElementById('globalMerchantHeader').style.display = (tabId === 'viewOrders') ? 'block' : 'none';
 
             document.querySelectorAll('.bottom-nav .nav-item').forEach(nav => nav.classList.remove('active'));
             element.classList.add('active');
             window.scrollTo(0, 0);
+            if (window.refreshNavBadges) window.refreshNavBadges();
+            if (tabId === 'viewReports' && window.renderReports) window.renderReports();
         }
-
-        function openMenuModal() {
-            document.getElementById("inputMenuName").value = "";
-            document.getElementById("inputMenuCategory").value = "";
-            document.getElementById("inputMenuPrice").value = "";
-            document.getElementById("previewMenuImg").style.display = "none";
-            window.tempBase64Image = "";
-            document.getElementById("addMenuModal").style.display = "flex";
-        }
-
-        function closeMenuModal() {
-            document.getElementById("addMenuModal").style.display = "none";
-        }
-
-        document.getElementById("menuImageInput").addEventListener("change", function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                const img = new Image();
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    const MAX_SIZE = 300;
-                    let width = img.width; let height = img.height;
-                    if (width > height) { if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; } } 
-                    else { if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; } }
-                    canvas.width = width; canvas.height = height;
-                    ctx.drawImage(img, 0, 0, width, height);
-                    
-                    window.tempBase64Image = canvas.toDataURL('image/jpeg', 0.7);
-                    const preview = document.getElementById("previewMenuImg");
-                    preview.src = window.tempBase64Image;
-                    preview.style.display = "block";
-                }
-                img.src = event.target.result;
-            }
-            reader.readAsDataURL(file);
-        });
     </script>
 
     <script type="module">
@@ -477,123 +880,798 @@
             cnt.classList.toggle("d-none", pending === 0);
             cnt.innerText = pending + (pending === 1 ? " new order" : " new orders");
 
-            const badge = document.getElementById("navOrdersBadge");
-            badge.classList.toggle("d-none", pending === 0);
-            badge.innerText = pending > 9 ? "9+" : String(pending);
+            lastPending = pending;
+            window.refreshNavBadges();
         }
 
         window.changeOrderStatus = async function(orderId, newStatus) {
             if (newStatus === 'rejected' && !confirm("Tolak pesanan ini?")) return;
-            try { await updateDoc(doc(db, "orders", orderId), { status: newStatus }); } 
-            catch (error) { alert("Gagal memperbarui pesanan: " + error.message); }
+            try {
+                await updateDoc(doc(db, "orders", orderId), { status: newStatus });
+                if (newStatus === 'preparing') showToast("Pesanan diterima. Kelola pesanan ini di tab Orders.", "Lihat", () => switchTab('viewActive', document.getElementById('navOrders')));
+                else if (newStatus === 'ready') showToast("Pesanan ditandai siap diambil.");
+                else if (newStatus === 'completed') showToast("Pesanan selesai dan masuk ke History.");
+            } catch (error) { alert("Gagal memperbarui pesanan: " + error.message); }
         };
 
+        // ===== Toast kecil =====
+        let toastTimer = null;
+        function showToast(msg, actionLabel, onAction) {
+            const t = document.getElementById("toast"), a = document.getElementById("toastAction");
+            document.getElementById("toastMsg").innerText = msg;
+            if (actionLabel) { a.innerText = actionLabel; a.onclick = () => { t.classList.add("d-none"); onAction(); }; a.classList.remove("d-none"); }
+            else { a.classList.add("d-none"); a.onclick = null; }
+            t.classList.remove("d-none");
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => t.classList.add("d-none"), 5000);
+        }
+
+        // ===== Halaman Orders (Active / History) =====
+        // Pembagian: pending -> Home (Incoming Orders) | preparing / ready -> Orders > Active | completed / rejected / delivered -> Orders > History
+        let lastPending = 0, lastActive = [];
+        const courierCache = {}; // uid kurir -> foto (base64) atau "" bila tidak ada
+
+        const IC = {
+            phone: '<svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>',
+            chat: '<svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.8 7L4 20l1.2-4.4A8 8 0 1 1 21 12z"/></svg>',
+            bike: '<svg viewBox="0 0 24 24"><circle cx="6" cy="17" r="3"/><circle cx="18" cy="17" r="3"/><path d="M6 17h4l3-7h3M13 10l-1-3H9"/></svg>',
+            bag: '<svg viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6z"/><path d="M9 8a3 3 0 0 1 6 0"/></svg>',
+            bulb: '<svg viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg>'
+        };
+
+        const EMPTY_ACTIVE_HTML = `
+            <div class="ord-empty">
+                <svg class="ill" viewBox="0 0 176 156" fill="none" aria-hidden="true">
+                    <circle cx="88" cy="68" r="58" fill="#FFF1D6"/>
+                    <rect x="63" y="20" width="50" height="70" rx="4" fill="#FFF" stroke="#DC9808" stroke-width="2"/>
+                    <path d="M72 34h32M72 44h32M72 54h20" stroke="#DC9808" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M40 88h96v24a4 4 0 0 1-4 4H44a4 4 0 0 1-4-4z" fill="#FFF" stroke="#DC9808" stroke-width="2" stroke-linejoin="round"/>
+                    <path d="M40 100h26l6 8h32l6-8h26" stroke="#DC9808" stroke-width="2" stroke-linejoin="round"/>
+                    <path d="M26 46v10M21 51h10M148 80v10M143 85h10" stroke="#DC9808" stroke-width="2" stroke-linecap="round"/>
+                    <ellipse cx="88" cy="134" rx="46" ry="5" fill="#EEF0F3"/>
+                </svg>
+                <h4>Belum Ada Pesanan Aktif</h4>
+                <p>Pesanan baru yang Anda terima akan muncul dan dikelola di sini secara real-time.</p>
+                <div class="ord-tip">${IC.bulb}<span>Tip: Pastikan status toko Anda 'Open' di halaman Home agar mahasiswa bisa memesan menu Anda.</span></div>
+            </div>`;
+        const EMPTY_HISTORY_HTML = `
+            <div class="ord-empty">
+                <svg class="ill" viewBox="0 0 176 156" fill="none" aria-hidden="true">
+                    <circle cx="88" cy="68" r="58" fill="#FFF1D6"/>
+                    <rect x="52" y="38" width="72" height="70" rx="8" fill="#FFF" stroke="#DC9808" stroke-width="2"/>
+                    <path d="M52 56h72M72 30v14M104 30v14" stroke="#DC9808" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M66 70h8M84 70h8M102 70h8M66 84h8M84 84h8M66 98h8" stroke="#DC9808" stroke-width="2" stroke-linecap="round" opacity=".55"/>
+                    <circle cx="116" cy="102" r="17" fill="#FFF" stroke="#DC9808" stroke-width="2"/>
+                    <path d="M108 102l6 6 11-12" stroke="#DC9808" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M30 50v10M25 55h10M148 40v10M143 45h10" stroke="#DC9808" stroke-width="2" stroke-linecap="round"/>
+                    <ellipse cx="88" cy="134" rx="46" ry="5" fill="#EEF0F3"/>
+                </svg>
+                <h4>Belum Ada Riwayat Pesanan</h4>
+                <p>Pesanan yang telah selesai disiapkan atau dibatalkan akan tersimpan di sini sebagai catatan riwayat penjualan Anda.</p>
+            </div>`;
+
+        // Nomor WhatsApp -> tautan wa.me (sama seperti halaman Track pemesan)
+        function waHref(phone) {
+            let d = String(phone || "").replace(/\D/g, "");
+            if (!d) return "";
+            if (d.startsWith("0")) d = "62" + d.slice(1);
+            return "https://wa.me/" + d;
+        }
+        function chatBtn(label, phone, icon) {
+            const href = waHref(phone);
+            return href
+                ? `<a class="chat-act" href="${href}" target="_blank" rel="noopener"><i>${icon}</i><span>${label}</span></a>`
+                : `<button type="button" class="chat-act off" disabled title="Nomor belum tersedia"><i>${icon}</i><span>${label}</span></button>`;
+        }
+
+        function loadCourierPhoto(uid) {
+            if (!uid || uid in courierCache) return;
+            courierCache[uid] = "";
+            getDoc(doc(db, "users", uid)).then(snap => {
+                const p = snap.exists() ? (snap.data().photoBase64 || "") : "";
+                if (p) { courierCache[uid] = p; renderActiveOrders(lastActive); }
+            }).catch(() => {});
+        }
+        function courierBoxHTML(o) {
+            if (o.type === "Pickup") return "";
+            if (!o.courierId) {
+                return `<div class="cr-box"><div class="cr-av searching"><span></span></div>
+                    <div class="cr-txt"><b>Finding a courier...</b><small>Order sent to available couriers</small></div></div>`;
+            }
+            loadCourierPhoto(o.courierId);
+            const name = String(o.courierName || "Courier");
+            const photo = courierCache[o.courierId];
+            const av = (photo && /^(data:image|https?:)/.test(photo))
+                ? `<div class="cr-av"><img src="${esc(photo)}" alt=""></div>`
+                : `<div class="cr-av">${esc(name.trim().charAt(0).toUpperCase() || "C")}</div>`;
+            const sub = o.deliveryStatus === "delivering" ? "Picked up, heading to customer"
+                      : (o.status === "ready" ? "Food is ready, courier is picking up" : "On the way to canteen");
+            return `<div class="cr-box">${av}<div class="cr-txt"><b>${esc(name)} (Student Courier)</b><small>${sub}</small></div></div>`;
+        }
+
+        function activeCardHTML(id, o) {
+            const isPickup = o.type === "Pickup";
+            const asap = !o.time || o.time === "Sekarang";
+            const place = (o.location && o.location !== "-") ? o.location : "(no location note)";
+            const hasNotes = o.notes && o.notes !== "-";
+            const items = (Array.isArray(o.items) ? o.items : []).map(i =>
+                `<div class="inc-item"><span>${esc(i.qty)}x ${esc(i.name)}</span><b>${rupiah((Number(i.price) || 0) * (Number(i.qty) || 0))}</b></div>`).join("");
+
+            let pill = '<span class="st-pill prep">PREPARING</span>';
+            if (o.deliveryStatus === "delivering") pill = '<span class="st-pill route">ON THE WAY</span>';
+            else if (o.status === "ready") pill = '<span class="st-pill ready">READY</span>';
+
+            let btn;
+            if (o.status === "preparing") {
+                btn = `<button type="button" class="ao-btn" onclick="changeOrderStatus('${id}', 'ready')">Mark as Ready for Pickup</button>`;
+            } else if (isPickup) {
+                btn = `<button type="button" class="ao-btn dark" onclick="changeOrderStatus('${id}', 'completed')">Mark as Picked Up</button>`;
+            } else {
+                btn = `<button type="button" class="ao-btn" disabled>${o.deliveryStatus === "delivering" ? "Order is with the courier" : "Waiting for courier pickup"}</button>`;
+            }
+
+            const chats = (isPickup ? "" : chatBtn("Chat Courier", o.courierPhone, IC.phone)) + chatBtn("Chat Customer", o.studentPhone, IC.chat);
+
+            return `
+                <div class="ao-card">
+                    <div class="ao-id"><h3>${esc("#BB-" + id.substring(0, 5).toUpperCase())}</h3>${pill}</div>
+                    <div class="ao-cust"><span>Customer <b>${esc(o.studentName)}</b></span>
+                        <span class="type-chip">${isPickup ? IC.bag : IC.bike}${isPickup ? "PICKUP" : "DELIVERY"}</span></div>
+                    <div class="slot-box">
+                        <div class="slot-ico">${ICON_CLOCK}</div>
+                        <div><strong>Target Slot: ${esc(asap ? "Sekarang" : o.time)}</strong><small>${asap ? "(As soon as possible)" : "(Class End Slot)"}</small></div>
+                    </div>
+                    ${hasNotes ? `<div class="notes-box"><small>Notes</small><span>${esc(o.notes)}</span></div>` : ""}
+                    <div class="ao-where">${ICON_PIN}<div><small>${isPickup ? "Pickup at" : "Deliver to"}</small><b>${esc(isPickup ? "Canteen counter" : place)}</b></div></div>
+                    ${courierBoxHTML(o)}
+                    <div class="chat-row">${chats}</div>
+                    <div class="ao-sum">${items}</div>
+                    <div class="ao-total"><span>Total</span><b>${rupiah(orderRevenue(o))}</b></div>
+                    ${btn}
+                </div>`;
+        }
+
+        function historyCardHTML(id, o, ms) {
+            const rejected = o.status === "rejected";
+            const when = new Date(ms).toLocaleString("id-ID", { timeZone: "Asia/Jakarta", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+            const list = Array.isArray(o.items) ? o.items : [];
+            const summary = list.map(i => `${esc(i.qty)}x ${esc(i.name)}`).join(", ");
+            return `
+                <div class="hi-card ${rejected ? "rej" : ""}">
+                    <div class="hi-top"><h3>${esc("#BB-" + id.substring(0, 5).toUpperCase())}</h3>
+                        <span class="hi-pill ${rejected ? "rej" : "done"}">${rejected ? "Rejected" : "Completed"}</span></div>
+                    <div class="hi-meta">${esc(o.studentName)} · ${o.type === "Pickup" ? "Pickup" : "Delivery"} · ${esc(when)}</div>
+                    <div class="hi-items">${summary}</div>
+                    <div class="hi-foot"><span>Total</span><b>${rupiah(orderRevenue(o))}</b></div>
+                </div>`;
+        }
+
+        function renderActiveOrders(list) {
+            lastActive = list;
+            document.getElementById("activeOrdersList").innerHTML = list.length ? list.map(x => activeCardHTML(x.id, x.order)).join("") : EMPTY_ACTIVE_HTML;
+            document.getElementById("tabActiveBtn").innerText = "Active (" + list.length + ")";
+            window.refreshNavBadges();
+        }
+        function renderHistoryOrders(list) {
+            document.getElementById("historyOrdersList").innerHTML = list.length
+                ? list.slice(0, 50).map(x => historyCardHTML(x.id, x.order, x.ms)).join("")
+                : EMPTY_HISTORY_HTML;
+        }
+
+        window.setOrdersTab = function(which) {
+            const isActive = which !== "history";
+            document.getElementById("activeOrdersList").classList.toggle("d-none", !isActive);
+            document.getElementById("historyOrdersList").classList.toggle("d-none", isActive);
+            const a = document.getElementById("tabActiveBtn"), h = document.getElementById("tabHistoryBtn");
+            a.classList.toggle("active", isActive); a.setAttribute("aria-selected", String(isActive));
+            h.classList.toggle("active", !isActive); h.setAttribute("aria-selected", String(!isActive));
+            document.getElementById("ordTitle").innerText = isActive ? "Active Orders" : "Order History";
+            document.getElementById("ordScroll").scrollTop = 0;
+        };
+
+        // Badge merah di nav: Home = pesanan baru menunggu keputusan, Orders = pesanan yang sedang dikerjakan.
+        // Disembunyikan saat tab yang bersangkutan sedang dibuka.
+        window.refreshNavBadges = function() {
+            const onHome = !document.getElementById("viewOrders").classList.contains("d-none");
+            const onOrders = !document.getElementById("viewActive").classList.contains("d-none");
+            const set = (id, n, hide) => {
+                const b = document.getElementById(id);
+                b.classList.toggle("d-none", n === 0 || hide);
+                b.innerText = n > 9 ? "9+" : String(n);
+            };
+            set("navHomeBadge", lastPending, onHome);
+            set("navOrdersBadge", lastActive.length, onOrders);
+        };
+
+        // Sama dengan sisi mahasiswa: nama toko yang tidak dikenal = tidak punya menu bawaan (null)
         function getJsonRestoKey(bName) {
-            if (!bName) return 'starbucks';
+            if (!bName) return null;
             const name = bName.toLowerCase();
             if (name.includes('starbuck')) return 'starbucks';
             if (name.includes('a&w') || name.includes('aw')) return 'aw';
             if (name.includes('hokben')) return 'hokben';
             if (name.includes('yoshinoya')) return 'yoshinoya';
-            return 'starbucks';
+            return null;
+        }
+
+        // ===== Menu Management =====
+        // Data menu toko:
+        //   users/{uid}.customMenus  : menu buatan / hasil edit merchant  [{ id, name, category, price, img, description, available, draft }]
+        //   users/{uid}.deletedMenus : id menu bawaan (menu.json) yang disembunyikan
+        // Sisi mahasiswa membaca: customMenus + (menu.json - deletedMenus). Mengedit / menandai Sold Out menu bawaan dilakukan dengan
+        // menyalinnya ke customMenus (id sama) lalu menyembunyikan aslinya lewat deletedMenus, jadi tidak ada id ganda.
+        const CAT_ORDER = ["Makanan", "Minuman", "Snacks", "Paket Hemat"];
+        // Nilai yang disimpan tetap Bahasa Indonesia (dipakai filter di sisi mahasiswa); label di layar mengikuti desain.
+        const CAT_LABEL = { "Makanan": "Main Course", "Minuman": "Beverages", "Snacks": "Snacks", "Paket Hemat": "Combo Deals" };
+        const catLabel = (c) => CAT_LABEL[c] || c || "Other";
+        let menuFilterCat = "all", menuQuery = "", editingId = null, formPhoto = "", formBusy = false;
+
+        const ICON_EDIT = '<svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>';
+        const ICON_DEL = '<svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6"/></svg>';
+        const $ = (id) => document.getElementById(id);
+
+        function allMerchantMenus() {
+            const hidden = new Set(window.userDeletedMenus);
+            return [...window.userCustomMenus, ...window.currentBaseMenus.filter(m => !hidden.has(m.id))];
+        }
+        const isOff = (m) => !!m.draft || m.available === false;
+        function initialsOf(name) {
+            const w = String(name || "").replace(/[^A-Za-z0-9 ]/g, " ").trim().split(/\s+/).filter(Boolean);
+            return (w.length >= 2 ? w[0][0] + w[1][0] : (w[0] || "?").slice(0, 2)).toUpperCase();
+        }
+        function cleanMenu(m, patch) {
+            const o = Object.assign({}, m, patch || {});
+            return { id: o.id, name: o.name, category: o.category, price: Number(o.price) || 0, img: o.img || "",
+                     description: o.description || "", available: o.available !== false, draft: !!o.draft };
+        }
+
+        // Simpan ke Firestore. State lokal diperbarui dulu supaya terasa cepat; dikembalikan bila gagal.
+        async function persistMenus(custom, deleted) {
+            const prev = [window.userCustomMenus, window.userDeletedMenus];
+            window.userCustomMenus = custom; window.userDeletedMenus = deleted;
+            window.renderMerchantMenus();
+            try {
+                await setDoc(doc(db, "users", window.currentUser.uid), { customMenus: custom, deletedMenus: deleted }, { merge: true });
+                return true;
+            } catch (e) {
+                [window.userCustomMenus, window.userDeletedMenus] = prev;
+                window.renderMerchantMenus();
+                alert("Gagal menyimpan menu: " + e.message);
+                return false;
+            }
+        }
+        // Tambah / ganti satu menu. Menu bawaan yang diedit disalin ke customMenus dan aslinya disembunyikan.
+        function upsertMenu(item) {
+            const custom = [...window.userCustomMenus], deleted = [...window.userDeletedMenus];
+            const i = custom.findIndex(x => x.id === item.id);
+            if (i >= 0) custom[i] = item;
+            else {
+                custom.unshift(item);
+                if (window.currentBaseMenus.some(b => b.id === item.id) && !deleted.includes(item.id)) deleted.push(item.id);
+            }
+            return [custom, deleted];
+        }
+
+        function menuCardHTML(m) {
+            const off = isOff(m);
+            const label = m.draft ? "Draft" : (m.available === false ? "Sold Out" : "Available");
+            const photo = m.img
+                ? `<img src="${esc(m.img)}" alt="" loading="lazy" onerror="this.parentNode.textContent=this.parentNode.dataset.ph">`
+                : esc(initialsOf(m.name));
+            return `
+                <div class="mg-card ${off ? "off" : ""}" data-id="${esc(m.id)}">
+                    <div class="mg-row">
+                        <div class="mg-photo" data-ph="${esc(initialsOf(m.name))}">${photo}</div>
+                        <div class="mg-info"><h4>${esc(m.name)}</h4><p>${m.price > 0 ? rupiah(m.price) : "Price not set"}</p></div>
+                    </div>
+                    <div class="mg-foot">
+                        <div class="mg-tg">
+                            <span class="sw-toggle"><input type="checkbox" data-act="toggle" aria-label="Available for order: ${esc(m.name)}" ${off ? "" : "checked"} ${m.draft ? "disabled" : ""}><span class="knob"></span></span>
+                            <span>${label}</span>
+                        </div>
+                        <div class="mg-icons">
+                            <button type="button" class="icon-btn" data-act="edit" aria-label="Edit ${esc(m.name)}">${ICON_EDIT}</button>
+                            <button type="button" class="icon-btn del" data-act="del" aria-label="Hapus ${esc(m.name)}">${ICON_DEL}</button>
+                        </div>
+                    </div>
+                </div>`;
         }
 
         window.renderMerchantMenus = function() {
-            const listContainer = document.getElementById("merchantMenuList");
-            listContainer.innerHTML = ""; 
-            
-            const filteredBase = window.currentBaseMenus.filter(m => !window.userDeletedMenus.includes(m.id));
-            
-            const finalMenus = [...window.userCustomMenus, ...filteredBase];
+            const all = allMerchantMenus();
+            const shop = window.merchantBName || "Toko Saya";
+            $("menuSub").innerHTML = esc(shop) + " &bull; " + all.length + (all.length === 1 ? " Item" : " Items");
 
-            if (finalMenus.length === 0) {
-                listContainer.innerHTML = "<p style='text-align:center; font-size:12px; color:#888;'>Belum ada menu. Silakan tambah menu.</p>";
-                return;
+            const present = CAT_ORDER.filter(c => all.some(m => m.category === c));
+            all.forEach(m => { if (m.category && !present.includes(m.category) && !CAT_ORDER.includes(m.category)) present.push(m.category); });
+            if (menuFilterCat !== "all" && !present.includes(menuFilterCat)) menuFilterCat = "all";
+            $("menuChips").innerHTML = [["all", "All"], ...present.map(c => [c, catLabel(c)])]
+                .map(([v, l]) => `<button type="button" class="mg-chip ${menuFilterCat === v ? "active" : ""}" data-cat="${esc(v)}">${esc(l)}</button>`).join("");
+
+            const q = menuQuery.trim().toLowerCase();
+            const shown = all.filter(m => (menuFilterCat === "all" || m.category === menuFilterCat) && (!q || String(m.name || "").toLowerCase().includes(q)));
+            $("menuShown").innerText = shown.length + (shown.length === 1 ? " item shown" : " items shown");
+            $("merchantMenuList").innerHTML = shown.length ? shown.map(menuCardHTML).join("")
+                : `<div class="mg-empty">${all.length ? "Tidak ada menu yang cocok dengan pencarian atau kategori ini." : "Belum ada menu. Tekan <b>+ Add Item</b> untuk menambahkan menu pertama Anda."}</div>`;
+        };
+
+        $("menuSearch").addEventListener("input", (e) => { menuQuery = e.target.value; window.renderMerchantMenus(); });
+        $("menuChips").addEventListener("click", (e) => {
+            const b = e.target.closest(".mg-chip"); if (!b) return;
+            menuFilterCat = b.dataset.cat; window.renderMerchantMenus();
+        });
+        $("merchantMenuList").addEventListener("click", (e) => {
+            const btn = e.target.closest("[data-act]"); if (!btn) return;
+            const id = btn.closest(".mg-card").dataset.id;
+            if (btn.dataset.act === "edit") window.openMenuForm(id);
+            else if (btn.dataset.act === "del") deleteMenu(id);
+        });
+        $("merchantMenuList").addEventListener("change", (e) => {
+            const t = e.target.closest('[data-act="toggle"]'); if (!t) return;
+            const m = allMerchantMenus().find(x => x.id === t.closest(".mg-card").dataset.id); if (!m) return;
+            const [c, d] = upsertMenu(cleanMenu(m, { available: t.checked }));
+            persistMenus(c, d);
+        });
+
+        async function deleteMenu(id) {
+            const m = allMerchantMenus().find(x => x.id === id); if (!m) return;
+            if (!confirm('Hapus "' + m.name + '" dari menu?')) return;
+            const custom = window.userCustomMenus.filter(x => x.id !== id), deleted = [...window.userDeletedMenus];
+            if (window.currentBaseMenus.some(b => b.id === id) && !deleted.includes(id)) deleted.push(id);
+            if (await persistMenus(custom, deleted)) showToast("Menu dihapus.");
+        }
+
+        // ----- Form Add / Edit -----
+        const fmtPrice = (n) => n ? Number(n).toLocaleString("id-ID") : "";
+        const priceDigits = () => $("mfPrice").value.replace(/\D/g, "");
+        function setFormPhoto(src) {
+            formPhoto = src || "";
+            const box = $("mfPhotoBox");
+            box.classList.toggle("has-img", !!formPhoto);
+            if (formPhoto) $("mfPreview").src = formPhoto; else $("mfPreview").removeAttribute("src");
+            $("mfChooseLbl").innerText = formPhoto ? "Change Photo" : "Choose Photo";
+        }
+        function formError(msg) { const e = $("mfError"); e.innerText = msg || ""; e.style.display = msg ? "block" : "none"; }
+
+        $("mfCategory").innerHTML = CAT_ORDER.map(c => `<option value="${c}">${catLabel(c)}</option>`).join("");
+        $("mfPrice").addEventListener("input", (e) => { e.target.value = fmtPrice(e.target.value.replace(/\D/g, "").slice(0, 8)); });
+
+        window.openMenuForm = function(id) {
+            editingId = id || null;
+            const m = id ? allMerchantMenus().find(x => x.id === id) : null;
+            $("mfTitle").innerText = m ? "Edit Item" : "Add New Item";
+            $("mfName").value = m ? m.name : "";
+            const cat = m && m.category ? m.category : "Makanan";
+            if (![...$("mfCategory").options].some(o => o.value === cat)) $("mfCategory").add(new Option(catLabel(cat), cat));
+            $("mfCategory").value = cat;
+            $("mfPrice").value = m ? fmtPrice(m.price) : "";
+            $("mfDesc").value = m ? (m.description || "") : "";
+            $("mfAvail").checked = m ? m.available !== false : true;
+            $("mfSaveBtn").innerText = (m && !m.draft) ? "Save Changes" : "Save & Publish Menu";
+            $("mfDraftBtn").style.display = (m && !m.draft) ? "none" : "";
+            $("mfPhotoInput").value = "";
+            setFormPhoto(m ? m.img : "");
+            formError("");
+            $("menuFormScreen").style.display = "flex";
+            document.querySelector(".bottom-nav").style.visibility = "hidden"; // nav bersifat fixed; sembunyikan agar tidak mengintip di bawah form
+            $("mfBody").scrollTop = 0;
+            setTimeout(() => $("mfName").focus(), 50);
+        };
+        window.closeMenuForm = function() { $("menuFormScreen").style.display = "none"; document.querySelector(".bottom-nav").style.visibility = ""; };
+
+        // Foto: dikecilkan dulu (disimpan sebagai teks base64 di Firestore, batas dokumen 1 MB)
+        $("mfPhotoInput").addEventListener("change", (e) => {
+            const file = e.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const img = new Image();
+                img.onload = () => {
+                    const MAX = 360;
+                    let w = img.width, h = img.height;
+                    if (w > h) { if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; } } else { if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; } }
+                    const cv = document.createElement("canvas"); cv.width = w; cv.height = h;
+                    cv.getContext("2d").drawImage(img, 0, 0, w, h);
+                    setFormPhoto(cv.toDataURL("image/jpeg", 0.75));
+                };
+                img.onerror = () => formError("File foto tidak bisa dibaca. Pilih gambar JPG atau PNG.");
+                img.src = ev.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        async function saveMenuForm(asDraft) {
+            if (formBusy) return;
+            const name = $("mfName").value.trim(), price = Number(priceDigits()) || 0;
+            if (!name) { formError("Item name wajib diisi."); $("mfName").focus(); return; }
+            if (!asDraft && price <= 0) { formError("Masukkan harga lebih dari Rp 0 untuk memublikasikan menu."); $("mfPrice").focus(); return; }
+            formError("");
+            const existing = editingId ? allMerchantMenus().find(x => x.id === editingId) : null;
+            const item = cleanMenu(existing || {}, {
+                id: existing ? existing.id : "custom-" + Date.now(),
+                name, category: $("mfCategory").value, price, img: formPhoto,
+                description: $("mfDesc").value.trim(), available: $("mfAvail").checked, draft: asDraft
+            });
+            formBusy = true; $("mfSaveBtn").disabled = true; $("mfDraftBtn").disabled = true;
+            const [c, d] = upsertMenu(item);
+            const ok = await persistMenus(c, d);
+            formBusy = false; $("mfSaveBtn").disabled = false; $("mfDraftBtn").disabled = false;
+            if (!ok) return;
+            window.closeMenuForm();
+            showToast(asDraft ? "Draft disimpan. Menu belum tampil untuk mahasiswa." : (existing && !existing.draft ? "Perubahan menu disimpan." : "Menu dipublikasikan."));
+        }
+        $("mfSaveBtn").addEventListener("click", () => saveMenuForm(false));
+        $("mfDraftBtn").addEventListener("click", () => saveMenuForm(true));
+        $("menuFormScreen").addEventListener("keydown", (e) => { if (e.key === "Escape") window.closeMenuForm(); });
+
+        // ===== Reports (Sales & Performance) =====
+        // Sumber data: window.reportOrders (semua pesanan kantin ini yang sudah dibayar), diisi oleh onSnapshot di bawah.
+        const RP = { range: "week", custom: null, fmt: "pdf" };
+        const RP_MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const RP_H0 = 8, RP_H1 = 18; // jam yang ditampilkan di grafik
+        const pdate = (s) => { const p = s.split("-").map(Number); return new Date(Date.UTC(p[0], p[1] - 1, p[2])); };
+        const sdate = (d) => d.toISOString().slice(0, 10);
+        const addDays = (s, n) => { const d = pdate(s); d.setUTCDate(d.getUTCDate() + n); return sdate(d); };
+        const diffDays = (a, b) => Math.round((pdate(b) - pdate(a)) / 86400000);
+        const isDone = (o) => o.status === "completed" || o.deliveryStatus === "delivered";
+        const isRejected = (o) => o.status === "rejected";
+        const orderDay = (o, ms) => o.slotDate || jakartaDay(ms);
+        const rpCode = (id) => "#BB-" + String(id).substring(0, 5).toUpperCase();
+
+        function fmtRange(from, to) {
+            const a = pdate(from), b = pdate(to);
+            const da = a.getUTCDate(), db2 = b.getUTCDate(), ma = RP_MON[a.getUTCMonth()], mb = RP_MON[b.getUTCMonth()];
+            const ya = a.getUTCFullYear(), yb = b.getUTCFullYear();
+            if (from === to) return `${da} ${ma} ${ya}`;
+            if (ya === yb && ma === mb) return `${da}\u2013${db2} ${ma} ${ya}`;
+            if (ya === yb) return `${da} ${ma} \u2013 ${db2} ${mb} ${ya}`;
+            return `${da} ${ma} ${ya} \u2013 ${db2} ${mb} ${yb}`;
+        }
+
+        // Rentang tanggal (WIB) + periode pembanding yang panjangnya sama
+        function rangeOf(kind, custom) {
+            const today = jakartaDay(Date.now());
+            let from, to, vs, name;
+            if (kind === "today") { from = to = today; vs = "vs yesterday"; name = "Today"; }
+            else if (kind === "week") {
+                const dow = (pdate(today).getUTCDay() + 6) % 7; // Senin = 0
+                from = addDays(today, -dow); to = addDays(from, 6); vs = "vs last week"; name = "This Week";
+            } else if (kind === "month") {
+                const d = pdate(today);
+                from = sdate(new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1)));
+                to = sdate(new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0)));
+                vs = "vs last month"; name = "This Month";
+            } else { from = custom.from; to = custom.to; vs = "vs previous period"; name = "Custom Date"; }
+
+            // bandingkan dengan jumlah hari yang sama (periode berjalan dihitung sampai hari ini)
+            const effTo = to > today ? today : to;
+            const len = Math.max(1, diffDays(from, effTo) + 1);
+            let pf, pend;
+            if (kind === "month") {
+                const d = pdate(from);
+                pf = sdate(new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() - 1, 1)));
+                pend = addDays(from, -1);
+            } else { pf = addDays(from, -(diffDays(from, to) + 1)); pend = addDays(from, -1); }
+            let pt = addDays(pf, len - 1); if (pt > pend) pt = pend;
+            return { kind, from, to, pf, pt, vs, name, today };
+        }
+
+        function hourOf(o, ms) {
+            const m = /(\d{1,2})[:.](\d{2})/.exec(String(o.time || ""));
+            if (m && Number(m[1]) < 24) return { h: Number(m[1]), slot: true };
+            const h = Number(new Date(ms).toLocaleString("en-GB", { timeZone: "Asia/Jakarta", hour: "2-digit", hour12: false }));
+            return { h: h === 24 ? 0 : h, slot: false };
+        }
+
+        function statsFor(list, from, to) {
+            const st = { revenue: 0, done: 0, cancelled: 0, hours: new Array(24).fill(0), slotHours: new Array(24).fill(0), items: {}, orders: [] };
+            (list || []).forEach(({ id, order: o, ms }) => {
+                const d = orderDay(o, ms);
+                if (d < from || d > to) return;
+                st.orders.push({ id, o, ms, d });
+                if (isRejected(o)) { st.cancelled++; return; }
+                const hh = hourOf(o, ms);
+                st.hours[hh.h]++;
+                if (hh.slot) st.slotHours[hh.h]++;
+                if (isDone(o)) {
+                    st.done++;
+                    st.revenue += orderRevenue(o);
+                    (Array.isArray(o.items) ? o.items : []).forEach(i => {
+                        const k = String(i.name || "Item");
+                        const q = Number(i.qty) || 0;
+                        const e = st.items[k] || (st.items[k] = { name: k, qty: 0, revenue: 0 });
+                        e.qty += q; e.revenue += (Number(i.price) || 0) * q;
+                    });
+                }
+            });
+            st.avg = st.done ? Math.round(st.revenue / st.done) : 0;
+            const finals = st.done + st.cancelled;
+            st.cancelPct = finals ? Math.round((st.cancelled / finals) * 1000) / 10 : 0;
+            st.top = Object.values(st.items).sort((a, b) => b.qty - a.qty || b.revenue - a.revenue);
+            return st;
+        }
+
+        const orderWord = (n) => n + (n === 1 ? " Order" : " Orders");
+        const ICON_UP = '<svg viewBox="0 0 24 24"><path d="M4 16l6-6 4 4 6-7M15 7h5v5"/></svg>';
+        const ICON_DOWN = '<svg viewBox="0 0 24 24"><path d="M4 8l6 6 4-4 6 7M15 17h5v-5"/></svg>';
+        const ICON_HAT = '<svg viewBox="0 0 24 24"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11.5V16c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5M22 9v6"/></svg>';
+        const pad2 = (n) => String(n).padStart(2, "0");
+
+        function renderReports() {
+            if (!document.getElementById("rpRevenue")) return;
+            const list = window.reportOrders || [];
+            const r = rangeOf(RP.range, RP.custom || { from: jakartaDay(Date.now()), to: jakartaDay(Date.now()) });
+            const cur = statsFor(list, r.from, r.to);
+            const prev = statsFor(list, r.pf, r.pt);
+            const $r = (id) => document.getElementById(id);
+
+            $r("rpStore").innerText = window.merchantBName || "Toko Saya";
+            $r("rpDateRange").innerText = fmtRange(r.from, r.to);
+            document.querySelectorAll("#rpTabs .rp-tab").forEach(b => {
+                const on = b.dataset.range === RP.range;
+                b.classList.toggle("active", on); b.setAttribute("aria-selected", on ? "true" : "false");
+            });
+
+            $r("rpRevenue").innerText = rupiah(cur.revenue);
+            $r("rpDone").innerText = orderWord(cur.done);
+            $r("rpAvg").innerText = rupiah(cur.avg);
+            $r("rpCancel").innerText = orderWord(cur.cancelled);
+            $r("rpCancelPct").innerText = cur.cancelPct + "% of all orders";
+
+            // Tren pendapatan vs periode sebelumnya
+            const tr = $r("rpTrend");
+            if (prev.revenue > 0) {
+                const pct = Math.round(((cur.revenue - prev.revenue) / prev.revenue) * 100);
+                tr.className = "rp-trend" + (pct < 0 ? " down" : pct === 0 ? " flat" : "");
+                tr.innerHTML = (pct < 0 ? ICON_DOWN : ICON_UP) + `<span>${pct > 0 ? "+" : ""}${pct}% ${r.vs}</span>`;
+            } else {
+                tr.className = "rp-trend flat";
+                tr.innerHTML = `<span>${cur.revenue > 0 ? "No sales to compare " + r.vs.replace("vs ", "with ") : "No sales yet"}</span>`;
             }
 
-            finalMenus.forEach(menu => {
-                const imgSrc = menu.img ? menu.img : 'https://via.placeholder.com/150/F5F5F5/A0A0A0?text=No+Photo';
-                const priceFmt = "Rp " + parseInt(menu.price || 0).toLocaleString('id-ID');
-                
-                const html = `
-                    <div class="menu-item-edit" id="menu-${menu.id}">
-                        <img src="${imgSrc}" alt="${menu.name}" onerror="this.src='https://via.placeholder.com/150/F5F5F5/A0A0A0?text=No+Photo'">
-                        <div class="menu-item-edit-info">
-                            <h4>${menu.name}</h4>
-                            <p>${priceFmt}</p>
-                            <span>${menu.category}</span>
-                        </div>
-                        <button class="btn-delete-menu" onclick="deleteMenuItem('${menu.id}')" style="background:#FFEBEE; color:#D32F2F; border:none; width:36px; height:36px; border-radius:10px; font-size:16px; cursor:pointer; display:flex; justify-content:center; align-items:center; transition:0.2s;" onmousedown="this.style.transform='scale(0.9)'" onmouseup="this.style.transform='scale(1)'">🗑️</button>
-                    </div>
-                `;
-                listContainer.insertAdjacentHTML('beforeend', html);
+            // Grafik jam sibuk (08:00 - 18:00); pesanan di luar rentang jam dimasukkan ke jam terdekat
+            const hrs = [];
+            for (let h = RP_H0; h <= RP_H1; h++) hrs.push({ h, n: 0, slot: 0 });
+            cur.hours.forEach((n, h) => { const k = Math.min(RP_H1, Math.max(RP_H0, h)) - RP_H0; hrs[k].n += n; hrs[k].slot += cur.slotHours[h]; });
+            const max = Math.max(0, ...hrs.map(x => x.n));
+            const top = max <= 4 ? 4 : Math.ceil(max / 10) * 10;
+            const peak = max > 0 ? hrs.find(x => x.n === max) : null;
+
+            $r("rpPeakSub").innerText = "Order volume by hour \u00B7 " + r.name;
+            $r("rpYax").innerHTML = [top, top / 2, 0].map((v, i) => `<span style="top:${i * 50}%">${v}</span>`).join("");
+            $r("rpLines").innerHTML = [0, 50, 100].map(p => `<div class="rp-grid-line" style="top:${p}%"></div>`).join("");
+            $r("rpBars").innerHTML = hrs.map(x => {
+                const isPk = peak && x.h === peak.h;
+                const hgt = x.n ? Math.max(4, Math.round((x.n / top) * 100)) : 0;
+                return `<div class="rp-col${isPk ? " peak" : ""}" title="${pad2(x.h)}:00 \u2013 ${x.n} orders">${isPk ? `<span class="rp-cnt">${x.n}</span>` : ""}<div class="rp-bar" style="height:${hgt}%${x.n ? "" : ";min-height:3px"}"></div></div>`;
+            }).join("");
+            $r("rpXax").innerHTML = hrs.map(x => {
+                const isPk = peak && x.h === peak.h;
+                return `<span class="${isPk ? "pk" : ""}">${(x.h % 2 === 0 || isPk) ? pad2(x.h) + ":00" : ""}</span>`;
+            }).join("");
+
+            const pk = $r("rpPeak");
+            if (peak) {
+                const title = peak.slot * 2 >= peak.n ? "Class End Slot" : "Busiest Window";
+                const tip = (peak.h >= 11 && peak.h < 14) ? "Your busiest window. Get ready for the lunch rush." : "Your busiest window. Plan your prep ahead.";
+                pk.innerHTML = `<div class="l"><span class="hat">${ICON_HAT}</span><div><b>${title}</b><small>${tip}</small></div></div><span class="t">${pad2(peak.h)}:00\u2013${pad2(peak.h + 1)}:00</span>`;
+            } else {
+                pk.innerHTML = `<div class="l"><span class="hat">${ICON_HAT}</span><div><b>No orders yet</b><small>Busy hours will show up here once orders come in.</small></div></div>`;
+            }
+
+            // Menu terlaris
+            $r("rpTopSub").innerText = "Ranked by units sold \u00B7 " + r.name;
+            $r("rpTop").innerHTML = cur.top.length
+                ? cur.top.slice(0, 3).map((it, i) => `
+                    <div class="rp-top-row">
+                        <span class="rp-rank${i === 2 ? " g" : ""}">#${i + 1}</span>
+                        <div class="nm"><b>${esc(it.name)}</b><small>${it.qty} sold</small></div>
+                        <span class="amt">${rupiah(it.revenue)}</span>
+                    </div>`).join("")
+                : '<div class="rp-none">No completed sales in this period yet.</div>';
+
+            updateUpdatedLabel();
+        }
+        window.renderReports = renderReports;
+
+        function updateUpdatedLabel() {
+            const el = document.getElementById("rpUpdated"); if (!el) return;
+            const s = Math.floor((Date.now() - (window.reportUpdatedAt || Date.now())) / 1000);
+            el.innerText = s < 60 ? "Updated just now" : s < 3600 ? "Updated " + Math.floor(s / 60) + " min ago" : "Updated " + Math.floor(s / 3600) + " hr ago";
+        }
+        setInterval(updateUpdatedLabel, 30000);
+
+        // ----- Tab rentang waktu -----
+        const rpOverlayOpen = (id) => { const o = document.getElementById(id); o.classList.add("open"); o.setAttribute("aria-hidden", "false"); };
+        const rpOverlayClose = (id) => { const o = document.getElementById(id); o.classList.remove("open"); o.setAttribute("aria-hidden", "true"); };
+
+        document.getElementById("rpTabs").addEventListener("click", (e) => {
+            const b = e.target.closest(".rp-tab"); if (!b) return;
+            if (b.dataset.range === "custom") { openCustomSheet(); return; }
+            RP.range = b.dataset.range; renderReports();
+        });
+
+        // ----- Custom Date -----
+        function openCustomSheet() {
+            const t = jakartaDay(Date.now());
+            document.getElementById("rpCuFrom").value = (RP.custom && RP.custom.from) || addDays(t, -6);
+            document.getElementById("rpCuTo").value = (RP.custom && RP.custom.to) || t;
+            document.getElementById("rpCuErr").innerText = "";
+            rpOverlayOpen("rpCustomOv");
+        }
+        function validRange(from, to) {
+            if (!from || !to) return "Pilih tanggal mulai dan akhir.";
+            if (from > to) return "Tanggal mulai tidak boleh setelah tanggal akhir.";
+            if (diffDays(from, to) > 365) return "Rentang maksimal 1 tahun.";
+            return "";
+        }
+        document.getElementById("rpCuApply").addEventListener("click", () => {
+            const from = document.getElementById("rpCuFrom").value, to = document.getElementById("rpCuTo").value;
+            const err = validRange(from, to);
+            if (err) { document.getElementById("rpCuErr").innerText = err; return; }
+            RP.custom = { from, to }; RP.range = "custom";
+            rpOverlayClose("rpCustomOv"); renderReports();
+        });
+        ["rpCuClose", "rpCuCancel"].forEach(id => document.getElementById(id).addEventListener("click", () => rpOverlayClose("rpCustomOv")));
+        document.getElementById("rpCustomOv").addEventListener("click", (e) => { if (e.target.id === "rpCustomOv") rpOverlayClose("rpCustomOv"); });
+
+        // ----- Export / Download -----
+        function exportRangeObj() {
+            const k = document.getElementById("rpExRange").value;
+            if (k === "custom") return rangeOf("custom", { from: document.getElementById("rpExFrom").value, to: document.getElementById("rpExTo").value });
+            return rangeOf(k);
+        }
+        function refreshExportSelect(selected) {
+            const sel = document.getElementById("rpExRange");
+            const opts = [["today", "Today"], ["week", "This Week"], ["month", "This Month"]].map(([k, n]) => {
+                const r = rangeOf(k); return `<option value="${k}">${n} (${fmtRange(r.from, r.to)})</option>`;
+            });
+            opts.push('<option value="custom">Custom Date</option>');
+            sel.innerHTML = opts.join("");
+            sel.value = selected;
+            syncExportRangeText();
+        }
+        function syncExportRangeText() {
+            const sel = document.getElementById("rpExRange");
+            const isCustom = sel.value === "custom";
+            document.getElementById("rpExDates").classList.toggle("show", isCustom);
+            let txt = sel.options[sel.selectedIndex].text;
+            if (isCustom) {
+                const f = document.getElementById("rpExFrom").value, t = document.getElementById("rpExTo").value;
+                txt = (f && t && f <= t) ? "Custom (" + fmtRange(f, t) + ")" : "Custom Date";
+            }
+            document.getElementById("rpExRangeTxt").innerText = txt;
+        }
+        document.getElementById("rpExportBtn").addEventListener("click", () => {
+            const t = jakartaDay(Date.now());
+            document.getElementById("rpExFrom").value = (RP.custom && RP.custom.from) || addDays(t, -6);
+            document.getElementById("rpExTo").value = (RP.custom && RP.custom.to) || t;
+            refreshExportSelect(RP.range);
+            document.getElementById("rpExErr").innerText = "";
+            RP.fmt = "pdf"; setFmt("pdf");
+            const go = document.getElementById("rpExGo"); go.disabled = false; go.innerText = "Download Report";
+            rpOverlayOpen("rpExportOv");
+        });
+        document.getElementById("rpExRange").addEventListener("change", syncExportRangeText);
+        ["rpExFrom", "rpExTo"].forEach(id => document.getElementById(id).addEventListener("change", syncExportRangeText));
+        document.getElementById("rpExClose").addEventListener("click", () => rpOverlayClose("rpExportOv"));
+        document.getElementById("rpExportOv").addEventListener("click", (e) => { if (e.target.id === "rpExportOv") rpOverlayClose("rpExportOv"); });
+        document.addEventListener("keydown", (e) => { if (e.key === "Escape") { rpOverlayClose("rpExportOv"); rpOverlayClose("rpCustomOv"); } });
+
+        function setFmt(f) {
+            RP.fmt = f;
+            document.getElementById("rpOptPdf").classList.toggle("sel", f === "pdf");
+            document.getElementById("rpOptCsv").classList.toggle("sel", f === "csv");
+            document.querySelector(`input[name="rpFmt"][value="${f}"]`).checked = true;
+        }
+        document.querySelectorAll('input[name="rpFmt"]').forEach(i => i.addEventListener("change", () => setFmt(i.value)));
+
+        const fileSafe = (s) => String(s || "Store").replace(/[^A-Za-z0-9]+/g, "_").replace(/^_+|_+$/g, "") || "Store";
+        function saveBlob(blob, name) {
+            const url = URL.createObjectURL(blob), a = document.createElement("a");
+            a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 2000);
+        }
+        const csvCell = (v) => {
+            let s = String(v == null ? "" : v);
+            if (/^[=+\-@\t\r]/.test(s)) s = "'" + s; // cegah formula injection di Excel
+            return '"' + s.replace(/"/g, '""') + '"';
+        };
+        function statusLabel(o) {
+            if (isDone(o)) return "Completed";
+            return ({ rejected: "Rejected", pending: "Pending", preparing: "Preparing", ready: "Ready" })[o.status] || String(o.status || "-");
+        }
+
+        function buildCsv(r, st) {
+            const head = ["Order ID", "Date", "Time Slot", "Order Type", "Customer", "Status", "Items", "Item Total (Rp)", "Counted in Revenue"];
+            const rows = st.orders.slice().sort((a, b) => a.ms - b.ms).map(({ id, o, ms, d }) => {
+                const items = (Array.isArray(o.items) ? o.items : []).map(i => `${i.qty}x ${i.name}`).join("; ");
+                return [rpCode(id), d, (!o.time || o.time === "Sekarang") ? "ASAP" : o.time, o.type || "Delivery", o.studentName || "-", statusLabel(o), items, orderRevenue(o), isDone(o) ? "Yes" : "No"];
+            });
+            return "\uFEFF" + [head].concat(rows).map(row => row.map(csvCell).join(",")).join("\r\n");
+        }
+
+        function loadScript(src) {
+            return new Promise((resolve, reject) => {
+                const s = document.createElement("script"); s.src = src; s.onload = resolve; s.onerror = () => reject(new Error("load"));
+                document.head.appendChild(s);
             });
         }
+        async function buildPdf(r, st, fileName) {
+            if (!window.jspdf) await loadScript("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js");
+            const doc = new window.jspdf.jsPDF({ unit: "pt", format: "a4" });
+            const W = 595, M = 44; let y = 56;
+            const txt = (t, x, yy, size, bold, color, align) => { doc.setFont("helvetica", bold ? "bold" : "normal"); doc.setFontSize(size); doc.setTextColor.apply(doc, color || [31, 41, 55]); doc.text(String(t), x, yy, align ? { align } : undefined); };
+            const rpf = (n) => "Rp " + (Number(n) || 0).toLocaleString("id-ID");
 
-        window.deleteMenuItem = async function(menuId) {
-            if(!confirm("Yakin ingin menghapus menu ini?")) return;
+            doc.setFillColor(220, 152, 8); doc.rect(0, 0, W, 8, "F");
+            txt("BBite Merchant", M, y, 11, true, [220, 152, 8]); y += 26;
+            txt("Sales Report", M, y, 24, true); y += 22;
+            txt(window.merchantBName || "Toko Saya", M, y, 12, false, [75, 85, 99]); y += 16;
+            txt("Period: " + fmtRange(r.from, r.to), M, y, 11, false, [75, 85, 99]); y += 14;
+            const now = new Date().toLocaleString("en-GB", { timeZone: "Asia/Jakarta", dateStyle: "medium", timeStyle: "short" });
+            txt("Generated: " + now + " (WIB)", M, y, 9, false, [107, 114, 128]); y += 28;
 
-            try {
-                const userRef = doc(db, "users", window.currentUser.uid);
-                
-                // Jika ID diawali custom-, berarti hapus dari array customMenus
-                if (menuId.startsWith('custom-')) {
-                    const updatedCustom = window.userCustomMenus.filter(m => m.id !== menuId);
-                    await updateDoc(userRef, { customMenus: updatedCustom });
-                    window.userCustomMenus = updatedCustom;
-                } 
-                else {
-                    const updatedDeleted = [...window.userDeletedMenus, menuId];
-                    await updateDoc(userRef, { deletedMenus: updatedDeleted });
-                    window.userDeletedMenus = updatedDeleted;
-                }
+            // Ringkasan
+            const cards = [["Total Revenue", rpf(st.revenue)], ["Completed Orders", orderWord(st.done)], ["Avg. Order Value", rpf(st.avg)], ["Cancelled Orders", orderWord(st.cancelled) + " (" + st.cancelPct + "%)"]];
+            const cw = (W - M * 2 - 12) / 2, ch = 56;
+            cards.forEach((c, i) => {
+                const cx = M + (i % 2) * (cw + 12), cy = y + Math.floor(i / 2) * (ch + 12);
+                doc.setFillColor(i === 0 ? 255 : 249, i === 0 ? 241 : 250, i === 0 ? 214 : 251); doc.setDrawColor(229, 231, 235); doc.roundedRect(cx, cy, cw, ch, 8, 8, "FD");
+                txt(c[0], cx + 12, cy + 20, 9.5, false, [107, 114, 128]); txt(c[1], cx + 12, cy + 42, 15, true);
+            });
+            y += (ch + 12) * 2 + 14;
 
-                window.renderMerchantMenus();
-            } catch(e) {
-                alert("Gagal menghapus menu: " + e.message);
-            }
+            // Menu terlaris
+            txt("Top Selling Items", M, y, 13, true); y += 8;
+            doc.setDrawColor(229, 231, 235); doc.line(M, y, W - M, y); y += 16;
+            if (st.top.length) {
+                st.top.slice(0, 5).forEach((it, i) => {
+                    txt("#" + (i + 1), M, y, 10, true, [220, 152, 8]); txt(it.name.slice(0, 48), M + 28, y, 10.5, true);
+                    txt(it.qty + " sold", W - M - 110, y, 10, false, [107, 114, 128], "right"); txt(rpf(it.revenue), W - M, y, 10.5, true, null, "right"); y += 20;
+                });
+            } else { txt("No completed sales in this period.", M, y, 10, false, [107, 114, 128]); y += 20; }
+            y += 14;
+
+            // Jam sibuk
+            txt("Peak Order Hours", M, y, 13, true); y += 8; doc.line(M, y, W - M, y); y += 14;
+            const counts = []; for (let h = RP_H0; h <= RP_H1; h++) counts.push(0);
+            st.hours.forEach((n, h) => { counts[Math.min(RP_H1, Math.max(RP_H0, h)) - RP_H0] += n; });
+            const mx = Math.max(1, ...counts), bw = (W - M * 2) / counts.length, bh = 90;
+            counts.forEach((n, i) => {
+                const hgt = (n / mx) * bh, bx = M + i * bw + 5;
+                doc.setFillColor(n === mx && n > 0 ? 220 : 251, n === mx && n > 0 ? 152 : 220, n === mx && n > 0 ? 8 : 160);
+                doc.rect(bx, y + bh - hgt, bw - 10, Math.max(hgt, 1.5), "F");
+                if (n > 0) txt(n, bx + (bw - 10) / 2, y + bh - hgt - 4, 8, true, [138, 90, 0], "center");
+                txt(pad2(RP_H0 + i) + ":00", bx + (bw - 10) / 2, y + bh + 12, 7.5, false, [107, 114, 128], "center");
+            });
+            y += bh + 34;
+
+            txt("Total orders in period (incl. cancelled): " + st.orders.length, M, y, 9, false, [107, 114, 128]);
+            txt("Revenue counts food prices of completed orders only (delivery & service fees excluded).", M, y + 13, 9, false, [107, 114, 128]);
+            doc.save(fileName);
         }
 
-        document.getElementById("btnSaveNewMenu").addEventListener("click", async () => {
-            if (!window.currentUser) return alert("Sesi tidak ditemukan. Harap login kembali.");
+        document.getElementById("rpExGo").addEventListener("click", async () => {
+            const err = document.getElementById("rpExErr"), go = document.getElementById("rpExGo");
+            err.innerText = "";
+            const isCustom = document.getElementById("rpExRange").value === "custom";
+            if (isCustom) { const m = validRange(document.getElementById("rpExFrom").value, document.getElementById("rpExTo").value); if (m) { err.innerText = m; return; } }
+            const r = exportRangeObj();
+            const st = statsFor(window.reportOrders || [], r.from, r.to);
+            if (!st.orders.length) { err.innerText = "Belum ada pesanan pada rentang tanggal ini."; return; }
 
-            const name = document.getElementById("inputMenuName").value;
-            const category = document.getElementById("inputMenuCategory").value;
-            const price = document.getElementById("inputMenuPrice").value;
-            const img = window.tempBase64Image || "https://via.placeholder.com/150/F5F5F5/A0A0A0?text=No+Photo";
-
-            if (!name || !category || !price) {
-                alert("Harap isi Nama, Kategori, dan Harga!");
-                return;
-            }
-
-            const newMenu = {
-                id: 'custom-' + Date.now(),
-                name: name,
-                category: category,
-                price: parseInt(price),
-                img: img
-            };
-
-            const btn = document.getElementById("btnSaveNewMenu");
-            btn.innerText = "Menyimpan...";
-            btn.disabled = true;
-
+            const base = `BBite_Sales_${fileSafe(window.merchantBName)}_${r.from}_to_${r.to}`;
+            go.disabled = true; go.innerText = "Preparing...";
             try {
-                const userRef = doc(db, "users", window.currentUser.uid);
-                const updatedCustom = [newMenu, ...window.userCustomMenus]; // letakkan paling atas
-                await updateDoc(userRef, { customMenus: updatedCustom }, { merge: true });
-                
-                window.userCustomMenus = updatedCustom;
-                window.renderMerchantMenus();
-                
-                closeMenuModal();
-            } catch(e) {
-                alert("Gagal menambahkan menu: " + e.message);
-            } finally {
-                btn.innerText = "Simpan Menu";
-                btn.disabled = false;
+                if (RP.fmt === "csv") saveBlob(new Blob([buildCsv(r, st)], { type: "text/csv;charset=utf-8" }), base + ".csv");
+                else await buildPdf(r, st, base + ".pdf");
+                rpOverlayClose("rpExportOv");
+                showToast("Laporan " + (RP.fmt === "csv" ? "CSV" : "PDF") + " berhasil diunduh.");
+            } catch (e) {
+                console.error(e);
+                err.innerText = RP.fmt === "pdf" ? "Gagal membuat PDF. Periksa koneksi internet atau coba format CSV." : "Gagal membuat file. Silakan coba lagi.";
             }
+            go.disabled = false; go.innerText = "Download Report";
         });
 
         async function fetchMerchantMenu(bName) {
@@ -625,6 +1703,7 @@
 
                         if (data.businessName) {
                             document.getElementById("merchantName").innerText = data.businessName;
+                            document.getElementById("ordSub").innerText = data.businessName;
                             fetchMerchantMenu(data.businessName);
                         }
 
@@ -639,12 +1718,14 @@
 
                         setMerchantInitials(data.businessName || data.name);
                         setOpenState(data.isOpen !== false);
+                        window.merchantBName = data.businessName || "";
+                        window.renderMerchantMenus();
 
                         onSnapshot(collection(db, "orders"), (snapshot) => {
                             const today = jakartaDay(Date.now());
                             let todayOrders = 0;
                             let todayRevenue = 0;
-                            const active = [];
+                            const pending = [], active = [], history = [], reportList = [];
 
                             snapshot.forEach(docSnapOrder => {
                                 const order = docSnapOrder.data();
@@ -654,6 +1735,7 @@
                                 if (!mine || !paid) return;
 
                                 const ms = orderMillis(order);
+                                reportList.push({ id: docSnapOrder.id, order, ms });
                                 // "Today" = hanya pesanan hari ini (zona waktu WIB)
                                 if ((order.slotDate || jakartaDay(ms)) === today) {
                                     todayOrders++;
@@ -661,14 +1743,21 @@
                                         todayRevenue += orderRevenue(order);
                                     }
                                 }
-                                // Pesanan aktif: belum selesai/ditolak, dan belum diantar kurir
-                                if (order.status !== 'completed' && order.status !== 'rejected' && order.deliveryStatus !== 'delivered') {
-                                    active.push({ id: docSnapOrder.id, order, ms });
-                                }
+                                // Pembagian daftar:
+                                //  selesai / ditolak / sudah diantar kurir -> History
+                                //  pending (menunggu keputusan kantin)     -> Home (Incoming Orders)
+                                //  preparing / ready                       -> Orders > Active
+                                const finished = order.status === 'completed' || order.status === 'rejected' || order.deliveryStatus === 'delivered';
+                                if (finished) history.push({ id: docSnapOrder.id, order, ms });
+                                else if (order.status === 'pending') pending.push({ id: docSnapOrder.id, order, ms });
+                                else active.push({ id: docSnapOrder.id, order, ms });
                             });
 
-                            active.sort((a, b) => b.ms - a.ms); // terbaru di atas
-                            renderIncomingOrders(active);
+                            [pending, active, history].forEach(l => l.sort((a, b) => b.ms - a.ms)); // terbaru di atas
+                            renderIncomingOrders(pending);
+                            renderActiveOrders(active);
+                            renderHistoryOrders(history);
+                            window.reportOrders = reportList; window.reportUpdatedAt = Date.now(); window.renderReports();
 
                             document.getElementById("todayOrdersCount").innerText = todayOrders;
                             document.getElementById("todayRevenueCount").innerText = rupiah(todayRevenue);

@@ -520,7 +520,7 @@
                 let dMenus = c.deletedMenus || [];
                 
                 let finalBase = baseM.filter(m => !dMenus.includes(m.id));
-                c.allMenus = [...cMenus, ...finalBase];
+                c.allMenus = [...cMenus, ...finalBase].filter(m => m && !m.draft && m.available !== false); // sembunyikan draft & Sold Out
                 if (jsonKey && baseMenusData[jsonKey] && baseMenusData[jsonKey].rating) c.rating = baseMenusData[jsonKey].rating;
                 if (jsonKey && baseMenusData[jsonKey] && baseMenusData[jsonKey].reviewCount) c.reviewCount = baseMenusData[jsonKey].reviewCount;
             });
