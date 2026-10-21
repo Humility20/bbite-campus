@@ -587,6 +587,8 @@
         });
 
         renderLists();
+        // Sinkron dengan Firestore (mis. order dilanjutkan dari perangkat lain)
+        CourierStore.onChange(() => renderLists());
     </script>
 </body>
 </html>

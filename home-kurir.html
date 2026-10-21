@@ -251,6 +251,8 @@
         }
         renderStats();
         renderOrders();
+        // Order baru dari pemesan (Firestore) muncul otomatis tanpa refresh
+        CourierStore.onChange(() => { renderStats(); renderOrders(); });
         // Saat kembali ke halaman ini lewat tombol Back, muat ulang angka dan daftar order
         window.addEventListener("pageshow", (e) => { if (e.persisted) { renderStats(); renderOrders(); } });
 

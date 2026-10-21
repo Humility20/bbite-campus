@@ -117,17 +117,114 @@
     function entry(o, result) {
         return { id: o.id, result: result, at: Date.now(), pickup: o.pickup, dropoff: o.dropoff, fee: result === "completed" ? o.fee : 0 };
     }
-    function get(id) { id = Number(id); return ORDERS.concat(loadExtras()).filter(function (o) { return o.id === id; })[0] || null; }
+    function allOrders() { return ORDERS.concat(loadExtras()).concat(fsList()); }
+    function get(id) { id = Number(id); return allOrders().filter(function (o) { return o.id === id; })[0] || null; }
+
+    // ===== Sinkronisasi dengan Firestore (koleksi "orders") =====
+    // Order delivery dari pemesan dibaca langsung dari Firestore. Saat kurir menerima / swipe, status ditulis balik
+    // ke field `courierId`, `courierName`, `deliveryStatus` (picking -> delivering -> delivered) supaya halaman Track pemesan ikut berubah.
+    // Field `status` tetap milik kantin (pending -> preparing -> ready -> completed) dan tidak diubah di sini.
+    var ELIGIBLE = ["preparing", "ready", "completed"]; // order baru bisa diambil kurir setelah kantin menerima
+    var FS = {};            // id numerik -> order (bentuk kurir)
+    var FS_API = null;      // { db, auth, fns }
+    var FS_READY = null;
+    var listeners = [];
+    function fsList() { return Object.keys(FS).map(function (k) { return FS[k]; }); }
+    function notify() { listeners.slice().forEach(function (fn) { try { fn(); } catch (e) { console.warn(e); } }); }
+    function hashId(str) {
+        var h = 5381;
+        for (var i = 0; i < str.length; i++) h = (((h << 5) + h) + str.charCodeAt(i)) >>> 0;
+        return 1000000 + (h % 9000000); // 7 digit, stabil untuk dokumen yang sama di semua perangkat
+    }
+    function tsMs(t) { return t && typeof t.toMillis === "function" ? t.toMillis() : (Number(t) || 0); }
+    function zoneText(z) { return typeof z === "string" ? z : (z && (z.name || z.label)) || ""; }
+    function toCourierOrder(fid, d) {
+        var loc = d.location && d.location !== "-" ? d.location : "-";
+        var zone = zoneText(d.deliveryZone);
+        return {
+            id: hashId(fid), fid: fid, _fs: true, createdAt: tsMs(d.timestamp) || Date.now(),
+            pickup: d.merchantName || "Canteen", dropoff: zone ? loc + " (" + zone + ")" : loc,
+            fee: Number(d.deliveryFee) || 0, customer: d.studentName || "Customer", phone: d.studentPhone || "-",
+            note: d.notes && d.notes !== "-" ? d.notes : "", payment: d.paymentMethod || "QRIS", paid: d.paymentStatus === "paid",
+            items: (d.items || []).map(function (i) { return { qty: Number(i.qty) || 1, name: i.name, price: Number(i.price) || 0, img: i.img || null }; }),
+            time: d.time || "", _courierId: d.courierId || null, _ds: d.deliveryStatus || null, _status: d.status,
+            _acceptedAt: tsMs(d.courierAcceptedAt), _deliveredAt: tsMs(d.deliveredAt)
+        };
+    }
+    function fsInit() {
+        if (FS_READY) return FS_READY;
+        FS_READY = (async function () {
+            var B = "https://www.gstatic.com/firebasejs/10.8.1/";
+            var mods = await Promise.all([import(B + "firebase-app.js"), import(B + "firebase-firestore.js"), import(B + "firebase-auth.js")]);
+            var A = mods[0], F = mods[1], U = mods[2];
+            var app = A.getApps().length ? A.getApp() : A.initializeApp({ apiKey: "AIzaSyDleckycfk_xnbhXMnPivz3F1NCS9x5wCQ", authDomain: "bbite-campus.firebaseapp.com", projectId: "bbite-campus" });
+            FS_API = { db: F.getFirestore(app), auth: U.getAuth(app), F: F };
+            // hanya order bertipe Delivery yang relevan untuk kurir
+            F.onSnapshot(F.query(F.collection(FS_API.db, "orders"), F.where("type", "==", "Delivery")), function (snap) {
+                var next = {};
+                snap.forEach(function (d) {
+                    var st = d.data().status;
+                    if (st === "awaiting_payment" || String(st || "").indexOf("payment_") === 0 || st === "rejected") return;
+                    var o = toCourierOrder(d.id, d.data());
+                    if (next[o.id]) { console.warn("ID order bentrok, dilewati:", d.id); return; }
+                    next[o.id] = o;
+                });
+                FS = next;
+                reconcile();
+                notify();
+            }, function (err) { console.warn("Sinkronisasi order gagal:", err); });
+        })().catch(function (e) { console.warn("Firebase tidak dapat dimuat:", e); });
+        return FS_READY;
+    }
+    function courierName() {
+        var u = FS_API && FS_API.auth.currentUser;
+        if (!u) return "Courier";
+        return u.displayName || (u.email ? u.email.split("@")[0] : "Courier");
+    }
+    // Tulis perubahan ke dokumen order di Firestore (diam-diam gagal kalau offline; state lokal tetap jalan)
+    function fsWrite(o, patchFn) {
+        if (!o || !o._fs) return Promise.resolve();
+        return fsInit().then(function () {
+            if (!FS_API) return;
+            var ref = FS_API.F.doc(FS_API.db, "orders", o.fid);
+            return FS_API.F.updateDoc(ref, patchFn(FS_API.F));
+        }).catch(function (e) { console.warn("Gagal memperbarui order di Firestore:", e); });
+    }
+    // Samakan state lokal dengan Firestore: order milik kurir ini yang masih berjalan / sudah selesai di perangkat lain
+    function reconcile() {
+        if (UID === "guest") return;
+        var s = load(), changed = false;
+        fsList().forEach(function (o) {
+            if (o._courierId !== UID) return;
+            if ((o._ds === "picking" || o._ds === "delivering") && !s.active[o.id] && !inDone(s, o.id)) {
+                s.active[o.id] = { status: o._ds, checked: o.items.map(function () { return o._ds === "delivering"; }), at: o._acceptedAt || Date.now() };
+                changed = true;
+            } else if (o._ds === "delivered" && !inDone(s, o.id)) {
+                var e = entry(o, "completed");
+                e.at = o._deliveredAt || Date.now(); e.acceptedAt = o._acceptedAt || null;
+                delete s.active[o.id]; s.done.push(e); changed = true;
+            }
+        });
+        if (changed) save(s);
+    }
+    // Mulai sinkronisasi segera setelah file ini dimuat
+    fsInit();
 
     window.CourierStore = {
         orders: ORDERS,
         get: get,
+        // Dipanggil setiap data order berubah (order baru masuk, diambil kurir lain, dll). Halaman kurir memakainya untuk render ulang.
+        onChange: function (fn) { if (typeof fn === "function") listeners.push(fn); },
         // order yang belum diterima & belum selesai
         available: function () {
             var s = load();
-            function free(o) { return !s.active[o.id] && !inDone(s, o.id); }
-            var list = ORDERS.concat(loadExtras()).filter(free);
-            return list.sort(function (a, b) { return b.id - a.id; });
+            function free(o) {
+                if (s.active[o.id] || inDone(s, o.id)) return false;
+                if (o._fs) return !o._courierId && ELIGIBLE.indexOf(o._status) > -1; // belum diambil kurir lain & sudah diterima kantin
+                return true;
+            }
+            var list = allOrders().filter(free);
+            return list.sort(function (a, b) { return ((b.createdAt || 0) - (a.createdAt || 0)) || (b.id - a.id); });
         },
         // Tambah order baru ke daftar Home kurir. Bentuk order:
         // { id, createdAt, pickup, dropoff, fee, customer, phone, note, payment, paid, items: [{ qty, name, price }] }
@@ -157,6 +254,28 @@
             if (!o || s.active[o.id] || inDone(s, o.id)) return;
             s.active[o.id] = { status: "picking", checked: o.items.map(function () { return false; }), at: Date.now() };
             save(s);
+            if (o._fs) {
+                var oid = o.id;
+                fsInit().then(async function () {
+                    if (!FS_API) return;
+                    var F = FS_API.F, ref = F.doc(FS_API.db, "orders", o.fid);
+                    // nomor HP kurir dikirim ke order supaya pemesan bisa menghubungi lewat WhatsApp
+                    var cphone = "";
+                    try { var us = await F.getDoc(F.doc(FS_API.db, "users", UID)); if (us.exists()) cphone = us.data().phone || us.data().whatsapp || ""; } catch (e) {}
+                    return F.runTransaction(FS_API.db, async function (tx) {
+                        var snap = await tx.get(ref);
+                        var d = snap.exists() ? snap.data() : null;
+                        if (!d) throw new Error("GONE");
+                        if (d.courierId && d.courierId !== UID) throw new Error("TAKEN");
+                        tx.update(ref, { courierId: UID, courierName: courierName(), courierPhone: cphone, deliveryStatus: "picking", courierAcceptedAt: F.serverTimestamp() });
+                    });
+                }).catch(function (e) {
+                    // gagal / sudah diambil kurir lain -> batalkan penerimaan lokal
+                    var st = load(); delete st.active[oid]; save(st); notify();
+                    if (e && (e.message === "TAKEN" || e.message === "GONE")) alert("Order ini sudah diambil kurir lain atau tidak tersedia lagi.");
+                    else console.warn("Gagal menerima order:", e);
+                });
+            }
         },
         // daftar order aktif: [{order, status, checked}]
         active: function () {
@@ -189,12 +308,17 @@
         advance: function (id) {
             var s = load(); id = Number(id); var a = s.active[id];
             if (!a) return null;
-            if (a.status === "picking") { a.status = "delivering"; }
-            else if (a.status === "delivering") {
+            var fo = get(id);
+            if (a.status === "picking") {
+                a.status = "delivering";
+                // kurir sudah ambil makanan -> status di halaman Track pemesan berubah jadi "Heading to your location"
+                fsWrite(fo, function (F) { return { deliveryStatus: "delivering", pickedUpAt: F.serverTimestamp() }; });
+            } else if (a.status === "delivering") {
                 var done = entry(get(id), "completed");
                 done.acceptedAt = a.at; // waktu order diterima -> dasar hitung Avg. Time
                 delete s.active[id];
                 s.done.push(done);
+                fsWrite(fo, function (F) { return { deliveryStatus: "delivered", deliveredAt: F.serverTimestamp() }; });
             }
             save(s);
             return this.statusOf(id);
@@ -281,6 +405,8 @@
             delete s.active[o.id];
             s.done.push(e);
             save(s);
+            // order yang sudah diterima lalu dibatalkan dikembalikan ke daftar supaya kurir lain bisa mengambil
+            if (wasActive) fsWrite(o, function (F) { return { courierId: F.deleteField(), courierName: F.deleteField(), courierPhone: F.deleteField(), deliveryStatus: F.deleteField(), courierAcceptedAt: F.deleteField() }; });
         },
         // Beri rating (1-5) untuk order yang sudah selesai. Dipanggil dari sisi customer
         // (nanti diganti penyimpanan Firestore). Console: CourierStore.rateOrder(1001, 5)

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Order - BBite</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="security.js" data-guard></script>
+    <style>
+        .app-container.dashboard { background: #F6F7F9; }
+        .tk-page { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 20px 18px 40px; }
+        .tk-page::-webkit-scrollbar { display: none; }
+        .tk-top { display: flex; align-items: center; justify-content: center; position: relative; margin: 30px 0 18px; }
+        .tk-back { position: absolute; left: 0; width: 38px; height: 38px; border-radius: 50%; border: 1px solid #E5E7EB; background: #FFF; color: #1F2937; display: flex; align-items: center; justify-content: center; text-decoration: none; }
+        .tk-top h1 { font-size: 18px; font-weight: 800; color: #1F2937; }
+        .tk-card { background: #FFF; border: 1px solid #E8EAED; border-radius: 16px; padding: 16px; margin-bottom: 14px; box-shadow: 0 1px 4px rgba(15,23,42,0.04); }
+        .tk-hero { text-align: center; padding: 20px 16px; }
+        .tk-hero .ico { width: 54px; height: 54px; border-radius: 50%; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; font-size: 26px; background: #FFF1D6; }
+        .tk-hero.green .ico { background: #E8F7EE; } .tk-hero.red .ico { background: #FDECEC; }
+        .tk-hero h2 { font-size: 18px; font-weight: 800; color: #1F2937; margin-bottom: 6px; }
+        .tk-hero p { font-size: 13px; color: #6B7280; line-height: 1.5; }
+        .tk-eta { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; background: #FFF1D6; color: #8A5E00; border-radius: 10px; padding: 7px 12px; font-size: 12px; font-weight: 700; }
+        .tk-h { font-size: 13px; font-weight: 800; color: #1F2937; margin-bottom: 14px; }
+        .tl { position: relative; }
+        .tl-step { display: flex; gap: 14px; position: relative; padding-bottom: 20px; }
+        .tl-step:last-child { padding-bottom: 0; }
+        .tl-step::before { content: ""; position: absolute; left: 13px; top: 28px; bottom: -2px; width: 2px; background: #E5E7EB; }
+        .tl-step:last-child::before { display: none; }
+        .tl-step.done::before { background: #F5A623; }
+        .tl-dot { width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: #F3F4F6; border: 2px solid #E5E7EB; color: #FFF; z-index: 1; }
+        .tl-step.done .tl-dot { background: #F5A623; border-color: #F5A623; }
+        .tl-step.now .tl-dot { background: #FFF; border-color: #F5A623; box-shadow: 0 0 0 4px #FFF1D6; }
+        .tl-step.now .tl-dot::after { content: ""; width: 10px; height: 10px; border-radius: 50%; background: #F5A623; animation: pulse 1.4s ease-in-out infinite; }
+        .tl-step.finalnow .tl-dot { background: #22A06B; border-color: #22A06B; box-shadow: none; }
+        .tl-step.finalnow .tl-dot::after { display: none; }
+        @keyframes pulse { 50% { transform: scale(0.55); opacity: 0.6; } }
+        .tl-text strong { display: block; font-size: 14px; color: #9CA3AF; font-weight: 700; margin-top: 3px; }
+        .tl-text small { display: none; font-size: 12px; color: #6B7280; margin-top: 2px; line-height: 1.4; }
+        .tl-step.done .tl-text strong { color: #1F2937; }
+        .tl-step.now .tl-text strong { color: #1F2937; font-weight: 800; }
+        .tl-step.now .tl-text small { display: block; }
+        .cr { display: flex; align-items: center; gap: 12px; }
+        .cr-av { width: 44px; height: 44px; border-radius: 50%; background: #FFF1D6; color: #B07400; font-weight: 800; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+        .cr-wa { margin-left: auto; flex-shrink: 0; background: #E8F7EE; color: #15803D; font-weight: 800; font-size: 12px; padding: 9px 13px; border-radius: 12px; text-decoration: none; }
+        .cr b { display: block; font-size: 14px; color: #1F2937; } .cr small { font-size: 12px; color: #6B7280; }
+        .tk-row { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; color: #4B5563; padding: 5px 0; }
+        .tk-row b { color: #1F2937; text-align: right; }
+        .tk-items { margin-bottom: 8px; }
+        .tk-sep { border-top: 1px dashed #E5E7EB; margin: 10px 0; }
+        .tk-row.total { font-size: 15px; } .tk-row.total span, .tk-row.total b { font-weight: 800; color: #1F2937; }
+        .tk-merchant { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-weight: 800; color: #1F2937; font-size: 15px; }
+        .tk-empty { text-align: center; padding: 80px 20px; color: #6B7280; font-size: 14px; }
+    </style>
+    <style id="sharedCss"></style>
+</head>
+<body>
+    <div class="app-container dashboard">
+        <div class="tk-page">
+            <div class="tk-top">
+                <a class="tk-back" href="orders-mahasiswa.html" aria-label="Back"><span id="backIco"></span></a>
+                <h1>Track Order</h1>
+            </div>
+            <div id="content"><div class="tk-empty">Loading order...</div></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { db, waitUser, rp, esc, stageOf, merchantInfo, logoHTML, SVG, SHARED_CSS } from "./order-utils.js";
+        import { doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        document.getElementById("sharedCss").textContent = SHARED_CSS;
+        document.getElementById("backIco").innerHTML = SVG.back;
+        const content = document.getElementById("content");
+        const orderId = new URLSearchParams(location.search).get("id");
+
+        const HERO_ICON = { pending: "&#9203;", preparing: "&#127859;", ready: "&#129369;", picking: "&#128692;", delivering: "&#128757;", delivered: "&#9989;", completed: "&#9989;", rejected: "&#10060;" };
+
+        function timeline(st) {
+            return st.steps.map((s, i) => {
+                let cls = "";
+                if (st.final && st.tone === "green") cls = i < st.step ? "done" : (i === st.step ? "now finalnow" : "");
+                else if (st.final) cls = ""; // ditolak: tidak ada langkah selesai
+                else cls = i < st.step ? "done" : (i === st.step ? "now" : "");
+                const dot = (cls.indexOf("done") > -1 || cls.indexOf("finalnow") > -1) ? SVG.check : "";
+                const sub = (i === st.step && st.waitingCourier) ? "Food is ready. Waiting for a courier to pick it up." : s.sub;
+                return `<div class="tl-step ${cls}"><div class="tl-dot">${dot}</div><div class="tl-text"><strong>${s.title}</strong><small>${sub}</small></div></div>`;
+            }).join("");
+        }
+
+        function waLink(phone) {
+            let d = String(phone || "").replace(/\D/g, "");
+            if (d.startsWith("0")) d = "62" + d.slice(1);
+            return "https://wa.me/" + d;
+        }
+        async function render(o) {
+            const st = stageOf(o);
+            const info = await merchantInfo(o);
+            const isDel = o.type !== "Pickup";
+            const items = (o.items || []).map(i => `<div class="tk-row"><span>${Number(i.qty) || 1}x ${esc(i.name)}</span><b>${rp((Number(i.price) || 0) * (Number(i.qty) || 1))}</b></div>`).join("");
+            const subtotal = (o.items || []).reduce((a, i) => a + (Number(i.price) || 0) * (Number(i.qty) || 1), 0);
+
+            const eta = (!st.final && o.time) ? `<div class="tk-eta">${SVG.clock}${isDel ? "Target delivery" : "Pickup time"}: ${esc(o.time)}</div>` : "";
+            const courier = (isDel && o.courierName && st.key !== "rejected") ? `
+                <div class="tk-card"><div class="tk-h">Your courier</div>
+                    <div class="cr"><div class="cr-av">${esc(String(o.courierName).trim().charAt(0).toUpperCase() || "C")}</div>
+                    <div><b>${esc(o.courierName)}</b><small>${st.key === "delivering" ? "On the way to you" : (st.final ? "Delivered your order" : "Picking up your order")}</small></div>
+                    ${o.courierPhone && !st.final ? `<a class="cr-wa" href="${waLink(o.courierPhone)}" target="_blank" rel="noopener">Chat WhatsApp</a>` : ""}</div>
+                </div>` : "";
+
+            content.innerHTML = `
+                <div class="tk-card tk-hero ${st.tone === "green" ? "green" : st.tone === "red" ? "red" : ""}">
+                    <div class="ico">${HERO_ICON[st.key] || "&#128230;"}</div>
+                    <h2>${st.headline}</h2><p>${st.note}</p>${eta}
+                </div>
+                ${st.key === "rejected" ? "" : `<div class="tk-card"><div class="tk-h">Order progress</div><div class="tl">${timeline(st)}</div></div>`}
+                ${courier}
+                <div class="tk-card">
+                    <div class="tk-merchant">${logoHTML(info, 36)}<span>${esc(info.name)}</span></div>
+                    <div class="tk-items">${items}</div>
+                    <div class="tk-sep"></div>
+                    <div class="tk-row"><span>Subtotal</span><b>${rp(subtotal)}</b></div>
+                    ${isDel ? `<div class="tk-row"><span>Delivery fee</span><b>${rp(o.deliveryFee)}</b></div>` : ""}
+                    ${Number(o.serviceFee) ? `<div class="tk-row"><span>Service fee</span><b>${rp(o.serviceFee)}</b></div>` : ""}
+                    <div class="tk-sep"></div>
+                    <div class="tk-row total"><span>Total paid</span><b>${rp(o.totalPrice)}</b></div>
+                </div>
+                <div class="tk-card">
+                    <div class="tk-row"><span>${isDel ? "Deliver to" : "Pickup at"}</span><b>${isDel ? esc(o.location || "-") : esc(info.name)}</b></div>
+                    <div class="tk-row"><span>Schedule</span><b>${esc(o.time || "-")}</b></div>
+                    <div class="tk-row"><span>Payment</span><b>${esc(o.paymentMethod || "QRIS")} (${o.paymentStatus === "paid" ? "Paid" : esc(o.paymentStatus || "-")})</b></div>
+                    ${o.notes && o.notes !== "-" ? `<div class="tk-row"><span>Notes</span><b>${esc(o.notes)}</b></div>` : ""}
+                </div>`;
+        }
+
+        (async () => {
+            if (!orderId) { content.innerHTML = '<div class="tk-empty">Order not found.</div>'; return; }
+            const user = await waitUser();
+            if (!user) { window.location.href = "index.html"; return; }
+            // Pantau pesanan secara langsung: status berubah saat kantin / kurir memperbarui
+            onSnapshot(doc(db, "orders", orderId), (s) => {
+                if (!s.exists() || s.data().studentId !== user.uid) { content.innerHTML = '<div class="tk-empty">Order not found.</div>'; return; }
+                render(s.data());
+            }, (err) => { content.innerHTML = '<div class="tk-empty">Could not load order: ' + esc(err.message) + '</div>'; });
+        })();
+    </script>
+</body>
+</html>

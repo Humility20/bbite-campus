@@ -172,13 +172,13 @@
                 </div>
             </div>
 
-            <div class="auth-field d-none" id="whatsappGroup">
-                <label>WhatsApp Number</label>
+            <div class="auth-field" id="whatsappGroup">
+                <label>Phone Number (WhatsApp)</label>
                 <div class="auth-input">
                     <span class="auth-input-icon-left">
                         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
                     </span>
-                    <input type="tel" id="signupWhatsapp" placeholder="e.g. 08123456789" inputmode="tel" pattern="(\+62|62|0)8[0-9]{7,12}" title="Use an Indonesian mobile number, e.g. 08123456789" disabled>
+                    <input type="tel" id="signupWhatsapp" placeholder="e.g. 08123456789" inputmode="tel" pattern="(\+62|62|0)8[0-9]{7,12}" title="Use an Indonesian mobile number, e.g. 08123456789" required>
                 </div>
             </div>
 
@@ -288,8 +288,8 @@
             document.getElementById("btnSubmitSignup").innerText = submitLabel();
 
             // Field khusus Kurir: di-disable saat tidak dipakai supaya tidak ikut validasi form
-            ["whatsappGroup", "ktmGroup"].forEach(id => document.getElementById(id).classList.toggle("d-none", !isCourier));
-            ["signupWhatsapp", "ktmProof"].forEach(id => {
+            ["ktmGroup"].forEach(id => document.getElementById(id).classList.toggle("d-none", !isCourier));
+            ["ktmProof"].forEach(id => {
                 const el = document.getElementById(id);
                 el.disabled = !isCourier;
                 el.required = isCourier;
@@ -353,6 +353,14 @@
             });
         }
 
+        // Nomor HP disimpan dalam format 08xxxxxxxxxx (+62 / 62 diubah jadi 0)
+        function normalizePhone(v) {
+            let d = String(v || "").replace(/\D/g, "");
+            if (d.startsWith("62")) d = "0" + d.slice(2);
+            else if (d.startsWith("8")) d = "0" + d;
+            return /^08[0-9]{7,12}$/.test(d) ? d : "";
+        }
+
         // PENAMBAHAN FUNGSI ASYNC UNTUK MENGAMBIL BASE64 GAMBAR BUKTI
         document.getElementById("signupForm").addEventListener("submit", async function(event){
             event.preventDefault(); 
@@ -366,6 +374,13 @@
 
             if (role === "Merchant" && (!bName || bName === "")) {
                 alert("Harap pilih atau tulis nama toko/kantin yang Anda kelola!");
+                return;
+            }
+
+            const phone = normalizePhone(document.getElementById("signupWhatsapp").value);
+            if (!phone) {
+                alert("Masukkan nomor HP aktif yang valid, contoh 08123456789.");
+                document.getElementById("signupWhatsapp").focus();
                 return;
             }
 
@@ -425,11 +440,12 @@
                     roles: isCourier ? ["Mahasiswa", "Courier"] : [role],
                     status: finalStatus,
                     businessName: (role === "Merchant") ? bName : "",
+                    phone: phone,               // nomor HP/WhatsApp semua role (dipakai untuk chat kurir-pemesan)
                     businessProof: proofBase64,  // Data Bukti Izin Masuk Sini
                     photoBase64: "",
                     ...(isCourier ? {
                         courierStatus: "pending",
-                        whatsapp: document.getElementById("signupWhatsapp").value,
+                        whatsapp: phone,
                         ktmProof: ktmBase64
                     } : {})
                 });
@@ -470,20 +486,21 @@
 
                         const courierData = {
                             courierStatus: "pending",
-                            whatsapp: document.getElementById("signupWhatsapp").value,
+                            whatsapp: phone,
                             ktmProof: ktmBase64
                         };
                         if (existing) {
                             const currentRoles = Array.isArray(existing.roles) ? existing.roles : [existing.role || "Mahasiswa"];
                             await updateDoc(ref, {
                                 ...courierData,
+                                phone: phone,
                                 roles: Array.from(new Set([...currentRoles, "Courier"])),
                                 nim: existing.nim && existing.nim !== "-" ? existing.nim : nim
                             });
                         } else {
                             // Akun Auth ada tapi dokumen Firestore belum ada (sisa pendaftaran yang gagal)
                             await setDoc(ref, {
-                                name: namaLengkap, email: email, nim: nim,
+                                name: namaLengkap, email: email, nim: nim, phone: phone,
                                 role: "Mahasiswa", roles: ["Mahasiswa", "Courier"], status: "active",
                                 businessName: "", businessProof: "", photoBase64: "",
                                 ...courierData

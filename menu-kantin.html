@@ -243,7 +243,6 @@
                             <div style="font-size: 14px; font-weight: 800; color: #0B1220;" id="paymentMethodText">QRIS</div>
                         </div>
                     </div>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0B1220" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
                 </div>
 
                 <div class="price-breakdown">
@@ -325,6 +324,7 @@
                 <h2>Payment successful</h2>
                 <p id="paySuccessText">Your order has been sent to the canteen. Waiting for their confirmation.</p>
                 <button type="button" class="btn-pay-main" id="btnPayDone">Back to menu</button>
+                <a href="orders-mahasiswa.html" class="btn-pay-main" style="display:block;text-align:center;text-decoration:none;margin-top:10px;background:#FFF;color:#C98A00;border:1px solid #DC9808;box-shadow:none;box-sizing:border-box;">View my orders</a>
             </div>
         </div>
 
@@ -715,6 +715,12 @@
         // Firebase Submit Order Logic
         let currentUser = null;
         let realName = "Mahasiswa";
+        let userPhone = "";
+        function normalizePhone(v) {
+            let d = String(v || "").replace(/\D/g, "");
+            if (d.startsWith("62")) d = "0" + d.slice(2); else if (d.startsWith("8")) d = "0" + d;
+            return /^08[0-9]{7,12}$/.test(d) ? d : "";
+        }
 
         onAuthStateChanged(auth, async (user) => { 
             currentUser = user; 
@@ -724,6 +730,7 @@
                     if(docSnap.exists() && docSnap.data().name) {
                         realName = docSnap.data().name; 
                     }
+                    if(docSnap.exists()) userPhone = docSnap.data().phone || docSnap.data().whatsapp || "";
                 } catch(e) { console.log(e); }
                 resumePendingPayment();
             }
@@ -1022,6 +1029,14 @@
             if (!timeEl.value) { timeEl.classList.add('co-error'); timeEl.focus(); alert("Pilih jadwal kelas terlebih dahulu."); return; }
             if (!isPickup && !locEl.value.trim()) { locEl.classList.add('co-error'); locEl.focus(); alert("Isi lokasi pengantaran (misalnya nomor ruangan)."); return; }
 
+            // Akun lama (daftar sebelum ada kolom nomor HP): minta sekali, lalu disimpan ke profil
+            if (!userPhone) {
+                const ph = normalizePhone(window.prompt("Masukkan nomor HP/WhatsApp kamu (contoh 08123456789) agar kurir bisa menghubungi:") || "");
+                if (!ph) { alert("Nomor HP wajib diisi untuk memesan."); return; }
+                try { await updateDoc(doc(db, "users", currentUser.uid), { phone: ph }); } catch (e) { console.warn("Gagal menyimpan nomor HP", e); }
+                userPhone = ph;
+            }
+
             const btn = document.getElementById('btnPlaceOrder');
             btn.innerText = "Processing..."; btn.disabled = true;
 
@@ -1032,7 +1047,10 @@
             const orderData = {
                 studentId: currentUser.uid,
                 studentName: realName,
+                studentPhone: userPhone,
                 merchantId: currentData.id, // UID Akun Merchant (atau nama restoran jika fallback JSON)
+                merchantName: currentData.name || '',   // dipakai halaman My Orders & Track
+                merchantLogo: (typeof currentData.logo === 'string' && currentData.logo.length < 60000) ? currentData.logo : null,
                 items: Object.values(cart),
                 totalPrice: FINAL_TOTAL_ORDER,
                 deliveryFee: DELIVERY_FEE,
