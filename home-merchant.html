@@ -58,52 +58,133 @@
         .btn-cancel { background: #F5F5F5; color: #333; }
         .btn-save { background: #DC9808; color: #FFF; }
 
-        /* Bottom Nav */
-        .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 390px; height: 70px; background-color: #FFFFFF; border-top: 1px solid #E5E5E5; display: flex; justify-content: space-around; align-items: center; padding: 0 10px 10px 10px; z-index: 50; border-radius: 0 0 40px 40px;}
-        .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: #A0A0A0; font-size: 10px; font-weight: 700; transition: 0.2s ease; cursor: pointer; }
-        .nav-item.active { color: #000; }
-        .nav-item.active .dot { width: 4px; height: 4px; background: #000; border-radius: 50%; }
+        /* ===== Desain Seller Dashboard terbaru ===== */
+        .m-avatar { position: relative; width: 44px; height: 44px; border-radius: 50%; background: #FFF1D6; border: 2px solid #E9B949; color: #B07400; font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; }
+        .m-avatar img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: none; border: none; border-radius: 0; }
+        .merchant-info h1 { font-size: 17px; font-weight: 700; }
+
+        .open-pill { display: flex; align-items: center; gap: 8px; background: #E6F6EC; color: #1B8B6A; font-family: inherit; font-size: 12px; font-weight: 700; padding: 5px 6px 5px 11px; border-radius: 20px; border: none; cursor: pointer; transition: 0.2s; }
+        .open-pill .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+        .open-pill .sw { position: relative; width: 34px; height: 20px; border-radius: 10px; background: #1B8B6A; transition: 0.2s; }
+        .open-pill .sw::after { content: ""; position: absolute; top: 2px; left: 16px; width: 16px; height: 16px; border-radius: 50%; background: #FFF; transition: 0.2s; }
+        .open-pill.closed { background: #EEF0F3; color: #6B7280; }
+        .open-pill.closed .sw { background: #B8BEC8; }
+        .open-pill.closed .sw::after { left: 2px; }
+
+        .alert-box svg { flex-shrink: 0; color: #D98E04; }
+        .alert-box { align-items: center; gap: 10px; padding: 12px 14px; }
+
+        .metric-card { padding: 14px 16px 16px; }
+        .metric-top { display: flex; justify-content: space-between; align-items: center; }
+        .metric-ico { width: 26px; height: 26px; border-radius: 8px; background: #FFF1D6; color: #DC9808; display: flex; align-items: center; justify-content: center; }
+        .metric-ico svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        .metric-card h2 { font-size: 24px; margin-top: 10px; }
+        .new-count { font-size: 11px; font-weight: 500; color: #888; }
+
+        .empty-orders { background: #EEF0F3; border-radius: 20px; padding: 44px 24px 40px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+        .empty-circle { width: 84px; height: 84px; border-radius: 50%; background: #FFF; display: flex; align-items: center; justify-content: center; color: #9AA0AA; margin-bottom: 22px; }
+        .empty-circle svg { width: 34px; height: 34px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+        .empty-orders h4 { font-size: 14px; font-weight: 700; color: #111; margin-bottom: 6px; }
+        .empty-orders p { font-size: 12px; color: #6B7280; line-height: 1.5; max-width: 230px; }
+
+        .inc-card { background: #FFF; border: 1px solid #E5E7EB; border-radius: 16px; overflow: hidden; margin-bottom: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+        .inc-card.is-new { border-color: #F3D9A0; box-shadow: 0 4px 14px rgba(220,152,8,0.10); }
+        .inc-top { display: flex; justify-content: space-between; align-items: center; padding: 9px 14px; background: #F3F4F6; font-size: 10px; font-weight: 700; color: #6B7280; }
+        .inc-top .lbl { display: flex; align-items: center; gap: 6px; letter-spacing: 0.3px; }
+        .inc-top .lbl svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        .inc-top .sub { font-weight: 500; color: #9AA0AA; }
+        .is-new .inc-top { background: #FFF3D6; color: #B07400; }
+        .is-prep .inc-top { background: #E6F6EC; color: #15803D; }
+        .is-ready .inc-top { background: #FFF3D6; color: #B07400; }
+        .inc-body { padding: 14px; }
+        .inc-idrow { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .inc-idrow h3 { font-size: 20px; font-weight: 800; color: #000; margin: 0; }
+        .inc-badge { font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 12px; }
+        .inc-badge.new { background: #DC9808; color: #FFF; }
+        .inc-badge.prep { background: #E6F6EC; color: #15803D; }
+        .inc-badge.ready { background: #FFF3D6; color: #B07400; }
+        .inc-name { font-size: 15px; font-weight: 700; color: #000; margin-bottom: 4px; }
+        .inc-loc { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #6B7280; margin-bottom: 12px; }
+        .inc-loc svg { width: 14px; height: 14px; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        .slot-box { display: flex; align-items: center; gap: 10px; background: #FFF3D6; border-radius: 12px; padding: 10px 12px; margin-bottom: 14px; }
+        .slot-ico { width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid #DC9808; color: #DC9808; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .slot-ico svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        .slot-box strong { display: block; font-size: 13px; font-weight: 700; color: #8A5A00; }
+        .slot-box small { font-size: 11px; color: #A8741A; }
+        .inc-items { margin-bottom: 12px; }
+        .inc-item { display: flex; justify-content: space-between; gap: 12px; font-size: 12px; color: #111; padding: 4px 0; }
+        .inc-item b { font-weight: 700; white-space: nowrap; }
+        .notes-box { background: #F3F4F6; border-radius: 10px; padding: 10px 12px; margin-bottom: 14px; }
+        .notes-box small { display: block; font-size: 10px; font-weight: 600; color: #6B7280; margin-bottom: 3px; }
+        .notes-box span { font-size: 12px; color: #111; line-height: 1.4; word-break: break-word; }
+        .inc-actions { display: flex; gap: 12px; }
+        .btn-decline { flex: 1; background: #FFF; color: #E5484D; border: 1.5px solid #E5484D; font-family: inherit; font-weight: 700; font-size: 13px; padding: 12px; border-radius: 10px; cursor: pointer; transition: 0.2s; }
+        .btn-accept-order { flex: 1; background: #DC9808; color: #FFF; border: none; font-family: inherit; font-weight: 700; font-size: 13px; padding: 12px; border-radius: 10px; cursor: pointer; transition: 0.2s; }
+        .btn-accept-order.dark { background: #333; }
+        .btn-decline:active, .btn-accept-order:active { transform: scale(0.96); }
+        .realtime-note { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #6B7280; line-height: 1.4; padding: 4px 4px 0; }
+        .realtime-note svg { width: 15px; height: 15px; flex-shrink: 0; color: #DC9808; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+        /* Bottom Nav (5 menu) */
+        .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 390px; height: 78px; background-color: #FFFFFF; border-top: 1px solid #E5E5E5; display: flex; justify-content: space-around; align-items: center; padding: 0 10px 10px 10px; z-index: 50; border-radius: 0 0 40px 40px; }
+        .nav-item { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; min-width: 54px; padding: 8px 6px; border-radius: 14px; text-decoration: none; color: #6B7280; font-size: 10px; font-weight: 600; transition: 0.2s ease; cursor: pointer; }
+        .nav-item span { font-size: 10px; font-weight: 600; }
+        .nav-item svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+        .nav-item.active { background: #DC9808; color: #FFF; padding: 8px 14px; }
+        .nav-item.active span { font-weight: 700; }
+        .nav-badge { position: absolute; top: 1px; right: 4px; min-width: 15px; height: 15px; padding: 0 4px; border-radius: 8px; background: #E5484D; color: #FFF; font-size: 9px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
 
         .d-none { display: none !important; }
     </style>
 </head>
 <body style="background: #333;">
-    <div class="app-container dashboard" style="background: #FAFAFA; border-radius: 40px;">
+    <div class="app-container dashboard" style="background: #F6F7F9; border-radius: 40px;">
         
         <!-- HEADER GLOBAL MERCHANT -->
         <div id="globalMerchantHeader" style="padding: 50px 24px 0 24px; background: #FFF; border-bottom: 1px solid #E5E5E5; margin-bottom: 20px; padding-bottom: 16px;">
             <div class="merchant-header" style="margin-bottom: 0;">
                 <div class="merchant-profile">
-                    <img src="https://via.placeholder.com/40/DC9808/FFFFFF?text=Toko" id="merchantHeaderImg" alt="Logo">
+                    <div class="m-avatar">
+                        <span id="merchantInitials"></span>
+                        <img id="merchantHeaderImg" alt="Logo" onload="this.style.display='block'; document.getElementById('merchantInitials').style.display='none';" onerror="this.style.display='none'; document.getElementById('merchantInitials').style.display='block';">
+                    </div>
                     <div class="merchant-info">
                         <h1 id="merchantName">Toko Saya</h1>
                         <p>Seller Dashboard</p>
                     </div>
                 </div>
-                <button class="status-toggle">☕ Open</button>
+                <button type="button" class="open-pill" id="openPill" role="switch" aria-checked="true" aria-label="Buka atau tutup toko">
+                    <span class="dot"></span><span id="openLabel">Open</span><span class="sw"></span>
+                </button>
             </div>
         </div>
 
-        <div id="viewOrders" class="dashboard-content" style="padding-top: 0; padding-bottom: 90px;">
-            <div class="alert-box">
-                <span style="font-size: 18px;">❗</span>
+        <!-- HOME: ringkasan hari ini + pesanan masuk (id tetap viewOrders agar kode lama tidak rusak) -->
+        <div id="viewOrders" class="dashboard-content" style="padding-top: 0; padding-bottom: 100px;">
+            <div class="alert-box d-none" id="realtimeTop">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2.5l10.4 18a1 1 0 0 1-.9 1.5H2.5a1 1 0 0 1-.9-1.5zM11 9v5h2V9zm0 7v2h2v-2z"/></svg>
                 <p>Menerima pesanan secara Real-Time. Pastikan aplikasi tetap terbuka.</p>
             </div>
 
             <div class="metrics-grid">
                 <div class="metric-card">
-                    <span>Orders today</span>
+                    <div class="metric-top"><span>Orders today</span><i class="metric-ico"><svg viewBox="0 0 24 24"><rect x="5" y="3.5" width="14" height="17" rx="2"/><path d="M9 8.5h6M9 12h6M9 15.5h3.5"/></svg></i></div>
                     <h2 id="todayOrdersCount">0</h2>
                 </div>
                 <div class="metric-card">
-                    <span>Revenue today</span>
-                    <h2 id="todayRevenueCount">Rp0</h2>
+                    <div class="metric-top"><span>Revenue today</span><i class="metric-ico"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg></i></div>
+                    <h2 id="todayRevenueCount">Rp 0</h2>
                 </div>
             </div>
 
-            <div class="section-title">Incoming Orders</div>
+            <div class="section-title">Incoming Orders <span class="new-count d-none" id="newOrderCount"></span></div>
             <div id="incomingOrdersList">
                 <p style="text-align:center; font-size:12px; color:#888; margin-top:20px;">Memuat pesanan masuk...</p>
+            </div>
+
+            <div class="realtime-note d-none" id="realtimeBottom">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"/><path d="M16.2 7.8a6 6 0 0 1 0 8.4M7.8 16.2a6 6 0 0 1 0-8.4"/></svg>
+                <span>Menerima pesanan secara Real-Time. Pastikan aplikasi tetap terbuka.</span>
             </div>
         </div>
 
@@ -189,20 +270,25 @@
         </div>
 
         <nav class="bottom-nav">
-            <a href="#" class="nav-item active" onclick="switchTab('viewOrders', this)">
-                <div class="dot"></div>
-                <span>Orders</span>
+            <a href="#" class="nav-item active" onclick="switchTab('viewOrders', this); return false;">
+                <svg viewBox="0 0 24 24"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>
+                <span>Home</span>
             </a>
-            <a href="#" class="nav-item" onclick="switchTab('viewMenu', this)">
-                <div class="dot" style="background: transparent;"></div>
+            <a href="#" class="nav-item" onclick="alert('Halaman Orders sedang dikembangkan'); return false;">
+                <svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>
+                <span>Orders</span>
+                <b class="nav-badge d-none" id="navOrdersBadge">0</b>
+            </a>
+            <a href="#" class="nav-item" onclick="switchTab('viewMenu', this); return false;">
+                <svg viewBox="0 0 24 24"><path d="M12 6.5C10.5 5 8 4.2 4 4.2v14c4 0 6.5.8 8 2.3 1.5-1.5 4-2.3 8-2.3v-14c-4 0-6.5.8-8 2.3zM12 6.5v14"/></svg>
                 <span>Menu</span>
             </a>
             <a href="#" class="nav-item" onclick="alert('Fitur Laporan sedang dikembangkan'); return false;">
-                <div class="dot" style="background: transparent;"></div>
+                <svg viewBox="0 0 24 24"><path d="M5 20v-7M12 20V5M19 20V10"/></svg>
                 <span>Reports</span>
             </a>
-            <a href="#" class="nav-item" onclick="switchTab('viewProfile', this)">
-                <div class="dot" style="background: transparent;"></div>
+            <a href="#" class="nav-item" onclick="switchTab('viewProfile', this); return false;">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
                 <span>Profile</span>
             </a>
         </nav>
@@ -212,25 +298,13 @@
         window.tempBase64Image = "";
 
         function switchTab(tabId, element) {
-            document.getElementById('viewOrders').classList.add('d-none');
-            document.getElementById('viewMenu').classList.add('d-none');
-            document.getElementById('viewProfile').classList.add('d-none');
-            
+            ['viewOrders', 'viewMenu', 'viewProfile'].forEach(id => document.getElementById(id).classList.add('d-none'));
             document.getElementById(tabId).classList.remove('d-none');
-            
-            if (tabId === 'viewProfile') {
-                document.getElementById('globalMerchantHeader').style.display = 'none';
-            } else {
-                document.getElementById('globalMerchantHeader').style.display = 'block';
-            }
 
-            document.querySelectorAll('.bottom-nav .nav-item').forEach(nav => {
-                nav.classList.remove('active');
-                nav.querySelector('.dot').style.background = 'transparent';
-            });
-            
+            document.getElementById('globalMerchantHeader').style.display = (tabId === 'viewProfile') ? 'none' : 'block';
+
+            document.querySelectorAll('.bottom-nav .nav-item').forEach(nav => nav.classList.remove('active'));
             element.classList.add('active');
-            element.querySelector('.dot').style.background = '#000';
             window.scrollTo(0, 0);
         }
 
@@ -295,7 +369,121 @@
         window.userDeletedMenus = [];
         window.currentBaseMenus = [];
 
+        // ===== Helper tampilan Seller Dashboard =====
+        const esc = (t) => String(t == null ? "" : t).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+        const rupiah = (n) => "Rp " + (Number(n) || 0).toLocaleString("id-ID");
+        const jakartaDay = (ms) => new Date(ms).toLocaleDateString("sv-SE", { timeZone: "Asia/Jakarta" }); // YYYY-MM-DD
+        const orderMillis = (o) => (o.timestamp && typeof o.timestamp.toMillis === "function") ? o.timestamp.toMillis() : Date.now();
+
+        // Pendapatan kantin = harga makanan saja. Ongkir (kurir) dan biaya layanan tidak dihitung.
+        function orderRevenue(o) {
+            if (Array.isArray(o.items) && o.items.length) return o.items.reduce((a, i) => a + (Number(i.price) || 0) * (Number(i.qty) || 0), 0);
+            return Number(o.totalPrice) || 0;
+        }
+
+        function setMerchantInitials(name) {
+            const words = String(name || "").replace(/[^A-Za-z0-9& ]/g, " ").trim().split(/\s+/).filter(Boolean);
+            const init = words.length >= 2 ? words[0][0] + words[1][0] : (words[0] || "?").slice(0, 2);
+            document.getElementById("merchantInitials").innerText = init.toUpperCase();
+        }
+
+        // Toggle Open / Closed (disimpan di users/{uid}.isOpen)
+        function setOpenState(isOpen) {
+            const pill = document.getElementById("openPill");
+            pill.classList.toggle("closed", !isOpen);
+            pill.setAttribute("aria-checked", isOpen ? "true" : "false");
+            document.getElementById("openLabel").innerText = isOpen ? "Open" : "Closed";
+        }
+        document.getElementById("openPill").addEventListener("click", async () => {
+            if (!window.currentUser) return;
+            const next = document.getElementById("openPill").classList.contains("closed"); // sedang Closed -> jadi Open
+            setOpenState(next);
+            try {
+                await setDoc(doc(db, "users", window.currentUser.uid), { isOpen: next }, { merge: true });
+            } catch (e) {
+                setOpenState(!next);
+                alert("Gagal mengubah status toko: " + e.message);
+            }
+        });
+
+        const ICON_BELL = '<svg viewBox="0 0 24 24"><path d="M18 16v-5a6 6 0 1 0-12 0v5l-2 2h16z"/><path d="M10 21h4"/></svg>';
+        const ICON_PIN = '<svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>';
+        const ICON_CLOCK = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
+        const EMPTY_ORDERS_HTML = `
+            <div class="empty-orders">
+                <div class="empty-circle"><svg viewBox="0 0 24 24"><path d="M7 3v6a3 3 0 0 0 6 0V3M10 12v9"/><path d="M18 21V3c-2.2 1.6-3.5 4.2-3.5 7.5H18"/></svg></div>
+                <h4>Belum ada pesanan masuk saat ini.</h4>
+                <p>Pesanan baru dari mahasiswa akan muncul di sini secara real-time.</p>
+            </div>`;
+
+        const ORDER_STATE = {
+            pending:   { cls: "is-new",   label: "NEW ORDER",   sub: "Ready for review",   badge: '<span class="inc-badge new">NEW</span>' },
+            preparing: { cls: "is-prep",  label: "IN PROGRESS", sub: "Being prepared",     badge: '<span class="inc-badge prep">Preparing</span>' },
+            ready:     { cls: "is-ready", label: "READY",       sub: "Waiting for pickup", badge: '<span class="inc-badge ready">Ready</span>' }
+        };
+
+        function orderCardHTML(id, o) {
+            const s = ORDER_STATE[o.status] || { cls: "", label: String(o.status || "").toUpperCase(), sub: "", badge: "" };
+            const displayId = "#BB-" + id.substring(0, 5).toUpperCase();
+            const isPickup = o.type === "Pickup";
+            const place = (o.location && o.location !== "-") ? o.location : "(no location note)";
+            const where = isPickup ? "Pickup at the canteen" : "Delivery to " + place;
+            const asap = !o.time || o.time === "Sekarang";
+            const items = (Array.isArray(o.items) ? o.items : []).map(i =>
+                `<div class="inc-item"><span>${esc(i.qty)}x ${esc(i.name)}</span><b>${rupiah((Number(i.price) || 0) * (Number(i.qty) || 0))}</b></div>`).join("");
+            const hasNotes = o.notes && o.notes !== "-";
+
+            let buttons = "";
+            if (o.status === "pending") {
+                buttons = `<button class="btn-decline" onclick="changeOrderStatus('${id}', 'rejected')">Decline</button>
+                           <button class="btn-accept-order" onclick="changeOrderStatus('${id}', 'preparing')">Accept Order</button>`;
+            } else if (o.status === "preparing") {
+                buttons = `<button class="btn-accept-order" onclick="changeOrderStatus('${id}', 'ready')">Mark ready for pickup</button>`;
+            } else if (o.status === "ready") {
+                buttons = `<button class="btn-accept-order dark" onclick="changeOrderStatus('${id}', 'completed')">Mark Completed</button>`;
+            }
+
+            return `
+                <div class="inc-card ${s.cls}">
+                    <div class="inc-top"><span class="lbl">${ICON_BELL}${esc(s.label)}</span><span class="sub">${esc(s.sub)}</span></div>
+                    <div class="inc-body">
+                        <div class="inc-idrow"><h3>${esc(displayId)}</h3>${s.badge}</div>
+                        <div class="inc-name">${esc(o.studentName)}</div>
+                        <div class="inc-loc">${ICON_PIN}<span>${esc(where)}</span></div>
+                        <div class="slot-box">
+                            <div class="slot-ico">${ICON_CLOCK}</div>
+                            <div><strong>Target Slot: ${esc(asap ? "Sekarang" : o.time)}</strong><small>${asap ? "(As soon as possible)" : "(Class End Slot)"}</small></div>
+                        </div>
+                        <div class="inc-items">${items}</div>
+                        ${hasNotes ? `<div class="notes-box"><small>Notes</small><span>${esc(o.notes)}</span></div>` : ""}
+                        ${buttons ? `<div class="inc-actions">${buttons}</div>` : ""}
+                    </div>
+                </div>`;
+        }
+
+        function renderIncomingOrders(list) {
+            const pending = list.filter(x => x.order.status === "pending").length;
+            const hasOrders = list.length > 0;
+
+            document.getElementById("incomingOrdersList").innerHTML = hasOrders
+                ? list.map(x => orderCardHTML(x.id, x.order)).join("")
+                : EMPTY_ORDERS_HTML;
+
+            // Kosong: peringatan real-time di atas. Ada pesanan: catatan real-time di bawah daftar.
+            document.getElementById("realtimeTop").classList.toggle("d-none", hasOrders);
+            document.getElementById("realtimeBottom").classList.toggle("d-none", !hasOrders);
+
+            const cnt = document.getElementById("newOrderCount");
+            cnt.classList.toggle("d-none", pending === 0);
+            cnt.innerText = pending + (pending === 1 ? " new order" : " new orders");
+
+            const badge = document.getElementById("navOrdersBadge");
+            badge.classList.toggle("d-none", pending === 0);
+            badge.innerText = pending > 9 ? "9+" : String(pending);
+        }
+
         window.changeOrderStatus = async function(orderId, newStatus) {
+            if (newStatus === 'rejected' && !confirm("Tolak pesanan ini?")) return;
             try { await updateDoc(doc(db, "orders", orderId), { status: newStatus }); } 
             catch (error) { alert("Gagal memperbarui pesanan: " + error.message); }
         };
@@ -449,62 +637,44 @@
                             document.getElementById("merchantHeaderImg").src = data.photoBase64;
                         }
 
+                        setMerchantInitials(data.businessName || data.name);
+                        setOpenState(data.isOpen !== false);
+
                         onSnapshot(collection(db, "orders"), (snapshot) => {
+                            const today = jakartaDay(Date.now());
                             let todayOrders = 0;
                             let todayRevenue = 0;
-                            const ordersList = document.getElementById("incomingOrdersList");
-                            ordersList.innerHTML = "";
+                            const active = [];
 
                             snapshot.forEach(docSnapOrder => {
                                 const order = docSnapOrder.data();
-                                const orderId = docSnapOrder.id;
+                                const mine = (order.merchantId === restoKey || order.merchantId === user.uid);
+                                // Pesanan yang belum dibayar / gagal bayar tidak tampil di kantin
+                                const paid = order.status !== 'awaiting_payment' && !String(order.status || '').startsWith('payment_');
+                                if (!mine || !paid) return;
 
-                                if((order.merchantId === restoKey || order.merchantId === user.uid) && order.status !== 'awaiting_payment' && !String(order.status || '').startsWith('payment_')) {
+                                const ms = orderMillis(order);
+                                // "Today" = hanya pesanan hari ini (zona waktu WIB)
+                                if ((order.slotDate || jakartaDay(ms)) === today) {
                                     todayOrders++;
-                                    if(order.status === 'preparing' || order.status === 'ready' || order.status === 'completed') {
-                                        todayRevenue += order.totalPrice;
+                                    if (order.status === 'preparing' || order.status === 'ready' || order.status === 'completed') {
+                                        todayRevenue += orderRevenue(order);
                                     }
-                                    if(order.status !== 'completed' && order.status !== 'rejected') {
-                                        let itemsText = order.items.map(i => `${i.qty}x ${i.name}`).join(', ');
-                                        let displayId = "#" + orderId.substring(0, 4).toUpperCase();
-                                        let badgeHtml = ''; let buttonsHtml = '';
-
-                                        if (order.status === 'pending') {
-                                            badgeHtml = `<div class="badge-blue">${order.type} ${order.time}</div>`;
-                                            buttonsHtml = `
-                                                <button class="btn-reject" onclick="changeOrderStatus('${orderId}', 'rejected')">Reject</button>
-                                                <button class="btn-accept" onclick="changeOrderStatus('${orderId}', 'preparing')">Accept</button>
-                                            `;
-                                        } else if (order.status === 'preparing') {
-                                            badgeHtml = `<div class="badge-green">Preparing</div>`;
-                                            buttonsHtml = `<button class="btn-accept btn-full" onclick="changeOrderStatus('${orderId}', 'ready')">Mark ready for pickup</button>`;
-                                        } else if (order.status === 'ready') {
-                                            badgeHtml = `<div class="badge-green" style="background:#FFF6DB; color:#DC9808;">Ready to Take</div>`;
-                                            buttonsHtml = `<button class="btn-accept btn-full" style="background:#333;" onclick="changeOrderStatus('${orderId}', 'completed')">Mark Completed</button>`;
-                                        }
-
-                                        const orderHtml = `
-                                            <div class="incoming-order-card">
-                                                <div class="order-head">
-                                                    <h3>${displayId} · ${order.studentName}</h3>
-                                                    ${badgeHtml}
-                                                </div>
-                                                <div class="order-items" style="margin-bottom: 8px;">${itemsText}</div>
-                                                <div style="font-size:10px; color:#888; margin-bottom:12px;">Notes: ${order.notes}</div>
-                                                <div class="order-actions">${buttonsHtml}</div>
-                                            </div>
-                                        `;
-                                        ordersList.insertAdjacentHTML('afterbegin', orderHtml);
-                                    }
+                                }
+                                // Pesanan aktif: belum selesai/ditolak, dan belum diantar kurir
+                                if (order.status !== 'completed' && order.status !== 'rejected' && order.deliveryStatus !== 'delivered') {
+                                    active.push({ id: docSnapOrder.id, order, ms });
                                 }
                             });
 
-                            if(ordersList.innerHTML === "") {
-                                ordersList.innerHTML = "<p style='text-align:center; font-size:12px; color:#888; margin-top:20px;'>Tidak ada pesanan aktif saat ini.</p>";
-                            }
+                            active.sort((a, b) => b.ms - a.ms); // terbaru di atas
+                            renderIncomingOrders(active);
 
                             document.getElementById("todayOrdersCount").innerText = todayOrders;
-                            document.getElementById("todayRevenueCount").innerText = "Rp " + todayRevenue.toLocaleString('id-ID');
+                            document.getElementById("todayRevenueCount").innerText = rupiah(todayRevenue);
+                        }, (err) => {
+                            console.log("Gagal memuat pesanan:", err);
+                            document.getElementById("incomingOrdersList").innerHTML = "<p style='text-align:center; font-size:12px; color:#D32F2F; margin-top:20px;'>Gagal memuat pesanan. Periksa koneksi lalu muat ulang halaman.</p>";
                         });
                     }
                 } catch (error) { console.log(error); }
