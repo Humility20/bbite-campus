@@ -755,7 +755,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, collection, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, collection, onSnapshot, updateDoc, runTransaction, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDleckycfk_xnbhXMnPivz3F1NCS9x5wCQ",
@@ -880,6 +880,11 @@
             cnt.classList.toggle("d-none", pending === 0);
             cnt.innerText = pending + (pending === 1 ? " new order" : " new orders");
 
+            if (!firstOrdersRender && pending > lastPending) {
+                playNewOrderChime();
+                showToast("Pesanan baru masuk! (" + pending + " menunggu konfirmasi)");
+            }
+            firstOrdersRender = false;
             lastPending = pending;
             window.refreshNavBadges();
         }
@@ -909,6 +914,54 @@
         // ===== Halaman Orders (Active / History) =====
         // Pembagian: pending -> Home (Incoming Orders) | preparing / ready -> Orders > Active | completed / rejected / delivered -> Orders > History
         let lastPending = 0, lastActive = [];
+        let firstOrdersRender = true;   // render pertama = memuat data awal, jangan bunyikan notifikasi
+
+        // ===== Notifikasi pesanan baru: bunyi + toast =====
+        function playNewOrderChime() {
+            try {
+                const AC = window.AudioContext || window.webkitAudioContext;
+                if (!AC) return;
+                const ctx = new AC();
+                [880, 1175, 1480].forEach((f, i) => {
+                    const o = ctx.createOscillator(), g = ctx.createGain();
+                    o.type = "sine"; o.frequency.value = f; o.connect(g); g.connect(ctx.destination);
+                    const t = ctx.currentTime + i * 0.17;
+                    g.gain.setValueAtTime(0.0001, t);
+                    g.gain.exponentialRampToValueAtTime(0.28, t + 0.02);
+                    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.28);
+                    o.start(t); o.stop(t + 0.3);
+                });
+            } catch (e) { /* browser memblokir audio sebelum ada interaksi: abaikan */ }
+        }
+
+        // ===== Pesanan yang sudah dibayar tapi statusnya masih "awaiting_payment" =====
+        // Status "pending" biasanya diubah oleh browser mahasiswa setelah ia mengecek pembayaran. Kalau mahasiswa menutup halaman / HP-nya
+        // mati sebelum itu, pesanan macet dan tidak pernah muncul di kantin. Karena itu dashboard kantin ikut memeriksa ke Midtrans
+        // (lewat /api/payment-status, status asli dari Midtrans) dan menaikkan pesanan yang sudah lunas menjadi "pending".
+        let unpaidOrders = [], reconcileBusy = false;
+        async function reconcileUnpaid() {
+            if (reconcileBusy || !unpaidOrders.length) return;
+            reconcileBusy = true;
+            try {
+                for (const { id, order } of unpaidOrders.slice(0, 10)) {
+                    try {
+                        const r = await fetch("/api/payment-status?ref=" + encodeURIComponent(order.payment.ref), { cache: "no-store" });
+                        if (!r.ok) continue;
+                        const st = await r.json();
+                        if (!st.paid) continue;
+                        if (st.grossAmount && st.grossAmount !== Math.round(Number(order.totalPrice))) continue;   // nominal tidak cocok
+                        const ref = doc(db, "orders", id);
+                        await runTransaction(db, async (tx) => {
+                            const snap = await tx.get(ref);
+                            if (snap.exists() && snap.data().status === "awaiting_payment") {
+                                tx.update(ref, { status: "pending", paymentStatus: "paid", paidAt: serverTimestamp() });
+                            }
+                        });
+                    } catch (e) { console.warn("Gagal memeriksa pembayaran", id, e); }
+                }
+            } finally { reconcileBusy = false; }
+        }
+        setInterval(reconcileUnpaid, 8000);
         const courierCache = {}; // uid kurir -> foto (base64) atau "" bila tidak ada
 
         const IC = {
@@ -1726,10 +1779,18 @@
                             let todayOrders = 0;
                             let todayRevenue = 0;
                             const pending = [], active = [], history = [], reportList = [];
+                            const unpaid = [];
+                            const myNameKey = String(data.businessName || "").trim().toLowerCase();
 
                             snapshot.forEach(docSnapOrder => {
                                 const order = docSnapOrder.data();
-                                const mine = (order.merchantId === restoKey || order.merchantId === user.uid);
+                                // Cocok lewat UID akun, kunci kantin bawaan, atau (cadangan) nama kantin bila merchantId tersimpan sebagai nama
+                                const oid = String(order.merchantId || "").trim().toLowerCase();
+                                const mine = (order.merchantId === restoKey || order.merchantId === user.uid || (myNameKey && oid === myNameKey));
+                                // Pesanan kantin ini yang masih menunggu konfirmasi pembayaran (maks. 30 menit terakhir) -> diperiksa ke Midtrans
+                                if (mine && order.status === 'awaiting_payment' && order.payment && order.payment.ref && (Date.now() - orderMillis(order)) < 30 * 60 * 1000) {
+                                    unpaid.push({ id: docSnapOrder.id, order });
+                                }
                                 // Pesanan yang belum dibayar / gagal bayar tidak tampil di kantin
                                 const paid = order.status !== 'awaiting_payment' && !String(order.status || '').startsWith('payment_');
                                 if (!mine || !paid) return;
@@ -1754,6 +1815,8 @@
                             });
 
                             [pending, active, history].forEach(l => l.sort((a, b) => b.ms - a.ms)); // terbaru di atas
+                            unpaidOrders = unpaid;
+                            if (unpaid.length) reconcileUnpaid();
                             renderIncomingOrders(pending);
                             renderActiveOrders(active);
                             renderHistoryOrders(history);
