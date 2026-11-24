@@ -66,6 +66,44 @@
 
         .toast-notif { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 12px 24px; border-radius: 30px; font-size: 12px; font-weight: 600; z-index: 200; box-shadow: 0 4px 12px rgba(0,0,0,0.2); opacity: 0; pointer-events: none; transition: 0.3s; }
         .toast-notif.show { opacity: 1; top: 40px; }
+    
+        /* Nav admin kini 5 item: perkecil padding agar semuanya muat */
+        .bottom-nav { padding-left: 6px; padding-right: 6px; }
+        .bottom-nav .nav-item { flex: 1; min-width: 0; padding: 10px 4px; }
+        /* ===== Tab Warung (akun merchant untuk kantin bawaan) ===== */
+        .cn-note { background: #FFF6DB; border: 1px solid #F3D9A0; color: #8A5A00; font-size: 12px; line-height: 1.5; border-radius: 12px; padding: 12px 14px; margin-bottom: 16px; }
+        .cn-row { background: #FFF; border: 1px solid #E5E5E5; border-radius: 16px; padding: 14px; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+        .cn-row.has { cursor: pointer; }
+        .cn-row.none { border-color: #F3D9A0; background: #FFFDF7; }
+        .cn-av { width: 44px; height: 44px; border-radius: 50%; background: #FFF6DB; color: #B07400; font-weight: 800; font-size: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; }
+        .cn-av img { width: 100%; height: 100%; object-fit: cover; }
+        .cn-info { flex: 1; min-width: 0; }
+        .cn-info h4 { font-size: 14px; font-weight: 700; color: #000; margin: 0 0 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .cn-info p { font-size: 11px; color: #666; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .cn-chip { display: inline-block; font-size: 9px; font-weight: 800; padding: 3px 8px; border-radius: 10px; margin-top: 5px; }
+        .cn-chip.ok { background: #E8F5E9; color: #2E7D32; }
+        .cn-chip.wait { background: #E3F2FD; color: #1976D2; }
+        .cn-chip.sus { background: #FFF3E0; color: #F57C00; }
+        .cn-chip.none { background: #FFF1D6; color: #B07400; }
+        .cn-btn { background: #DC9808; color: #FFF; border: none; border-radius: 12px; padding: 10px 14px; font-family: inherit; font-weight: 700; font-size: 12px; cursor: pointer; flex-shrink: 0; }
+        .cn-btn:active { transform: scale(0.96); }
+        .cn-arrow { color: #B0B0B0; font-size: 18px; flex-shrink: 0; }
+        .cf-field { margin-bottom: 12px; }
+        .cf-field label { display: block; font-size: 11px; font-weight: 700; color: #444; margin-bottom: 5px; text-transform: uppercase; }
+        .cf-input { width: 100%; padding: 12px 14px; border: 1px solid #D5D9DE; border-radius: 12px; background: #FFF; font-family: inherit; font-size: 14px; color: #000; outline: none; }
+        .cf-input:focus { border-color: #DC9808; box-shadow: 0 0 0 3px rgba(220,152,8,0.15); }
+        .cf-input[readonly] { background: #F3F4F6; color: #555; }
+        .cf-pass { display: flex; gap: 8px; }
+        .cf-gen { flex-shrink: 0; border: 1px solid #DC9808; background: #FFF; color: #B07400; border-radius: 12px; padding: 0 12px; font-family: inherit; font-weight: 700; font-size: 12px; cursor: pointer; }
+        .cf-err { display: none; color: #C62828; font-size: 12px; font-weight: 600; margin: 4px 0 10px; line-height: 1.4; }
+        .cf-actions { display: flex; gap: 10px; margin-top: 6px; }
+        .cf-actions button { flex: 1; padding: 13px; border-radius: 12px; font-family: inherit; font-weight: 700; font-size: 14px; border: none; cursor: pointer; }
+        .cf-cancel { background: #E5E5E5; color: #333; }
+        .cf-submit { background: #DC9808; color: #FFF; }
+        .cf-submit:disabled { opacity: 0.6; cursor: wait; }
+        .cf-cred { background: #FFF; border: 1px dashed #DC9808; border-radius: 12px; padding: 14px; font-size: 13px; line-height: 1.7; word-break: break-all; margin-bottom: 12px; }
+        .cf-cred b { display: inline-block; min-width: 76px; color: #666; font-weight: 600; }
+        .cf-warn { background: #FFF3E0; color: #8A4B00; font-size: 12px; line-height: 1.5; border-radius: 10px; padding: 10px 12px; margin-bottom: 12px; }
     </style>
 </head>
 <body>
@@ -126,6 +164,16 @@
                 </div>
             </div>
 
+            <!-- TAMPILAN: WARUNG (akun untuk kantin bawaan) -->
+            <div id="adminCanteenView" class="d-none">
+                <div style="margin-bottom: 14px;">
+                    <h2 style="font-size: 18px; color: #000; margin-bottom: 4px;">Warung Kampus</h2>
+                    <p id="canteenSummary" style="font-size: 12px; color: #666;">Memuat...</p>
+                </div>
+                <div class="cn-note">Warung yang belum punya akun <b>tidak bisa menerima pesanan</b>. Buat akunnya di sini. Menu, foto, dan kategori yang sudah ada otomatis tertaut lewat nama warung, jadi tidak perlu input ulang.</div>
+                <div class="member-list" id="canteenList"></div>
+            </div>
+
             <!-- TAMPILAN 3: REQUESTS / PENGAJUAN -->
             <div id="adminRequestsView" class="d-none">
                 <div style="margin-bottom: 20px;">
@@ -168,6 +216,10 @@
                 <span style="font-size: 20px;">👥</span>
                 <span>Members</span>
             </div>
+            <div class="nav-item" onclick="window.switchAdminTab('canteens', this)">
+                <span style="font-size: 20px;">🏪</span>
+                <span>Warung</span>
+            </div>
             <div class="nav-item" onclick="window.switchAdminTab('requests', this)">
                 <span style="font-size: 20px; position: relative;">
                     📋
@@ -181,6 +233,37 @@
             </div>
         </nav>
         
+        <!-- MODAL: BUAT AKUN WARUNG -->
+        <div class="custom-modal-overlay" id="createAccOverlay">
+            <div class="detail-modal">
+                <div class="modal-header-top">
+                    <h3 id="ccTitle">Buat Akun Warung</h3>
+                    <button class="btn-close-modal" onclick="window.closeCreateAccount()" aria-label="Tutup">×</button>
+                </div>
+                <div id="ccFormBox">
+                    <div class="cf-field"><label>Nama Warung</label><input class="cf-input" id="ccStore" readonly></div>
+                    <div class="cf-field"><label for="ccOwner">Nama Pemilik / Penanggung Jawab</label><input class="cf-input" id="ccOwner" maxlength="60" autocomplete="off"></div>
+                    <div class="cf-field"><label for="ccEmail">Email Login</label><input class="cf-input" id="ccEmail" type="email" placeholder="contoh: hokben@bbite.id" autocomplete="off"></div>
+                    <div class="cf-field"><label for="ccPass">Password</label>
+                        <div class="cf-pass"><input class="cf-input" id="ccPass" type="text" autocomplete="off" spellcheck="false"><button type="button" class="cf-gen" onclick="window.generateCcPass()">Generate</button></div></div>
+                    <div class="cf-field"><label for="ccPhone">No. WhatsApp (opsional)</label><input class="cf-input" id="ccPhone" type="tel" inputmode="tel" placeholder="08xxxxxxxxxx" autocomplete="off"></div>
+                    <div class="cf-err" id="ccErr" role="alert"></div>
+                    <div class="cf-actions">
+                        <button type="button" class="cf-cancel" onclick="window.closeCreateAccount()">Batal</button>
+                        <button type="button" class="cf-submit" id="ccSubmit" onclick="window.submitCreateAccount()">Buat Akun</button>
+                    </div>
+                </div>
+                <div id="ccDoneBox" style="display:none;">
+                    <div class="cf-warn">Akun berhasil dibuat. <b>Catat atau salin sekarang</b>: password tidak bisa dilihat lagi setelah jendela ini ditutup.</div>
+                    <div class="cf-cred" id="ccCred"></div>
+                    <div class="cf-actions">
+                        <button type="button" class="cf-cancel" id="ccCopyBtn" onclick="window.copyCcCred()">Salin</button>
+                        <button type="button" class="cf-submit" onclick="window.closeCreateAccount()">Selesai</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="custom-modal-overlay" id="actionModalOverlay">
             <div class="detail-modal">
                 <div class="modal-header-top">
@@ -248,8 +331,9 @@
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, deleteDoc, doc, updateDoc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
         const firebaseConfig = {
           apiKey: "AIzaSyDleckycfk_xnbhXMnPivz3F1NCS9x5wCQ",
@@ -285,6 +369,7 @@
                 if (querySnapshot.empty) {
                     memberList.innerHTML = "<p style='text-align:center; font-size: 12px; color: #666;'>Belum ada data member yang mendaftar.</p>";
                     document.getElementById("totalUsersCount").innerText = 0;
+                    window.renderCanteens();
                     return;
                 }
 
@@ -377,11 +462,155 @@
                 document.getElementById("totalUsersCount").innerText = activeCount;
                 document.getElementById("pendingCount").innerText = pendingCount;
                 document.getElementById("vendorCount").innerText = vendorCount;
+                window.renderCanteens();
                 
             }, (error) => {
                 console.log(error);
                 document.getElementById("dynamicMemberList").innerHTML = "<p style='text-align:center;'>Gagal memuat data.</p>";
             });
+        };
+
+
+        // =====================================================================
+        // TAB WARUNG: buat akun merchant untuk kantin bawaan (tanpa signup & tanpa input ulang menu)
+        // Menu / foto / kategori tertaut lewat businessName yang SAMA PERSIS dengan nama kantin bawaan.
+        // =====================================================================
+        const DEFAULT_CANTEENS = [
+            { name: "Hokben", category: "Fast Food" },
+            { name: "Cerita Cinta", category: "" },
+            { name: "A&W", category: "Fast Food" },
+            { name: "Bakmi Efata", category: "Indonesian" },
+            { name: "Warteg GB", category: "Indonesian" },
+            { name: "Starbucks", category: "Beverages & Cafe" },
+            { name: "Yoshinoya", category: "Fast Food" },
+            { name: "Rasela", category: "" }
+        ];
+        const esc = (v) => String(v == null ? "" : v).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+        const norm = (v) => String(v || "").trim().toLowerCase();
+        const initialsOf = (n) => { const w = String(n || "?").replace(/[^A-Za-z0-9 ]/g, " ").trim().split(/\s+/).filter(Boolean); return (w.length > 1 ? w[0][0] + w[1][0] : (w[0] || "?").slice(0, 2)).toUpperCase(); };
+        window.canteenRows = [];
+        let ccTarget = null, ccCredText = "";
+
+        window.renderCanteens = function() {
+            const host = document.getElementById("canteenList");
+            if (!host) return;
+            const merchants = Object.entries(window.bbiteUsers).filter(([, u]) => u.role === "Merchant").map(([id, u]) => ({ id, ...u }));
+            const best = (list) => list.find(m => m.status === "active") || list[0] || null;
+
+            const rows = DEFAULT_CANTEENS.map(c => ({ name: c.name, category: c.category, acc: best(merchants.filter(m => norm(m.businessName) === norm(c.name))) }));
+            const known = new Set(DEFAULT_CANTEENS.map(c => norm(c.name)));
+            merchants.filter(m => !known.has(norm(m.businessName))).forEach(m => rows.push({ name: m.businessName || m.name || "Merchant", category: m.category || "", acc: m, extra: true }));
+            window.canteenRows = rows;
+
+            const activeN = rows.filter(r => r.acc && (r.acc.status || "active") === "active").length;
+            document.getElementById("canteenSummary").innerText = activeN + " dari " + rows.length + " warung sudah punya akun aktif";
+
+            host.innerHTML = rows.map((r, i) => {
+                const a = r.acc, st = a ? (a.status || "active") : "";
+                const av = (a && a.photoBase64) ? `<img src="${esc(a.photoBase64)}" alt="">` : esc(initialsOf(r.name));
+                if (!a) {
+                    return `<div class="cn-row none"><div class="cn-av">${av}</div>
+                        <div class="cn-info"><h4>${esc(r.name)}</h4><p>${esc(r.category || "Kantin kampus")}</p><span class="cn-chip none">BELUM ADA AKUN</span></div>
+                        <button type="button" class="cn-btn" onclick="window.openCreateAccount(${i})">Buat Akun</button></div>`;
+                }
+                const chip = st === "pending" ? '<span class="cn-chip wait">MENUNGGU ACC</span>'
+                           : st === "suspended" ? '<span class="cn-chip sus">SUSPENDED</span>'
+                           : '<span class="cn-chip ok">AKUN AKTIF</span>';
+                return `<div class="cn-row has" onclick="window.openDetailModal('${esc(a.id)}')"><div class="cn-av">${av}</div>
+                    <div class="cn-info"><h4>${esc(r.name)}</h4><p>${esc(a.email || "-")}</p>${chip}</div><span class="cn-arrow">›</span></div>`;
+            }).join("");
+        };
+
+        window.generateCcPass = function() {
+            const abc = "ABCDEFGHJKMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789"; // tanpa karakter mirip (0/O, 1/l/I)
+            const buf = new Uint32Array(10); crypto.getRandomValues(buf);
+            document.getElementById("ccPass").value = Array.from(buf, n => abc[n % abc.length]).join("");
+        };
+        const ccErr = (m) => { const e = document.getElementById("ccErr"); e.innerText = m || ""; e.style.display = m ? "block" : "none"; };
+        ["ccEmail", "ccPass", "ccOwner"].forEach(id => document.getElementById(id).addEventListener("input", () => ccErr("")));
+
+        window.openCreateAccount = function(i) {
+            ccTarget = window.canteenRows[i]; if (!ccTarget) return;
+            document.getElementById("ccTitle").innerText = "Buat Akun Warung";
+            document.getElementById("ccStore").value = ccTarget.name;
+            document.getElementById("ccOwner").value = "Owner " + ccTarget.name;
+            document.getElementById("ccEmail").value = "";
+            document.getElementById("ccPhone").value = "";
+            window.generateCcPass(); ccErr("");
+            document.getElementById("ccFormBox").style.display = "block";
+            document.getElementById("ccDoneBox").style.display = "none";
+            document.getElementById("ccSubmit").disabled = false; document.getElementById("ccSubmit").innerText = "Buat Akun";
+            document.getElementById("createAccOverlay").style.display = "flex";
+            setTimeout(() => document.getElementById("ccEmail").focus(), 50);
+        };
+        window.closeCreateAccount = function() { document.getElementById("createAccOverlay").style.display = "none"; ccTarget = null; ccCredText = ""; };
+
+        window.submitCreateAccount = async function() {
+            if (!ccTarget) return;
+            const store = ccTarget.name;
+            const owner = document.getElementById("ccOwner").value.trim() || ("Owner " + store);
+            const email = document.getElementById("ccEmail").value.trim().toLowerCase();
+            const pass = document.getElementById("ccPass").value;
+            const phone = document.getElementById("ccPhone").value.trim();
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { ccErr("Format email belum benar."); return; }
+            if (pass.length < 6) { ccErr("Password minimal 6 karakter."); return; }
+            ccErr("");
+            const btn = document.getElementById("ccSubmit"); btn.disabled = true; btn.innerText = "Membuat akun...";
+
+            // Aplikasi kedua khusus pembuatan akun, supaya sesi admin tidak ikut berganti
+            const secApp = getApps().find(a => a.name === "adminSecondary") || initializeApp(firebaseConfig, "adminSecondary");
+            const secAuth = getAuth(secApp), secDb = getFirestore(secApp);
+            const profile = (uid) => ({
+                name: owner, email, nim: "-", role: "Merchant", roles: ["Merchant"], status: "active",
+                businessName: store, category: ccTarget.category || "", phone, businessProof: "", photoBase64: "",
+                createdByAdmin: true, createdAt: Date.now()
+            });
+            try {
+                let uid;
+                try {
+                    const cred = await createUserWithEmailAndPassword(secAuth, email, pass);
+                    uid = cred.user.uid;
+                    try { await updateProfile(cred.user, { displayName: owner }); } catch (e) {}
+                } catch (e) {
+                    // Email sudah terdaftar: bila itu akun login yang dulu gagal membuat dokumen toko (tanpa data users), lengkapi saja
+                    if (e.code !== "auth/email-already-in-use") throw e;
+                    let cred;
+                    try { cred = await signInWithEmailAndPassword(secAuth, email, pass); } catch (e2) { throw e; }
+                    uid = cred.user.uid;
+                    const ex = await getDoc(doc(secDb, "users", uid));
+                    if (ex.exists()) throw e;
+                }
+                await setDoc(doc(secDb, "users", uid), profile(uid));
+                ccCredText = "BBite Merchant\nWarung   : " + store + "\nEmail    : " + email + "\nPassword : " + pass +
+                             "\nLogin    : " + location.href.replace(/admin\.html.*$/, "index.html");
+                document.getElementById("ccCred").innerHTML = `<b>Warung</b> ${esc(store)}<br><b>Email</b> ${esc(email)}<br><b>Password</b> ${esc(pass)}`;
+                document.getElementById("ccTitle").innerText = "Akun Dibuat";
+                document.getElementById("ccFormBox").style.display = "none";
+                document.getElementById("ccDoneBox").style.display = "block";
+                document.getElementById("ccCopyBtn").innerText = "Salin";
+            } catch (e) {
+                const map = {
+                    "auth/email-already-in-use": "Email ini sudah dipakai akun lain. Gunakan email berbeda.",
+                    "auth/invalid-email": "Format email tidak valid.",
+                    "auth/weak-password": "Password terlalu lemah. Gunakan minimal 6 karakter.",
+                    "auth/network-request-failed": "Koneksi bermasalah. Coba lagi.",
+                    "auth/operation-not-allowed": "Login Email/Password belum diaktifkan di Firebase Console (Authentication > Sign-in method)."
+                };
+                ccErr(map[e.code] || ("Gagal membuat akun: " + (e.message || e.code)));
+                btn.disabled = false; btn.innerText = "Buat Akun";
+            } finally {
+                try { await signOut(secAuth); } catch (e) {}
+            }
+        };
+
+        window.copyCcCred = async function() {
+            const b = document.getElementById("ccCopyBtn");
+            try { await navigator.clipboard.writeText(ccCredText); b.innerText = "Tersalin ✓"; }
+            catch (e) {
+                const ta = document.createElement("textarea"); ta.value = ccCredText; document.body.appendChild(ta); ta.select();
+                try { document.execCommand("copy"); b.innerText = "Tersalin ✓"; } catch (e2) { b.innerText = "Salin manual"; }
+                ta.remove();
+            }
         };
 
         // Panggil fetch saat halaman dimuat
@@ -394,6 +623,7 @@
         window.switchAdminTab = function(tabName, element) {
             document.getElementById('adminDashboardView').classList.add('d-none');
             document.getElementById('adminMembersView').classList.add('d-none');
+            document.getElementById('adminCanteenView').classList.add('d-none');
             document.getElementById('adminRequestsView').classList.add('d-none');
             document.getElementById('adminSettingsView').classList.add('d-none');
             
@@ -411,6 +641,10 @@
                 document.getElementById('adminMembersView').classList.remove('d-none');
                 headerTitle.innerHTML = '👥 Members';
                 headerDesc.innerText = "Daftar pengguna aktif di sistem.";
+            } else if (tabName === 'canteens') {
+                document.getElementById('adminCanteenView').classList.remove('d-none');
+                headerTitle.innerHTML = '🏪 Warung';
+                headerDesc.innerText = "Akun merchant untuk setiap warung kampus.";
             } else if (tabName === 'requests') {
                 document.getElementById('adminRequestsView').classList.remove('d-none');
                 headerTitle.innerHTML = '📋 Requests';
