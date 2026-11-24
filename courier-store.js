@@ -284,6 +284,14 @@
                 return { order: get(id), status: s.active[id].status, checked: s.active[id].checked, at: s.active[id].at };
             }).filter(function (a) { return a.order; }).sort(function (a, b) { return a.at - b.at; });
         },
+        // Status makanan di kantin (dari Firestore, diubah oleh merchant lewat "Mark as Ready for Pickup"):
+        // "preparing" = masih dimasak, "ready" = siap diambil. Order demo/lokal selalu dianggap siap.
+        kitchenState: function (id) {
+            var o = get(id);
+            if (!o || !o._fs) return "ready";
+            return (o._status === "ready" || o._status === "completed") ? "ready" : "preparing";
+        },
+        kitchenReady: function (id) { return this.kitchenState(id) === "ready"; },
         statusOf: function (id) {
             var s = load(); id = Number(id);
             if (s.active[id]) return s.active[id].status;
@@ -310,6 +318,8 @@
             if (!a) return null;
             var fo = get(id);
             if (a.status === "picking") {
+                // makanan belum ditandai siap oleh kantin -> belum boleh "picked up"
+                if (!this.kitchenReady(id)) return this.statusOf(id);
                 a.status = "delivering";
                 // kurir sudah ambil makanan -> status di halaman Track pemesan berubah jadi "Heading to your location"
                 fsWrite(fo, function (F) { return { deliveryStatus: "delivering", pickedUpAt: F.serverTimestamp() }; });

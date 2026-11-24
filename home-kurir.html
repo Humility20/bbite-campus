@@ -229,10 +229,16 @@
             document.getElementById("statDeliveries").textContent = st.deliveries;
             document.getElementById("statEarnings").textContent = rp(st.earnings);
         }
+        function kTag(o) {
+            if (!o._fs) return "";
+            const ready = CourierStore.kitchenReady(o.id);
+            return `<div style="margin:0 0 10px"><span style="display:inline-block;font-size:10.5px;font-weight:800;padding:4px 10px;border-radius:12px;background:${ready ? "#DDF5E6" : "#FFF1D6"};color:${ready ? "#15803D" : "#B07400"}">${ready ? "Food is ready" : "Food is being prepared"}</span></div>`;
+        }
         function cardHTML(o) {
             return `
             <div class="order-card" data-id="${o.id}">
                 <div class="order-head"><span>ORDER #${o.id}</span><span class="order-time">${esc(CourierStore.ago(o))}</span></div>
+                ${kTag(o)}
                 <div class="route">
                     <div class="stop"><div class="stop-ico pickup">${shopIcon}</div><div><small>PICKUP</small><strong>${esc(o.pickup)}</strong></div></div>
                     <div class="route-dots"><i></i><i></i><i></i></div>
@@ -244,15 +250,60 @@
                 </div>
             </div>`;
         }
-        function renderOrders() {
+        // ===== Notifikasi order baru: bunyi chime + getar + toast =====
+        // Browser baru mengizinkan suara setelah ada ketukan di halaman, jadi AudioContext "dibuka" saat kurir pertama kali menyentuh layar.
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+        function unlockAudio() {
+            try {
+                if (!AudioCtx) return;
+                if (!audioCtx) audioCtx = new AudioCtx();
+                if (audioCtx.state === "suspended") audioCtx.resume();
+            } catch (e) {}
+        }
+        ["pointerdown", "touchstart", "keydown"].forEach(ev => window.addEventListener(ev, unlockAudio, { passive: true }));
+        function playNewOrderChime() {
+            try {
+                unlockAudio();
+                const ctx = audioCtx;
+                if (!ctx) return;
+                [880, 1175, 1480].forEach((f, i) => {
+                    const o = ctx.createOscillator(), g = ctx.createGain();
+                    o.type = "sine"; o.frequency.value = f; o.connect(g); g.connect(ctx.destination);
+                    const t = ctx.currentTime + i * 0.17;
+                    g.gain.setValueAtTime(0.0001, t);
+                    g.gain.exponentialRampToValueAtTime(0.28, t + 0.02);
+                    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.28);
+                    o.start(t); o.stop(t + 0.3);
+                });
+            } catch (e) { /* suara diblokir browser: abaikan, toast tetap muncul */ }
+            try { if (navigator.vibrate) navigator.vibrate([200, 100, 200]); } catch (e) {}
+        }
+        const seenOrders = new Set();   // id order yang sudah pernah tampil, supaya hanya order BARU yang membunyikan chime
+        let ordersBaseline = false;     // snapshot Firestore pertama = data awal, jangan dibunyikan
+        function announceNewOrders(list) {
+            const fresh = list.filter(o => !seenOrders.has(o.id));
+            list.forEach(o => seenOrders.add(o.id));
+            const online = !document.getElementById("onlineToggle").classList.contains("off");
+            if (!fresh.length || !online) return;   // kurir sedang Offline: tidak dibunyikan
+            playNewOrderChime();
+            showToast(fresh.length === 1 ? "Order baru dari " + esc(fresh[0].pickup) + "!" : fresh.length + " order baru masuk!");
+        }
+        function renderOrders(announce) {
             const list = CourierStore.available();
             orderList.innerHTML = list.length ? list.map(cardHTML).join("")
                 : '<div class="no-orders">Belum ada order masuk.<br>Order baru akan muncul di sini.</div>';
+            if (announce === true) announceNewOrders(list); else list.forEach(o => seenOrders.add(o.id));
         }
         renderStats();
         renderOrders();
-        // Order baru dari pemesan (Firestore) muncul otomatis tanpa refresh
-        CourierStore.onChange(() => { renderStats(); renderOrders(); });
+        // Order baru dari pemesan (Firestore) muncul otomatis tanpa refresh, dan membunyikan chime
+        CourierStore.onChange(() => {
+            const announce = ordersBaseline;   // perubahan pertama = muat data awal
+            ordersBaseline = true;
+            renderStats();
+            renderOrders(announce);
+        });
         // Saat kembali ke halaman ini lewat tombol Back, muat ulang angka dan daftar order
         window.addEventListener("pageshow", (e) => { if (e.persisted) { renderStats(); renderOrders(); } });
 

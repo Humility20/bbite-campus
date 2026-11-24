@@ -25,6 +25,12 @@
         .o-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
         .o-head strong { font-size: 15px; font-weight: 800; color: #0B1220; }
         .badge { font-size: 10.5px; font-weight: 700; padding: 4px 10px; border-radius: 12px; }
+        .k-tag { display: inline-block; font-size: 10.5px; font-weight: 800; padding: 4px 10px; border-radius: 12px; margin-top: 10px; }
+        .k-tag.prep { background: #FFF1D6; color: #B07400; }
+        .k-tag.ready { background: #DDF5E6; color: #15803D; }
+        .kitchen { margin-top: 12px; padding: 10px 12px; border-radius: 12px; font-size: 12px; font-weight: 700; line-height: 1.4; }
+        .kitchen.prep { background: #FFF1D6; color: #B07400; }
+        .kitchen.ready { background: #DDF5E6; color: #15803D; }
         .b-pick { background: #FFF6DB; color: #C98A00; }
         .b-deliv { background: #E3F2FD; color: #1E88E5; }
         .b-done { background: #ECFDF3; color: #15803D; }
@@ -318,6 +324,10 @@
         }
 
         // ===== Daftar Active / History =====
+        function kTag(o, status) {
+            if (!o._fs || status !== "picking") return "";
+            return CourierStore.kitchenReady(o.id) ? '<span class="k-tag ready">Food is ready</span>' : '<span class="k-tag prep">Food is being prepared</span>';
+        }
         function cardHTML(o, status, foot) {
             const st = STATUS[status];
             return `
@@ -328,6 +338,7 @@
                     ${arrowSvg}
                     <div class="o-stop"><div class="mini-ico drop">${pinSvg}</div><span>${esc(o.dropoff)}</span></div>
                 </div>
+                ${kTag(o, status)}
                 <div class="o-foot"><span>Customer: ${esc(o.customer)}</span>${foot}</div>
             </div>`;
         }
@@ -410,6 +421,7 @@
                 </div>
                 <div class="dp-card">
                     <div class="pick-head"><div class="stop-ico mini-ico pickup" style="width:34px;height:34px">${shopSvg}</div><div><small>PICKUP FROM</small><strong>${esc(o.pickup)}</strong></div></div>
+                    <div id="kitchenBanner"></div>
                     <div class="check-list">${o.items.map((i, idx) => `
                         <label class="check-item"><input type="checkbox" data-idx="${idx}" ${checked[idx] ? "checked" : ""} ${locked ? "disabled" : ""}><span>${i.qty}x ${esc(i.name)}</span></label>`).join("")}
                     </div>
@@ -419,7 +431,18 @@
                     ${stepHTML("Picking up Food", st === "picking" ? "current" : "done")}
                     ${stepHTML("Delivering", st === "picking" ? "" : (st === "delivering" ? "current" : "done"))}
                 </div>`;
+            renderKitchenBanner();
             updateFooter(st, o);
+        }
+        // Info status makanan dari kantin; ikut berubah otomatis saat kantin menandai siap
+        function renderKitchenBanner() {
+            const el = $("kitchenBanner");
+            if (!el) return;
+            const o = currentId == null ? null : CourierStore.get(currentId);
+            if (!o || !o._fs || CourierStore.statusOf(currentId) !== "picking") { el.innerHTML = ""; return; }
+            el.innerHTML = CourierStore.kitchenReady(currentId)
+                ? '<div class="kitchen ready">Food is ready. Pick it up at the canteen.</div>'
+                : '<div class="kitchen prep">The canteen is still preparing this order. You can swipe once it is marked ready.</div>';
         }
         function updateFooter(st, o) {
             const done = st === "done";
@@ -473,6 +496,11 @@
 
         function onSwiped() {
             const st = CourierStore.statusOf(currentId);
+            if (st === "picking" && !CourierStore.kitchenReady(currentId)) {
+                resetKnob(true);
+                showToast("Makanan belum siap. Tunggu kantin menandai pesanan siap diambil");
+                return;
+            }
             if (st === "picking" && !CourierStore.allChecked(currentId)) {
                 resetKnob(true);
                 showToast("Centang semua menu yang sudah diambil dulu");
@@ -588,7 +616,7 @@
 
         renderLists();
         // Sinkron dengan Firestore (mis. order dilanjutkan dari perangkat lain)
-        CourierStore.onChange(() => renderLists());
+        CourierStore.onChange(() => { renderLists(); renderKitchenBanner(); });
     </script>
 </body>
 </html>
