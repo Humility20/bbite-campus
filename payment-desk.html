@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Desk - BBite</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif; background: #F6F7F9; color: #111827; min-height: 100vh; }
+        .wrap { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
+        .d-none { display: none !important; }
+
+        /* Header */
+        .top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; background: #FFF; border: 1px solid #E5E7EB; border-radius: 18px; padding: 16px 20px; margin-bottom: 16px; }
+        .top h1 { font-size: 20px; font-weight: 800; }
+        .top p { font-size: 12px; color: #6B7280; margin-top: 3px; }
+        .top-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+        .chip { font-size: 12px; font-weight: 700; padding: 8px 12px; border-radius: 12px; background: #FFF3D6; color: #8A5A00; }
+        .chip.green { background: #E6F6EC; color: #15803D; }
+        .btn { font-family: inherit; font-size: 13px; font-weight: 700; border-radius: 12px; padding: 10px 14px; cursor: pointer; border: 1.5px solid #DC9808; background: #FFF; color: #B07400; text-decoration: none; transition: .15s; white-space: nowrap; }
+        .btn:hover { background: #FFF8E6; }
+        .btn:active { transform: scale(.97); }
+        .btn.primary { background: #DC9808; color: #FFF; }
+        .btn.primary:hover { background: #C98A00; }
+        .btn.gray { border-color: #D1D5DB; color: #4B5563; }
+        .btn[disabled] { opacity: .45; cursor: not-allowed; pointer-events: none; }
+
+        /* Cara pakai */
+        details.help { background: #FFF; border: 1px solid #E5E7EB; border-radius: 16px; padding: 12px 18px; margin-bottom: 20px; font-size: 13px; color: #374151; }
+        details.help summary { cursor: pointer; font-weight: 700; }
+        details.help ol { margin: 10px 0 4px 18px; line-height: 1.7; }
+        details.help .warn { margin-top: 8px; font-size: 12px; color: #8A5A00; background: #FFF3D6; border-radius: 10px; padding: 8px 12px; }
+
+        h2.sec { font-size: 14px; font-weight: 800; margin: 6px 2px 12px; display: flex; align-items: center; gap: 8px; }
+        h2.sec small { font-weight: 600; color: #9AA0AA; font-size: 12px; }
+
+        /* Kartu pembayaran */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 14px; margin-bottom: 28px; }
+        .card { background: #FFF; border: 1px solid #E5E7EB; border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+        .card.fresh { animation: fresh 2.4s ease-out; }
+        @keyframes fresh { 0% { border-color: #DC9808; box-shadow: 0 0 0 4px rgba(220,152,8,.25); } 100% { border-color: #E5E7EB; box-shadow: none; } }
+        .card.expired { opacity: .55; }
+        .row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+        .oid { font-size: 15px; font-weight: 800; }
+        .left { font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 12px; background: #E6F6EC; color: #15803D; font-variant-numeric: tabular-nums; }
+        .left.warn { background: #FFF3D6; color: #B07400; }
+        .left.late { background: #FDE8E8; color: #C62828; }
+        .who { font-size: 15px; font-weight: 700; }
+        .meta { font-size: 12px; color: #6B7280; }
+        .amount { font-size: 26px; font-weight: 800; letter-spacing: -.5px; }
+        .actions { display: flex; flex-direction: column; gap: 8px; margin-top: 2px; }
+        .note { font-size: 12px; color: #8A5A00; background: #FFF3D6; border-radius: 10px; padding: 8px 10px; line-height: 1.45; }
+        .tag-prod { font-size: 10px; font-weight: 800; background: #FDE8E8; color: #C62828; padding: 3px 8px; border-radius: 8px; }
+
+        .empty { background: #FFF; border: 1px dashed #D1D5DB; border-radius: 16px; padding: 38px 20px; text-align: center; color: #6B7280; font-size: 13px; line-height: 1.6; margin-bottom: 28px; }
+        .empty b { display: block; color: #111827; font-size: 15px; margin-bottom: 4px; }
+
+        /* Sudah lunas */
+        .paid-list { background: #FFF; border: 1px solid #E5E7EB; border-radius: 16px; overflow: hidden; }
+        .paid-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 11px 16px; font-size: 13px; border-top: 1px solid #F1F2F4; }
+        .paid-row:first-child { border-top: none; }
+        .paid-row .ok { color: #15803D; font-weight: 800; margin-right: 8px; }
+        .paid-row small { color: #9AA0AA; }
+        .paid-empty { padding: 18px 16px; font-size: 13px; color: #9AA0AA; text-align: center; }
+
+        .toast { position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%) translateY(20px); background: #0B1220; color: #FFF; font-size: 13px; font-weight: 600; padding: 12px 18px; border-radius: 12px; opacity: 0; pointer-events: none; transition: .25s; z-index: 50; max-width: calc(100% - 32px); text-align: center; }
+        .toast.show { opacity: 1; transform: translateX(-50%); }
+    </style>
+</head>
+<body>
+    <script>
+        // Hanya admin: sesi dibuat saat admin login di index.html (sama seperti admin.html)
+        if (localStorage.getItem("bbite_admin_session") !== "active") {
+            window.location.replace("index.html");
+        }
+    </script>
+
+    <div class="wrap">
+        <div class="top">
+            <div>
+                <h1>Payment Desk</h1>
+                <p>Pembayaran QRIS peserta yang menunggu dibayar lewat simulator Midtrans (Sandbox)</p>
+            </div>
+            <div class="top-actions">
+                <span class="chip" id="chipWaiting">Menunggu: 0</span>
+                <span class="chip green" id="chipPaid">Lunas hari ini: 0</span>
+                <button type="button" class="btn gray" id="btnSound">Suara: Mati</button>
+                <button type="button" class="btn primary" id="btnSim">Buka simulator Midtrans</button>
+                <a class="btn gray" href="admin.html">Kembali ke Admin</a>
+            </div>
+        </div>
+
+        <details class="help" open>
+            <summary>Cara pakai (4 langkah)</summary>
+            <ol>
+                <li>Peserta memesan di aplikasi sampai muncul layar <b>Payment (QRIS)</b>. Pesanannya otomatis muncul di sini.</li>
+                <li>Klik <b>Salin &amp; buka simulator</b> pada kartu peserta tersebut.</li>
+                <li>Di simulator Midtrans, <b>paste</b> link QR lalu selesaikan pembayarannya.</li>
+                <li>Dalam beberapa detik pesanan peserta otomatis masuk ke merchant dan kartunya pindah ke daftar <b>Sudah lunas</b>.</li>
+            </ol>
+            <div class="warn">Pastikan layar pembayaran di HP peserta <b>tetap terbuka</b> sampai muncul tulisan sukses. Aplikasi peserta yang mengecek pembayaran dan meneruskan pesanan ke merchant. Link QR hanya berlaku sekitar 15 menit.</div>
+        </details>
+
+        <h2 class="sec">Menunggu pembayaran <small id="secWaitingNote"></small></h2>
+        <div id="waitingGrid" class="grid"></div>
+        <div id="waitingEmpty" class="empty"><b>Belum ada pembayaran yang menunggu</b>Pesanan peserta akan muncul di sini secara real-time.</div>
+
+        <h2 class="sec">Sudah lunas <small>(30 menit terakhir)</small></h2>
+        <div class="paid-list" id="paidList"><div class="paid-empty">Belum ada.</div></div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script type="module">
+        import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDleckycfk_xnbhXMnPivz3F1NCS9x5wCQ",
+            authDomain: "bbite-campus.firebaseapp.com",
+            projectId: "bbite-campus"
+        };
+        const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+        const db = getFirestore(app);
+
+        const SIMULATOR_URL = "https://simulator.sandbox.midtrans.com/v2/qris/index";
+        const SIM_TAB = "bbite-midtrans-sim";   // nama tab: klik berikutnya memakai tab simulator yang sama
+        const EXPIRY_MIN = 15;                  // samakan dengan expiry_duration di api/create-payment.js
+        const PAID_WINDOW_MIN = 30;
+
+        const $ = (id) => document.getElementById(id);
+        const esc = (t) => String(t == null ? "" : t).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+        const rupiah = (n) => "Rp " + (Number(n) || 0).toLocaleString("id-ID");
+        const tsMs = (t) => (t && typeof t.toMillis === "function") ? t.toMillis() : null;
+        const dayWIB = (ms) => new Date(ms).toLocaleDateString("sv-SE", { timeZone: "Asia/Jakarta" });
+        const shortId = (id) => "#BB-" + String(id).substring(0, 5).toUpperCase();
+
+        let waiting = [];            // [{ id, o, exp }]
+        let knownWaiting = new Set();
+        let firstLoad = true;
+        let lastSig = null;
+        const firstSeen = new Map(); // id -> waktu pertama terlihat (jika timestamp server belum ada)
+
+        // ---------- Suara notifikasi ----------
+        let audioCtx = null, soundOn = false;
+        $("btnSound").addEventListener("click", () => {
+            soundOn = !soundOn;
+            if (soundOn) { audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)(); beep(); }
+            $("btnSound").textContent = "Suara: " + (soundOn ? "Nyala" : "Mati");
+        });
+        function beep() {
+            if (!soundOn || !audioCtx) return;
+            const o = audioCtx.createOscillator(), g = audioCtx.createGain(), t = audioCtx.currentTime;
+            o.type = "sine"; o.frequency.value = 880;
+            g.gain.setValueAtTime(0.0001, t);
+            g.gain.exponentialRampToValueAtTime(0.25, t + 0.02);
+            g.gain.exponentialRampToValueAtTime(0.0001, t + 0.35);
+            o.connect(g); g.connect(audioCtx.destination); o.start(t); o.stop(t + 0.4);
+        }
+
+        function toast(msg) {
+            const el = $("toast"); el.textContent = msg; el.classList.add("show");
+            clearTimeout(toast._t); toast._t = setTimeout(() => el.classList.remove("show"), 2600);
+        }
+
+        function openSimulator() { window.open(SIMULATOR_URL, SIM_TAB); }
+        $("btnSim").addEventListener("click", openSimulator);
+
+        async function copyText(text) {
+            try { await navigator.clipboard.writeText(text); return true; }
+            catch (e) {
+                // cadangan untuk browser yang menolak clipboard API
+                const ta = document.createElement("textarea");
+                ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+                document.body.appendChild(ta); ta.select();
+                let ok = false; try { ok = document.execCommand("copy"); } catch (e2) {}
+                ta.remove(); return ok;
+            }
+        }
+
+        // ---------- Tampilan ----------
+        function leftText(ms) {
+            const s = Math.max(0, Math.floor(ms / 1000));
+            return String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0");
+        }
+
+        function cardHTML(w) {
+            const o = w.o, p = o.payment || {};
+            const qty = (Array.isArray(o.items) ? o.items : []).reduce((a, i) => a + (Number(i.qty) || 0), 0);
+            const isProd = p.sandbox === false;
+            let body;
+            if (isProd) {
+                body = `<div class="note">Ini pembayaran <b>asli</b> (mode produksi). Simulator tidak berlaku, peserta harus membayar sendiri lewat aplikasi e-wallet/bank.</div>`;
+            } else if (!p.qrUrl) {
+                body = `<div class="note">QR sedang dibuat. Tunggu beberapa detik...</div>`;
+            } else {
+                body = `<div class="actions">
+                            <button type="button" class="btn primary" data-act="copy-open" data-id="${esc(w.id)}">Salin &amp; buka simulator</button>
+                            <button type="button" class="btn" data-act="copy" data-id="${esc(w.id)}">Salin link QR saja</button>
+                        </div>`;
+            }
+            return `<div class="card" id="card-${esc(w.id)}" data-exp="${w.exp}">
+                        <div class="row"><span class="oid">${esc(shortId(w.id))}${isProd ? ' <span class="tag-prod">PRODUKSI</span>' : ''}</span><span class="left" data-left>--:--</span></div>
+                        <div><div class="who">${esc(o.studentName || "Peserta")}</div>
+                             <div class="meta">${esc(o.merchantName || o.merchantId || "-")} &middot; ${qty} item &middot; ${esc(o.type || "")}</div></div>
+                        <div class="amount">${rupiah(o.totalPrice)}</div>
+                        ${body}
+                    </div>`;
+        }
+
+        function renderWaiting() {
+            const grid = $("waitingGrid");
+            grid.innerHTML = waiting.map(cardHTML).join("");
+            $("waitingEmpty").classList.toggle("d-none", waiting.length > 0);
+            $("chipWaiting").textContent = "Menunggu: " + waiting.length;
+            document.title = (waiting.length ? "(" + waiting.length + ") " : "") + "Payment Desk - BBite";
+            tick();
+        }
+
+        // Update hitung mundur tiap detik tanpa membangun ulang kartu (supaya klik tidak hilang)
+        function tick() {
+            const now = Date.now();
+            document.querySelectorAll("#waitingGrid .card").forEach(card => {
+                const left = Number(card.dataset.exp) - now;
+                const el = card.querySelector("[data-left]");
+                if (left <= 0) {
+                    card.classList.add("expired");
+                    el.textContent = "Kedaluwarsa"; el.className = "left late";
+                    card.querySelectorAll("button").forEach(b => b.disabled = true);
+                } else {
+                    el.textContent = leftText(left);
+                    el.className = "left" + (left < 60000 ? " late" : left < 180000 ? " warn" : "");
+                }
+            });
+        }
+        setInterval(tick, 1000);
+
+        let lastPaid = [];
+        function renderPaid() {
+            const box = $("paidList");
+            const now = Date.now();
+            const list = lastPaid.filter(x => now - x.ms < PAID_WINDOW_MIN * 60000);
+            if (!list.length) { box.innerHTML = '<div class="paid-empty">Belum ada.</div>'; return; }
+            box.innerHTML = list.map(x => {
+                const mins = Math.max(0, Math.round((now - x.ms) / 60000));
+                return `<div class="paid-row"><span><span class="ok">&#10003;</span>${esc(shortId(x.id))} &middot; ${esc(x.o.studentName || "Peserta")} <small>&middot; ${esc(x.o.merchantName || "")}</small></span><span><b>${rupiah(x.o.totalPrice)}</b> <small>&middot; ${mins < 1 ? "baru saja" : mins + " mnt lalu"}</small></span></div>`;
+            }).join("");
+        }
+
+        // ---------- Tombol di kartu ----------
+        $("waitingGrid").addEventListener("click", async (e) => {
+            const btn = e.target.closest("button[data-act]");
+            if (!btn) return;
+            const w = waiting.find(x => x.id === btn.dataset.id);
+            const url = w && w.o.payment && w.o.payment.qrUrl;
+            if (!url) { toast("Link QR belum tersedia."); return; }
+            const ok = await copyText(url);
+            toast(ok ? "Link QR disalin. Paste di simulator Midtrans." : "Gagal menyalin. Coba lagi.");
+            if (ok && btn.dataset.act === "copy-open") openSimulator();
+        });
+
+        // ---------- Data real-time ----------
+        onSnapshot(collection(db, "orders"), (snap) => {
+            const now = Date.now();
+            const today = dayWIB(now);
+            const nextWaiting = [], paid = [];
+            let paidToday = 0;
+
+            snap.forEach(d => {
+                const o = d.data();
+                let created = tsMs(o.timestamp);
+                if (created == null) { if (!firstSeen.has(d.id)) firstSeen.set(d.id, now); created = firstSeen.get(d.id); }
+
+                if (o.status === "awaiting_payment") {
+                    // QR yang umurnya jauh melewati batas sudah pasti kedaluwarsa (pesanan yatim), tidak ditampilkan
+                    if (now - created < (EXPIRY_MIN + 1) * 60000) nextWaiting.push({ id: d.id, o, exp: created + EXPIRY_MIN * 60000, created });
+                } else if (o.paymentStatus === "paid") {
+                    const ms = tsMs(o.paidAt) || created;
+                    if (dayWIB(ms) === today) paidToday++;
+                    if (now - ms < PAID_WINDOW_MIN * 60000) paid.push({ id: d.id, o, ms });
+                }
+            });
+
+            nextWaiting.sort((a, b) => a.exp - b.exp);   // yang paling mendesak (hampir habis) di atas
+            paid.sort((a, b) => b.ms - a.ms);
+            // Bangun ulang kartu hanya jika daftar benar-benar berubah (perubahan order lain tidak mengganggu klik staf)
+            const sig = nextWaiting.map(w => w.id + ":" + (w.o.payment && w.o.payment.qrUrl ? 1 : 0) + ":" + (w.o.payment && w.o.payment.sandbox)).join("|");
+            const changed = sig !== lastSig;
+            lastSig = sig;
+            waiting = nextWaiting;
+            if (changed) renderWaiting();
+            lastPaid = paid;
+            renderPaid();
+            $("chipPaid").textContent = "Lunas hari ini: " + paidToday;
+
+            // Tandai & bunyikan untuk pesanan yang baru muncul (bukan saat pertama kali halaman dibuka)
+            const ids = new Set(waiting.map(w => w.id));
+            if (!firstLoad) {
+                let fresh = 0;
+                waiting.forEach(w => { if (!knownWaiting.has(w.id)) { fresh++; const c = document.getElementById("card-" + w.id); if (c) c.classList.add("fresh"); } });
+                if (fresh) beep();
+            }
+            knownWaiting = ids; firstLoad = false;
+        }, (err) => {
+            console.log("Gagal memuat pesanan:", err);
+            $("waitingGrid").innerHTML = "";
+            $("waitingEmpty").classList.remove("d-none");
+            $("waitingEmpty").innerHTML = "<b>Gagal memuat data</b>Periksa koneksi internet lalu muat ulang halaman.";
+        });
+
+        setInterval(renderPaid, 30000);   // segarkan teks "x mnt lalu" dan buang yang lewat 30 menit
+    </script>
+</body>
+</html>
